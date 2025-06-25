@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 
-export const routesParameterizationWarnings: Routes = [
+export const routesAlertParameterization: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./page/alert-parameterization.page').then((m) => m.ParameterizationWarningsPageComponent),
+      import('./page/alert-parameterization.page').then((m) => m.AlertParameterizationPageComponent),
   },
 ];

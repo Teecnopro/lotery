@@ -21,6 +21,9 @@ import { MaterialModule } from '../../../shared/material/material.module';
           >
           <a mat-list-item routerLink="alert-parameterization" routerLinkActive="active"
             >Parametrización de alertas</a>
+          <a mat-list-item routerLink="payment-parameterization" routerLinkActive="active">
+          Parametrización de pagos
+          </a>
         </mat-nav-list>
       </mat-sidenav>
 
@@ -43,6 +46,7 @@ export class DashboardLayoutComponent {
     "/dashboard/users": "Usuarios",
     "/dashboard/vendors": "Vendedores",
     "/dashboard/alert-parameterization": "Parametrización de alertas",
+    "/dashboard/payment-parameterization": "Parametrización de pagos",
   }
 
   sectionTitle = computed(() => {

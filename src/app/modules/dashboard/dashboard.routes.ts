@@ -20,7 +20,12 @@ export const routesDashboard: Routes = [
       {
         path: 'alert-parameterization',
         loadChildren: () =>
-          import('../alert-parameterization/alert-parameterization.routes').then((m) => m.routesParameterizationWarnings),
+          import('../alert-parameterization/alert-parameterization.routes').then((m) => m.routesAlertParameterization),
+      },
+      {
+        path: 'payment-parameterization',
+        loadChildren: () =>
+          import('../payment-parameterization/payment-parameterization.routes').then((m) => m.routesPaymentParameterization),
       },
     ],
   },

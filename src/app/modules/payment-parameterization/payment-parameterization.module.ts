@@ -6,4 +6,4 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [CommonModule, ReactiveFormsModule],
   providers: [],
 })
-export class AlertParameterizationModule {}
+export class PaymentParameterizationModule {}
