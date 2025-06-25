@@ -19,6 +19,8 @@ import { MaterialModule } from '../../../shared/material/material.module';
           <a mat-list-item routerLink="vendors" routerLinkActive="active"
             >Vendedores</a
           >
+          <a mat-list-item routerLink="parameterization-warnings" routerLinkActive="active"
+            >Parametrización de alertas</a>
         </mat-nav-list>
       </mat-sidenav>
 
@@ -43,6 +45,7 @@ export class DashboardLayoutComponent {
     console.log({ url });
     if (url.includes('users')) return 'Usuario';
     if (url.includes('vendors')) return 'Vendedores';
+    if (url.includes('parameterization-warnings')) return 'Prametrización de alertas';
     return 'Inicio';
   });
 }
