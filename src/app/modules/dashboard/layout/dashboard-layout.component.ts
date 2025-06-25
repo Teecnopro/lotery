@@ -21,9 +21,9 @@ import { MaterialModule } from '../../../shared/material/material.module';
           >
           <a
             mat-list-item
-            routerLink="register-numbers"
+            routerLink="register-bets"
             routerLinkActive="active"
-            >Registrar números</a
+            >Registrar apuestas</a
           >
         </mat-nav-list>
       </mat-sidenav>
@@ -48,7 +48,7 @@ export class DashboardLayoutComponent {
     "/dashboard/users": "Usuarios",
     "/dashboard/vendors": "Vendedores",
     "/dashboard/alert-parameterization": "Parametrización de alertas",
-    "/dashboard/register-numbers": "Parametrización de alertas",
+    "/dashboard/register-bets": "Registrar apuestas",
   }
 
   sectionTitle = computed(() => {

@@ -18,9 +18,9 @@ export const routesDashboard: Routes = [
           import('../users/users.routes').then((m) => m.routesUsers),
       },
       {
-        path: 'register-numbers',
+        path: 'register-bets',
         loadChildren: () =>
-          import('../register-numbers/register-numbers.routes').then((m) => m.routesRegisterNumbers),
+          import('../register-bets/register-bets.routes').then((m) => m.routesRegisterBets),
       },
     ],
   },
