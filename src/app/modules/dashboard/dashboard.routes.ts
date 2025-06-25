@@ -17,6 +17,11 @@ export const routesDashboard: Routes = [
         loadChildren: () =>
           import('../users/users.routes').then((m) => m.routesUsers),
       },
+      {
+        path: 'register-numbers',
+        loadChildren: () =>
+          import('../register-numbers/register-numbers.routes').then((m) => m.routesRegisterNumbers),
+      },
     ],
   },
 ];

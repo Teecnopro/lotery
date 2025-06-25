@@ -19,6 +19,12 @@ import { MaterialModule } from '../../../shared/material/material.module';
           <a mat-list-item routerLink="vendors" routerLinkActive="active"
             >Vendedores</a
           >
+          <a
+            mat-list-item
+            routerLink="register-numbers"
+            routerLinkActive="active"
+            >Registrar números</a
+          >
         </mat-nav-list>
       </mat-sidenav>
 
@@ -38,11 +44,15 @@ export class DashboardLayoutComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  title: Record<string, string> = {
+    "/dashboard/users": "Usuarios",
+    "/dashboard/vendors": "Vendedores",
+    "/dashboard/alert-parameterization": "Parametrización de alertas",
+    "/dashboard/register-numbers": "Parametrización de alertas",
+  }
+
   sectionTitle = computed(() => {
     const url = this.router.url;
-    console.log({ url });
-    if (url.includes('users')) return 'Usuario';
-    if (url.includes('vendors')) return 'Vendedores';
-    return 'Inicio';
+    return this.title[url as string] || 'Inicio';
   });
 }
