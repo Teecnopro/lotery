@@ -1,43 +1,65 @@
-<mat-card class="login-card">
-  <mat-card-title>Iniciar sesión</mat-card-title>
-  <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="email" type="email" />
-      <mat-error *ngIf="form.get('email')?.hasError('required')"
-        >Requerido</mat-error
-      >
-      <mat-error *ngIf="form.get('email')?.hasError('email')"
-        >Email inválido</mat-error
-      >
-    </mat-form-field>
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header class="title">
+      <mat-icon mat-card-avatar color="primary">account_circle</mat-icon>
+      <mat-card-title>Iniciar sesión</mat-card-title>
+    </mat-card-header>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Contraseña</mat-label>
-      <input matInput formControlName="password" type="password" />
-      <mat-error *ngIf="form.get('password')?.hasError('required')"
-        >Requerido</mat-error
-      >
-    </mat-form-field>
+    <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          autocomplete="email"
+        />
+        <mat-error *ngIf="form.get('email')?.hasError('required')"
+          >Requerido</mat-error
+        >
+        <mat-error *ngIf="form.get('email')?.hasError('email')"
+          >Email inválido</mat-error
+        >
+      </mat-form-field>
 
-    <div class="actions">
-      <button
-        mat-flat-button
-        color="primary"
-        type="submit"
-        [disabled]="loading"
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
+        <input
+          matInput
+          formControlName="password"
+          type="password"
+          autocomplete="current-password"
+        />
+        <mat-error *ngIf="form.get('password')?.hasError('required')"
+          >Requerido</mat-error
+        >
+      </mat-form-field>
+
+      <div class="actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="btn-loading"
+          [disabled]="loading"
+        >
+          <ng-container *ngIf="!loading">Entrar</ng-container>
+          <mat-progress-spinner
+            *ngIf="loading"
+            diameter="20"
+            mode="indeterminate"
+            color="accent"
+          ></mat-progress-spinner>
+        </button>
+      </div>
+    </form>
+
+    <div class="recover">
+      <a mat-stroked-button color="accent" routerLink="/auth/recover-password"
+        >¿Olvidaste tu contraseña?</a
       >
-        {{ loading ? "Ingresando..." : "Entrar" }}
-        <mat-progress-spinner
-          *ngIf="loading"
-          mode="indeterminate"
-          diameter="20"
-        ></mat-progress-spinner>
-      </button>
     </div>
-  </form>
-
-  <div class="recover">
-    <a routerLink="/auth/recover-password">¿Olvidaste tu contraseña?</a>
-  </div>
-</mat-card>
+  </mat-card>
+</div>

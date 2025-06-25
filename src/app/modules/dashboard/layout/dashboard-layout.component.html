@@ -1,0 +1,35 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #sidenav
+    [mode]="(isHandset | async) ? 'over' : 'side'"
+    [opened]="!(isHandset | async)"
+    class="sidebar"
+  >
+    <mat-nav-list>
+      <a
+        *ngFor="let item of visibleMenuItems()"
+        mat-list-item
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="sidenav.close()"
+      >
+        <mat-icon matListIcon>{{ item.icon }}</mat-icon>
+        <span matLine>{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content-area">
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="toggleMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-title">{{ title }}</span>
+    </mat-toolbar>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

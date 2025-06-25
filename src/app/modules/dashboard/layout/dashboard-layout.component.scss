@@ -2,8 +2,62 @@
   height: 100vh;
 }
 
+.sidebar {
+  width: 220px;
+  background-color: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding-top: 1rem;
+
+  mat-icon {
+    margin-right: 8px;
+    color: #1976d2;
+  }
+
+  a.active {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    font-weight: bold;
+  }
+}
+
+.sidebar a.mat-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+}
+
+.sidebar a mat-icon {
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+.sidebar a {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar a.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.content-area {
+  background-color: #f4f6f8;
+  height: 100%;
+}
+
 .main-content {
-  padding: 16px;
-  min-height: calc(100vh - 64px);
-  background-color: #f4f4f4;
+  padding: 1.5rem;
+}
+
+mat-toolbar {
+  display: flex;
+  justify-content: start;
+  gap: 1rem;
+}
+
+.toolbar-title {
+  font-weight: 500;
+  font-size: 1.2rem;
 }

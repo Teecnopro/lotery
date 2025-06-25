@@ -16,6 +16,9 @@ export const routesDashboard: Routes = [
         path: 'users',
         loadChildren: () =>
           import('../users/users.routes').then((m) => m.routesUsers),
+        data: {
+          title: 'Usuarios',
+        },
       },
     ],
   },

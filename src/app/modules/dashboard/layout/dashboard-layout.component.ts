@@ -1,48 +1,68 @@
-import { Component, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterModule,
+} from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatSidenav } from '@angular/material/sidenav';
+import { filter, map, mergeMap, Subject, takeUntil } from 'rxjs';
 
 import { MaterialModule } from '../../../shared/material/material.module';
+import { MENU_ITEMS } from '../const/menuItems';
 
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
-  imports: [RouterModule, MaterialModule],
-  template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav mode="side" opened>
-        <mat-toolbar>Menú</mat-toolbar>
-        <mat-nav-list>
-          <a mat-list-item routerLink="users" routerLinkActive="active"
-            >Usuarios</a
-          >
-          <a mat-list-item routerLink="vendors" routerLinkActive="active"
-            >Vendedores</a
-          >
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <mat-toolbar color="primary">
-          <span>{{ sectionTitle() }}</span>
-        </mat-toolbar>
-        <main class="main-content">
-          <router-outlet></router-outlet>
-        </main>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
+  imports: [CommonModule, RouterModule, MaterialModule],
+  templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.scss'],
 })
-export class DashboardLayoutComponent {
+export class DashboardLayoutComponent implements OnDestroy {
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+
+  private breakpointObserver = inject(BreakpointObserver);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroy$ = new Subject<void>();
 
-  sectionTitle = computed(() => {
-    const url = this.router.url;
-    console.log({ url });
-    if (url.includes('users')) return 'Usuario';
-    if (url.includes('vendors')) return 'Vendedores';
-    return 'Inicio';
-  });
+  title: string = '';
+  menuItems = MENU_ITEMS;
+
+  isHandset = this.breakpointObserver
+    .observe(Breakpoints.Handset)
+    .pipe(map((result) => result.matches));
+
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        map(() => this.route),
+        map((r) => {
+          while (r.firstChild) r = r.firstChild;
+          return r;
+        }),
+        mergeMap((r) => r?.data),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((data) => {
+        this.title = data['title'] ?? 'Inicio';
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  visibleMenuItems() {
+    return this.menuItems.filter((item) => this.router.url !== item.route);
+  }
+
+  toggleMenu() {
+    this.sidenav.toggle();
+  }
 }

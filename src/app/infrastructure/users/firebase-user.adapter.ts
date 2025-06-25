@@ -20,6 +20,7 @@ import { UserData } from '../../domain/users/models/users.entity';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserAdapter implements UserServicePort {
+  /* TODO: Cambiar a Cloud Firestore */
   constructor(private auth: Auth, private firestore: Firestore) {}
 
   async create(
