@@ -1,1 +1,53 @@
-<p>aqui va el form de alertaas</p>
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Configuración de Alertas</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form #alertForm="ngForm" (ngSubmit)="onSubmit(alertForm)" class="alert-form">
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo de Alerta</mat-label>
+          <mat-select name="alertType" ngModel required>
+            <mat-option value="" disabled>Seleccione un tipo</mat-option>
+            <mat-option value="email">Email</mat-option>
+            <mat-option value="sms">SMS</mat-option>
+            <mat-option value="push">Notificación Push</mat-option>
+            <mat-option value="webhook">Webhook</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Título</mat-label>
+          <input matInput type="text" name="title" ngModel required placeholder="Ingrese el título de la alerta">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mensaje</mat-label>
+          <textarea matInput name="message" ngModel required rows="4" placeholder="Ingrese el mensaje de la alerta"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Prioridad</mat-label>
+          <mat-select name="priority" ngModel required>
+            <mat-option value="" disabled>Seleccione la prioridad</mat-option>
+            <mat-option value="low">Baja</mat-option>
+            <mat-option value="medium">Media</mat-option>
+            <mat-option value="high">Alta</mat-option>
+            <mat-option value="critical">Crítica</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!alertForm.valid">
+            Crear Alerta
+          </button>
+          <button mat-outlined-button type="button" (click)="alertForm.resetForm()">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
