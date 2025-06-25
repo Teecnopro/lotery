@@ -40,6 +40,16 @@ export const routesDashboard: Routes = [
           title: 'Parametrización de pagos',
         },
       },
+      {
+        path: 'register-bets',
+        loadChildren: () =>
+          import('../register-bets/register-bets.routes').then(
+            (m) => m.routesRegisterBets
+          ),
+        data: {
+          title: 'Registrar apuestas',
+        },
+      },
     ],
   },
 ];
