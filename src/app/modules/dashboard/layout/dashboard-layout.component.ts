@@ -39,17 +39,20 @@ export class DashboardLayoutComponent implements OnDestroy {
   constructor() {
     this.router.events
       .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd
+        ),
         map(() => this.route),
-        map((r) => {
-          while (r.firstChild) r = r.firstChild;
-          return r;
+        map((activatedRoute) => {
+          while (activatedRoute.firstChild)
+            activatedRoute = activatedRoute.firstChild;
+          return activatedRoute;
         }),
-        mergeMap((r) => r?.data),
+        mergeMap((finalRoute) => finalRoute?.data),
         takeUntil(this.destroy$)
       )
-      .subscribe((data) => {
-        this.title = data['title'] ?? 'Inicio';
+      .subscribe((routeData) => {
+        this.title = routeData['title'] ?? 'Inicio';
       });
   }
 

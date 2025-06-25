@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NOTIFICATION_PORT } from '../ports';
 import { MaterialNotificationAdapter } from '../infrastructure/primeng-notification.adapter';
@@ -24,6 +25,7 @@ import { MaterialNotificationAdapter } from '../infrastructure/primeng-notificat
     MatSidenavModule,
     MatToolbarModule,
     MatListModule,
+    MatTooltipModule,
   ],
   providers: [
     {

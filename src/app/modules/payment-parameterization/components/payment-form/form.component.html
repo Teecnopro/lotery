@@ -1,0 +1,41 @@
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Configuración de Pago</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form #paymentForm="ngForm" (ngSubmit)="onSubmit(paymentForm)" class="payment-form">
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo</mat-label>
+          <mat-select name="type" ngModel required>
+            <mat-option value="" disabled>Seleccione un tipo</mat-option>
+            <mat-option value="opcion1">Opción 1</mat-option>
+            <mat-option value="opcion2">Opción 2</mat-option>
+            <mat-option value="opcion3">Opción 3</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" name="cantidad" ngModel required min="1" placeholder="Ingrese la cantidad">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Valor</mat-label>
+          <input matInput type="number" name="valor" ngModel required min="0" placeholder="Ingrese el valor">
+        </mat-form-field>
+
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!paymentForm.valid">
+            Enviar
+          </button>
+          <button mat-outlined-button type="button" (click)="paymentForm.resetForm()">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

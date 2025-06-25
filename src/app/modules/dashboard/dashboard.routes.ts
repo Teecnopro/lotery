@@ -20,6 +20,26 @@ export const routesDashboard: Routes = [
           title: 'Usuarios',
         },
       },
+      {
+        path: 'alert-parameterization',
+        loadChildren: () =>
+          import(
+            '../alert-parameterization/alert-parameterization.routes'
+          ).then((m) => m.routesAlertParameterization),
+        data: {
+          title: 'Parametrización de alertas',
+        },
+      },
+      {
+        path: 'payment-parameterization',
+        loadChildren: () =>
+          import(
+            '../payment-parameterization/payment-parameterization.routes'
+          ).then((m) => m.routesPaymentParameterization),
+        data: {
+          title: 'Parametrización de pagos',
+        },
+      },
     ],
   },
 ];

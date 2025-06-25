@@ -13,6 +13,9 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         (click)="sidenav.close()"
+        [matTooltip]="item.label"
+        matTooltipPosition="right"
+        matTooltipShowDelay="500"
       >
         <mat-icon matListIcon>{{ item.icon }}</mat-icon>
         <span matLine>{{ item.label }}</span>
