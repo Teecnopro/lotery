@@ -18,9 +18,9 @@ export const routesDashboard: Routes = [
           import('../users/users.routes').then((m) => m.routesUsers),
       },
       {
-        path: 'parameterization-warnings',
+        path: 'alert-parameterization',
         loadChildren: () =>
-          import('../parameterization-warnings/parameterization_warnings.routes').then((m) => m.routesParameterizationWarnings),
+          import('../alert-parameterization/alert-parameterization.routes').then((m) => m.routesParameterizationWarnings),
       },
     ],
   },

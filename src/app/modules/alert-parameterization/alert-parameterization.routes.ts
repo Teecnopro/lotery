@@ -4,6 +4,6 @@ export const routesParameterizationWarnings: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./page/parameterization_warnings.page').then((m) => m.ParameterizationWarningsPageComponent),
+      import('./page/alert-parameterization.page').then((m) => m.ParameterizationWarningsPageComponent),
   },
 ];

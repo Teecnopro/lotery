@@ -36,16 +36,19 @@ import { MaterialModule } from '../../../shared/material/material.module';
   `,
   styleUrls: ['./dashboard-layout.component.scss'],
 })
+
+
+
 export class DashboardLayoutComponent {
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  title: Record<string, string> = {
+    "/dashboard/users": "Usuario",
+    "/dashboard/vendors": "Vendedores",
+    "/dashboard/alert-parameterization": "Prametrización de alertas",
+  }
 
   sectionTitle = computed(() => {
-    const url = this.router.url;
-    console.log({ url });
-    if (url.includes('users')) return 'Usuario';
-    if (url.includes('vendors')) return 'Vendedores';
-    if (url.includes('parameterization-warnings')) return 'Prametrización de alertas';
-    return 'Inicio';
+    const url = this.router.url as string;
+    return this.title[url] || 'Inicio';
   });
 }
