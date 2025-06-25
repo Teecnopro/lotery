@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-parameterization-warnings-page',
+  selector: 'app-aalert-parameterization-page',
   standalone: true,
   imports: [],
   template: ` <h2>Parametrización de alertas</h2>`,

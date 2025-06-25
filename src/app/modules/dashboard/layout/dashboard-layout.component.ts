@@ -19,7 +19,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
           <a mat-list-item routerLink="vendors" routerLinkActive="active"
             >Vendedores</a
           >
-          <a mat-list-item routerLink="parameterization-warnings" routerLinkActive="active"
+          <a mat-list-item routerLink="alert-parameterization" routerLinkActive="active"
             >Parametrización de alertas</a>
         </mat-nav-list>
       </mat-sidenav>
@@ -36,19 +36,17 @@ import { MaterialModule } from '../../../shared/material/material.module';
   `,
   styleUrls: ['./dashboard-layout.component.scss'],
 })
-
-
-
 export class DashboardLayoutComponent {
   private router = inject(Router);
+
   title: Record<string, string> = {
-    "/dashboard/users": "Usuario",
+    "/dashboard/users": "Usuarios",
     "/dashboard/vendors": "Vendedores",
-    "/dashboard/alert-parameterization": "Prametrización de alertas",
+    "/dashboard/alert-parameterization": "Parametrización de alertas",
   }
 
   sectionTitle = computed(() => {
-    const url = this.router.url as string;
-    return this.title[url] || 'Inicio';
+    const url = this.router.url;
+    return this.title[url as string] || 'Inicio';
   });
 }
