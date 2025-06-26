@@ -1,20 +1,38 @@
 import { Component } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-alert-table',
   standalone: true,
-  imports: [MatTableModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss'
 })
 export class AlertTableComponent {
-  displayedColumns: string[] = ['title', 'type', 'priority', 'status'];
+  displayedColumns: string[] = ['title', 'type', 'priority', 'actions'];
   
   dataSource = [
-    { id: 1, title: 'Alerta de Sistema', type: 'email', priority: 'high', status: 'Activa' },
-    { id: 2, title: 'Notificación de Pago', type: 'sms', priority: 'medium', status: 'Pendiente' },
-    { id: 3, title: 'Alerta Crítica', type: 'push', priority: 'critical', status: 'Pausada' },
-    { id: 4, title: 'Webhook de Actualización', type: 'webhook', priority: 'low', status: 'Activa' }
+    { id: 1, title: 'Alerta de Sistema', type: 'email', priority: 'high' },
+    { id: 2, title: 'Notificación de Pago', type: 'sms', priority: 'medium' },
+    { id: 3, title: 'Alerta Crítica', type: 'push', priority: 'critical' },
+    { id: 4, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
+    { id: 5, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
+    { id: 6, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
+    { id: 7, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
+    { id: 8, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
+    { id: 9, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
+    { id: 10, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' }
   ];
+
+  editAlert(element: any) {
+    console.log('Editar alerta:', element);
+    // Aquí puedes implementar la lógica para editar
+  }
+
+  deleteAlert(element: any) {
+    console.log('Eliminar alerta:', element);
+    // Aquí puedes implementar la lógica para eliminar
+  }
 }
