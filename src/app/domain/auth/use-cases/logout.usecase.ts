@@ -1,12 +1,14 @@
-
 import { inject } from '@angular/core';
 
-import { AUTH_SERVICE } from '../ports/auth-service.token';
+import { AUTH_SERVICE, AUTH_SESSION } from '../ports';
 
 export class LogoutUseCase {
-   private authService = inject(AUTH_SERVICE);
+  private authService = inject(AUTH_SERVICE);
+  private authSesion = inject(AUTH_SESSION);
 
   async execute() {
-    return this.authService.logout();
+    await this.authService.logout();
+    this.authSesion.clearUser();
+    return;
   }
 }
