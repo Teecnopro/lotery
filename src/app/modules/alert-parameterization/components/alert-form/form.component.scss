@@ -2,22 +2,23 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 20px;
+  padding: 15px;
+  height: fit-content;
 }
 
 .form-card {
   width: 100%;
-  max-width: 500px;
-  padding: 20px;
+  max-width: 400px;
+  padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   mat-card-header {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     text-align: center;
 
     mat-card-title {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 500;
       color: #333;
       margin: 0;
@@ -28,7 +29,7 @@
 .alert-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 
   .full-width {
     width: 100%;
@@ -43,15 +44,16 @@
 
 .button-group {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 12px;
 
   button {
-    min-width: 100px;
-    height: 40px;
+    min-width: 90px;
+    height: 36px;
     border-radius: 4px;
     font-weight: 500;
+    font-size: 14px;
 
     &[color="primary"] {
       &:disabled {
@@ -65,11 +67,11 @@
 // Responsive design
 @media (max-width: 768px) {
   .form-container {
-    padding: 16px;
+    padding: 12px;
   }
 
   .form-card {
-    padding: 16px;
+    padding: 12px;
   }
 
   .button-group {
@@ -78,5 +80,17 @@
     button {
       width: 100%;
     }
+  }
+}
+
+// When inside a two-column layout
+@media (min-width: 1025px) {
+  .form-container {
+    padding: 0;
+    height: auto;
+  }
+  
+  .form-card {
+    max-width: 350px;
   }
 }

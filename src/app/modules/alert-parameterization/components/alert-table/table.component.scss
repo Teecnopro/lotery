@@ -1,0 +1,114 @@
+.table-container {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px; /* Limitar el ancho máximo */
+  margin: 0 auto; /* Centrar la tabla */
+}
+
+.mat-elevation-z8 {
+  border-radius: 8px 8px 0 0 !important; /* Solo bordes superiores redondeados para la tabla */
+}
+
+table {
+  width: 100%;
+  overflow: hidden;
+  flex: 1;
+}
+
+// Filas más angostas
+.table-row {
+  height: 10px !important;
+}
+
+.mat-mdc-header-row {
+  height: 40px !important;
+}
+
+.mat-mdc-cell, .mat-mdc-header-cell {
+  padding: 4px 12px !important;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+mat-paginator {
+  border-radius: 0 0 8px 8px !important; /* Bordes inferiores redondeados */
+  margin-top: 0;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12) !important; /* Mismo sombreado que la tabla */
+}
+
+// Action buttons styles
+.actions-header {
+  text-align: center !important;
+}
+
+.actions-cell {
+  text-align: center;
+  font-size: 15px !important;
+  button {
+    margin: 0 3px;
+    width: 100px !important;
+    height: 40px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 4px;
+    line-height: 1;
+    padding: 0 6px;
+  }
+  
+  .edit-btn {
+    background-color: #ff9800;
+    color: white;
+    
+    &:hover {
+      background-color: #f57c00;
+    }
+  }
+  
+  .delete-btn {
+    background-color: #f44336;
+    color: white;
+    
+    &:hover {
+      background-color: #d32f2f;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .table-container {
+    padding: 16px;
+  }
+  
+  table {
+    font-size: 14px;
+  }
+  
+  .mat-mdc-cell, .mat-mdc-header-cell {
+    padding: 3px 6px !important;
+  }
+  
+  .table-row {
+    height: 28px !important;
+  }
+  
+  .actions-cell button {
+    min-width: 45px;
+    height: 20px;
+    margin: 0 1px;
+    font-size: 10px;
+    padding: 0 4px;
+  }
+}
+
+// When inside a two-column layout
+@media (min-width: 1025px) {
+  .table-container {
+    padding: 0;
+    height: calc(100vh - 40px);
+    max-width: 100%; /* En layout de dos columnas, usar todo el espacio disponible */
+    margin: 0; /* Sin centrado en layout de dos columnas */
+  }
+}
