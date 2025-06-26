@@ -11,19 +11,10 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './table.component.scss'
 })
 export class AlertTableComponent {
-  displayedColumns: string[] = ['title', 'type', 'priority', 'actions'];
+  displayedColumns: string[] = ['tope', 'createdBy', 'createAt', 'updatedBy', 'updateAt', 'actions'];
   
   dataSource = [
-    { id: 1, title: 'Alerta de Sistema', type: 'email', priority: 'high' },
-    { id: 2, title: 'Notificación de Pago', type: 'sms', priority: 'medium' },
-    { id: 3, title: 'Alerta Crítica', type: 'push', priority: 'critical' },
-    { id: 4, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 5, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 6, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 7, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 8, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 9, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 10, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' }
+    { id: 1, tope: 10000, createdBy: 'Samuel Suarez', createAt: "12-6-2025 12:32:32", updatedBy: 'Samuel Suarez', updateAt: "12-6-2025 12:32:32" },
   ];
 
   editAlert(element: any) {
