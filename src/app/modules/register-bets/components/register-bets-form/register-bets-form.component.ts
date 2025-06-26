@@ -56,4 +56,8 @@ export class RegisterBetsFormComponent {
 
     action === "active" ? (lottery?.enable(), this.lotterySelect.open()) : lottery?.disable();
   }
+
+  sendData() {
+    console.log(this.registerBetForm.value);
+  }
 }

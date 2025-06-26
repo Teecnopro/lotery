@@ -21,7 +21,7 @@
           <div class="lottery-select">
             <mat-form-field appearance="outline">
               <mat-label>Lotería</mat-label>
-              <mat-select #lotterySelect formControlName="lottery" (selectionChange)="activeDeactiveSelect('deactive')">
+              <mat-select #lotterySelect formControlName="lottery" (valueChange)="activeDeactiveSelect('deactive'); selectSeller.open()">
                 <mat-option *ngFor="let item of arrayLotteries" [value]="item"><span [style.color]="item.color">{{ item.name }}</span></mat-option>
               </mat-select>
             </mat-form-field>
@@ -30,7 +30,7 @@
           <button
             mat-raised-button
             color="primary"
-            type="submit"
+            type="button"
             (click)="activeDeactiveSelect('active')"
             class="lottery-button"
           >
@@ -40,7 +40,7 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Vendedor</mat-label>
-          <mat-select formControlName="seller">
+          <mat-select #selectSeller formControlName="seller" (valueChange)="inputNumber.focus()">
             <mat-option *ngFor="let item of arraySellers" [value]="item"><span>{{ item.seller }}</span></mat-option>
           </mat-select>
         </mat-form-field>
@@ -48,25 +48,28 @@
         <div class="number-check">
           <mat-form-field appearance="outline">
             <mat-label>Número</mat-label>
-            <input matInput type="number" formControlName="lotteryNumber"/>
+            <input #inputNumber matInput type="number" formControlName="lotteryNumber" (keydown.enter)="inputCombined.focus()"/>
           </mat-form-field>
 
-          <mat-checkbox color="primary" formControlName="combined" class="checkbox">
+          <mat-checkbox #inputCombined color="primary" formControlName="combined" class="checkbox" (keydown.enter)="inputValue.focus()">
             Combinado
           </mat-checkbox>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Valor</mat-label>
-          <input matInput type="number" formControlName="value"/>
+          <input #inputValue matInput type="number" formControlName="value" (keydown.enter)="btnSend.focus()"/>
         </mat-form-field>
 
         <div class="button-group">
           <button
+            #btnSend
             mat-raised-button
             color="primary"
-            type="submit"
+            type="button"
             [disabled]="registerBetForm.invalid"
+            (keydown.enter)="sendData()"
+            (click)="sendData()"
           >
             Enviar
           </button>
