@@ -7,8 +7,8 @@
     <mat-card-content>
       <form #alertForm="ngForm" (ngSubmit)="onSubmit(alertForm)" class="alert-form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Tope</mat-label>
-          <input matInput type="number" name="tope" ngModel required placeholder="Ingrese el tope">
+          <mat-label>Valor</mat-label>
+          <input matInput type="number" name="value" ngModel required placeholder="Ingrese el valor">
         </mat-form-field>
         <div class="button-group">
           <button mat-raised-button color="primary" type="submit" [disabled]="!alertForm.valid">

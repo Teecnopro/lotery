@@ -11,10 +11,10 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './table.component.scss'
 })
 export class AlertTableComponent {
-  displayedColumns: string[] = ['tope', 'createdBy', 'createAt', 'updatedBy', 'updateAt', 'actions'];
+  displayedColumns: string[] = ['value', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'actions'];
   
   dataSource = [
-    { id: 1, tope: 10000, createdBy: 'Samuel Suarez', createAt: "12-6-2025 12:32:32", updatedBy: 'Samuel Suarez', updateAt: "12-6-2025 12:32:32" },
+    { id: 1, value: 10000, createdBy: 'Samuel Suarez', createdAt: "12-6-2025 12:32:32", updatedBy: 'Samuel Suarez', updatedAt: "12-6-2025 12:32:32" },
   ];
 
   editAlert(element: any) {
