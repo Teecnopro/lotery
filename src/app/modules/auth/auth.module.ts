@@ -11,6 +11,7 @@ import {
 } from '../../domain/auth/use-cases';
 import { AUTH_SESSION } from '../../domain/auth/ports';
 import { LocalStorageAuthSessionAdapter } from '../../infrastructure/auth/local-storage-auth-session.adapter';
+import { LoadUserProfileUseCase } from '../../domain/users/use-cases';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule],
@@ -26,6 +27,7 @@ import { LocalStorageAuthSessionAdapter } from '../../infrastructure/auth/local-
     LoginUseCase,
     LogoutUseCase,
     RecoverPasswordUseCase,
+    LoadUserProfileUseCase,
   ],
 })
 export class AuthModule {}

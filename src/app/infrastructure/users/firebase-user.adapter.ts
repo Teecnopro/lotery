@@ -6,6 +6,7 @@ import {
   deleteDoc,
   doc,
   Firestore,
+  getDoc,
   getDocs,
   setDoc,
   updateDoc,
@@ -17,6 +18,12 @@ import { UserData } from '../../domain/users/models/users.entity';
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserAdapter implements UserServicePort {
   constructor(private auth: Auth, private firestore: Firestore) {}
+
+  async getByUid(uid: string): Promise<UserData> {
+    const userDoc = await getDoc(doc(this.firestore, 'users', uid));
+    if (!userDoc.exists()) throw new Error('Perfil no encontrado');
+    return userDoc.data() as UserData;
+  }
 
   async create(
     user: Omit<UserData, 'uid' | 'state'>,

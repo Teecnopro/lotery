@@ -9,4 +9,5 @@ export abstract class UserServicePort {
   abstract deactivate(uid: string): Promise<void>;
   abstract delete(uid: string): Promise<void>;
   abstract getAll(): Promise<UserData[]>;
+  abstract getByUid(uid: string): Promise<UserData>;
 }

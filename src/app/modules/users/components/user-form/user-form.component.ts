@@ -47,7 +47,7 @@ export class UserFormComponent {
     const currentUser = this.userSession.getUser();
     const creator = {
       id: currentUser?.uid ?? '',
-      name: currentUser?.email ?? '',
+      name: currentUser?.name || currentUser?.email || '',
     };
     const now = Timestamp.now();
 

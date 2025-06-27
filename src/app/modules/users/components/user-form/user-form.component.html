@@ -43,7 +43,7 @@
 
         <mat-checkbox formControlName="isAdmin">Es administrador</mat-checkbox>
 
-        <div class="button-group">
+        <div class="button-group" *ngIf="!loading">
           <button
             mat-raised-button
             color="primary"
@@ -55,6 +55,14 @@
           <button mat-outlined-button type="button" (click)="form.reset()">
             Limpiar
           </button>
+        </div>
+
+        <div class="button-group" *ngIf="loading">
+          <mat-progress-spinner
+            diameter="30"
+            mode="indeterminate"
+            color="accent"
+          ></mat-progress-spinner>
         </div>
       </form>
     </mat-card-content>

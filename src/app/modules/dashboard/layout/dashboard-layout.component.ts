@@ -35,7 +35,7 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
 
   title: string = '';
   menuItems = MENU_ITEMS;
-  currentUserName: string = '';
+  currentUserName: string | undefined = 'Invitado';
 
   isHandset = this.breakpointObserver
     .observe(Breakpoints.Handset)
@@ -63,8 +63,9 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const userSession = this.authSession.getUser();
+    const nameFull = userSession?.name;
     const email = userSession?.email;
-    this.currentUserName = email ? email?.split('@')?.[0] : 'Invitado';
+    this.currentUserName = nameFull ? nameFull : email?.split('@')?.[0];
   }
 
   ngOnDestroy(): void {
