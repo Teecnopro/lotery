@@ -5,7 +5,7 @@ import { AlertParameterization } from '../../domain/alert-parameterization/model
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAlertParameterizationAdapter implements AlertParameterizationServicePort {
-  constructor() {}
+    constructor() {}
     createAlertParameterization(data: AlertParameterization): Promise<AlertParameterization> {
         throw new Error('Method not implemented.');
     }

@@ -5,7 +5,7 @@ import { PaymentParameterization } from '../../domain/payment-parameterization/m
 
 @Injectable({ providedIn: 'root' })
 export class FirebasePaymentParameterizationAdapter implements PaymentParameterizationServicePort {
-  constructor() {}
+    constructor() {}
     createPaymentParameterization(data: PaymentParameterization): Promise<PaymentParameterization> {
         throw new Error('Method not implemented.');
     }
