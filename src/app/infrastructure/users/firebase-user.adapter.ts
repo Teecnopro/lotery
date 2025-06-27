@@ -47,7 +47,7 @@ export class FirebaseUserAdapter implements UserServicePort {
   }
 
   async deactivate(uid: string): Promise<void> {
-    await updateDoc(doc(this.firestore, 'users', uid), { state: 'inactive' });
+    await updateDoc(doc(this.firestore, 'users', uid), { state: false });
   }
 
   async delete(uid: string): Promise<void> {

@@ -12,7 +12,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { NOTIFICATION_PORT } from '../ports';
-import { MaterialNotificationAdapter } from '../infrastructure/primeng-notification.adapter';
+import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
 
 @NgModule({
   exports: [
