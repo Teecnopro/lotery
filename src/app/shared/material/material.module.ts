@@ -10,6 +10,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { NOTIFICATION_PORT } from '../ports';
 import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
@@ -26,6 +27,7 @@ import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notif
     MatToolbarModule,
     MatListModule,
     MatTooltipModule,
+    MatCheckboxModule,
   ],
   providers: [
     {

@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import {
-  Auth,
-  createUserWithEmailAndPassword,
-  deleteUser,
-} from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import {
   collection,
   deleteDoc,
@@ -20,7 +16,6 @@ import { UserData } from '../../domain/users/models/users.entity';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserAdapter implements UserServicePort {
-  /* TODO: Cambiar a Cloud Firestore */
   constructor(private auth: Auth, private firestore: Firestore) {}
 
   async create(
@@ -32,13 +27,12 @@ export class FirebaseUserAdapter implements UserServicePort {
       user.email,
       password
     );
-    console.log({ result });
     const uid = result?.user?.uid;
     const userDoc = doc(this.firestore, 'users', uid);
     await setDoc(userDoc, {
       ...user,
       uid,
-      state: 'active',
+      state: true,
     });
   }
 

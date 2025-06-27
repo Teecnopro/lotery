@@ -3,9 +3,9 @@ import { FormBuilder, Validators } from '@angular/forms';
 
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { RecoverPasswordUseCase } from '../../../../domain/auth/use-cases';
-import { getFirebaseLoginErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 import { FormsImportModule } from '../../../../shared/forms/forms-import.module';
 import { MaterialModule } from '../../../../shared/material/material.module';
+import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 
 @Component({
   selector: 'app-recovery-password-form',
@@ -38,7 +38,7 @@ export class RecoveryPasswordFormComponent {
       await this.recoveryPasswordUseCase.execute(email!);
       this.notification.success('Enlace enviado al correo electrónico');
     } catch (error) {
-      this.notification.error(getFirebaseLoginErrorMessage(error));
+      this.notification.error(getFirebaseAuthErrorMessage(error));
     } finally {
       this.loading = false;
     }

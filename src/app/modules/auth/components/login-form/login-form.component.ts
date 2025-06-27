@@ -5,7 +5,7 @@ import { MaterialModule } from '../../../../shared/material/material.module';
 import { LoginUseCase } from '../../../../domain/auth/use-cases';
 import { FormsImportModule } from '../../../../shared/forms/forms-import.module';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
-import { getFirebaseLoginErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
+import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 
 @Component({
   selector: 'app-login-form',
@@ -40,7 +40,7 @@ export class LoginFormComponent {
       this.notification.success('Inicio de sesión exitoso');
       this.loginSuccess.emit();
     } catch (error) {
-      this.notification.error(getFirebaseLoginErrorMessage(error));
+      this.notification.error(getFirebaseAuthErrorMessage(error));
     } finally {
       this.loading = false;
     }

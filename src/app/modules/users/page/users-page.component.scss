@@ -1,0 +1,39 @@
+.alert-layout {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.form-section {
+  flex: 0 0 350px;
+  min-width: 0;
+}
+
+.table-section {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .alert-layout {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .form-section,
+  .table-section {
+    flex: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .alert-layout {
+    padding: 12px;
+    gap: 12px;
+  }
+}
