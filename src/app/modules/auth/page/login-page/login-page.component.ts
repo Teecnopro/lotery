@@ -8,7 +8,10 @@ import { LoginFormComponent } from '../../components/login-form/login-form.compo
   standalone: true,
   imports: [LoginFormComponent],
   template: `
-    <app-login-form (loginSuccess)="onLoginSuccess()"></app-login-form>
+    <app-login-form
+      (loginSuccess)="onLoginSuccess()"
+      (recoverPassword)="onRecoverPassword()"
+    ></app-login-form>
   `,
 })
 export class LoginPageComponent {
@@ -16,5 +19,9 @@ export class LoginPageComponent {
 
   onLoginSuccess() {
     this.router.navigate(['/dashboard']);
+  }
+
+  onRecoverPassword() {
+    this.router.navigate(['/auth/recover-password']);
   }
 }

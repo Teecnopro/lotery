@@ -20,6 +20,7 @@ export class LoginFormComponent {
   private notification = inject(NOTIFICATION_PORT);
 
   @Output() loginSuccess = new EventEmitter<void>();
+  @Output() recoverPassword = new EventEmitter<void>();
 
   loading: boolean = false;
 
@@ -43,5 +44,9 @@ export class LoginFormComponent {
     } finally {
       this.loading = false;
     }
+  }
+
+  goToRecoverPassword() {
+    this.recoverPassword.emit();
   }
 }
