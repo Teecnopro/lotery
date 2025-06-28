@@ -7,14 +7,25 @@
     <mat-card-content>
       <form #alertForm="ngForm" (ngSubmit)="onSubmit(alertForm)" class="alert-form">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Tope</mat-label>
-          <input matInput type="number" name="tope" ngModel required placeholder="Ingrese el tope">
+          <mat-label>Digítos</mat-label>
+          <input matInput type="number" name="digits" [(ngModel)]="alert.digits" required
+            placeholder="Ingrese la cantidad de dígitos">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Valor</mat-label>
+          <input matInput type="number" name="value" [(ngModel)]="alert.value" required 
+          placeholder="Ingrese el valor">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción Alerta</mat-label>
+          <input matInput type="text" name="description" [(ngModel)]="alert.description" required
+            placeholder="Ingrese una Descripción">
         </mat-form-field>
         <div class="button-group">
           <button mat-raised-button color="primary" type="submit" [disabled]="!alertForm.valid">
-            Crear Alerta
+            {{textButton}}
           </button>
-          <button mat-outlined-button type="button" (click)="alertForm.resetForm()">
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(alertForm)">
             Limpiar
           </button>
         </div>

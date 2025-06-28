@@ -8,20 +8,27 @@
       <form #paymentForm="ngForm" (ngSubmit)="onSubmit(paymentForm)" class="payment-form">
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Cantidad</mat-label>
-          <input matInput type="number" name="cantidad" ngModel required min="1" placeholder="Ingrese la cantidad">
+          <mat-label>Digitos</mat-label>
+          <input matInput type="number" name="digits" [(ngModel)]="payment.digits" required min="1" placeholder="Ingrese los digitos">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Valor</mat-label>
-          <input matInput type="number" name="valor" ngModel required min="0" placeholder="Ingrese el valor">
+          <mat-label>Multiplicador de pago</mat-label>
+          <input matInput type="number" name="amount" [(ngModel)]="payment.amount" required min="0" placeholder="Ingrese el multiplicador">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Combinado</mat-label>
+          <mat-select name="combined" [(ngModel)]="payment.combined" required>
+            <mat-option [value]="true">Sí</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
         </mat-form-field>
 
         <div class="button-group">
-          <button mat-raised-button color="primary" type="submit" [disabled]="!paymentForm.valid">
-            Crear Pago
+          <button mat-raised-button color="primary" type="submit" [disabled]="!paymentForm.valid || loading">
+            {{loading ? 'Guardando...' : textButton}}
           </button>
-          <button mat-outlined-button type="button" (click)="paymentForm.resetForm()">
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(paymentForm)" [disabled]="loading">
             Limpiar
           </button>
         </div>

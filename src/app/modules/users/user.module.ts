@@ -3,7 +3,13 @@ import { NgModule } from '@angular/core';
 
 import { USER_SERVICE } from '../../domain/users/ports';
 import { FirebaseUserAdapter } from '../../infrastructure/users/firebase-user.adapter';
-import { GetUsersUseCase } from '../../domain/users/use-cases';
+import {
+  CreateUserUseCase,
+  DeactivateUserUseCase,
+  DeleteUserUseCase,
+  GetUsersUseCase,
+  UpdateUserUseCase,
+} from '../../domain/users/use-cases';
 
 @NgModule({
   imports: [CommonModule],
@@ -13,6 +19,10 @@ import { GetUsersUseCase } from '../../domain/users/use-cases';
       useClass: FirebaseUserAdapter,
     },
     GetUsersUseCase,
+    CreateUserUseCase,
+    UpdateUserUseCase,
+    DeactivateUserUseCase,
+    DeleteUserUseCase,
   ],
 })
 export class UserModule {}

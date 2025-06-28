@@ -5,22 +5,41 @@
     [opened]="!(isHandset | async)"
     class="sidebar"
   >
-    <mat-nav-list>
-      <a
-        *ngFor="let item of visibleMenuItems()"
-        mat-list-item
-        [routerLink]="item.route"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        (click)="sidenav.close()"
-        [matTooltip]="item.label"
-        matTooltipPosition="right"
-        matTooltipShowDelay="500"
-      >
-        <mat-icon matListIcon>{{ item.icon }}</mat-icon>
-        <span matLine>{{ item.label }}</span>
-      </a>
-    </mat-nav-list>
+    <div class="sidebar-wrapper">
+      <div class="sidebar-menu">
+        <mat-nav-list>
+          <a
+            *ngFor="let item of visibleMenuItems()"
+            mat-list-item
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="sidenav.close()"
+            [matTooltip]="item.label"
+            matTooltipPosition="right"
+            matTooltipShowDelay="500"
+          >
+            <mat-icon matListIcon >{{ item.icon }}</mat-icon>
+            <span matLine >{{ item.label }}</span>
+          </a>
+        </mat-nav-list>
+      </div>
+
+      <div class="user-footer">
+        <div class="user-info">
+          <mat-icon>account_circle</mat-icon>
+          <span>{{ currentUserName }}</span>
+        </div>
+        <button
+          mat-icon-button
+          matTooltip="Cerrar sesión"
+          (click)="logout()"
+          color="warn"
+        >
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content class="content-area">

@@ -1,0 +1,96 @@
+.table-container {
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mat-elevation-z8 {
+  border-radius: 8px 8px 0 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  overflow: hidden;
+  flex: 1;
+}
+
+.table-row {
+  height: 10px !important;
+}
+
+.mat-mdc-header-row {
+  height: 40px !important;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  padding: 4px 12px !important;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+mat-paginator {
+  border-radius: 0 0 8px 8px !important;
+  margin-top: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.actions-header {
+  text-align: center !important;
+}
+
+.actions-cell {
+  text-align: center;
+  button {
+    margin: 0 3px;
+    width: 90px !important;
+    height: 30px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 4px;
+    line-height: 1;
+    padding: 0 6px;
+  }
+
+  .edit-btn {
+    background-color: #ff9800;
+    color: white;
+
+    &:hover {
+      background-color: #f57c00;
+    }
+  }
+
+  .delete-btn {
+    background-color: #f44336;
+    color: white;
+
+    &:hover {
+      background-color: #d32f2f;
+    }
+  }
+}
+
+.state-active {
+  background-color: #1976d2;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.state-deactive {
+  background-color: #d32f2f;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: inline-block;
+}

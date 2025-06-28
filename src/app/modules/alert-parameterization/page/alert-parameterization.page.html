@@ -1,8 +1,8 @@
 <div class="alert-layout">
   <div class="form-section">
-    <app-alert-form></app-alert-form>
+    <app-alert-form [alertObservable]="alertObservable" [updateTable]="updateTable"></app-alert-form>
   </div>
   <div class="table-section">
-    <app-alert-table></app-alert-table>
+    <app-alert-table [alertObservable]="alertObservable" [updateTable]="updateTable"></app-alert-table>
   </div>
 </div>

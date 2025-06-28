@@ -1,8 +1,8 @@
 <div class="payment-layout">
   <div class="form-section">
-    <app-payment-form></app-payment-form>
+    <app-payment-form [paymentObservable]="paymentObservable" [updateTable]="updateTable"></app-payment-form>
   </div>
   <div class="table-section">
-    <app-payment-table></app-payment-table>
+    <app-payment-table [paymentObservable]="paymentObservable" [updateTable]="updateTable"></app-payment-table>
   </div>
 </div>

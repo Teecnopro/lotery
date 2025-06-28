@@ -1,13 +1,14 @@
+import { Timestamp } from '@angular/fire/firestore';
+
 export interface UserData {
-  uid: string;
+  uid?: string;
   name: string;
-  document: string;
-  phone: string;
   email: string;
-  role: string;
-  state: 'active' | 'inactive';
-  createdAt: Date;
-  creator: { name: string; rol: string };
-  updatedAt: Date;
-  updater: { name: string; rol: string };
+  password?: string;
+  isAdmin: boolean;
+  state?: boolean;
+  createdAt?: Timestamp;
+  creator?: { name: string; id: string };
+  updatedAt?: Timestamp;
+  updater?: { name: string; id: string };
 }

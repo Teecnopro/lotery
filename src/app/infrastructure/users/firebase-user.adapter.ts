@@ -1,27 +1,34 @@
 import { Injectable } from '@angular/core';
 
-import {
-  Auth,
-  createUserWithEmailAndPassword,
-  deleteUser,
-} from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import {
   collection,
   deleteDoc,
   doc,
   Firestore,
+  getDoc,
   getDocs,
+  orderBy,
+  query,
   setDoc,
+  Timestamp,
   updateDoc,
 } from '@angular/fire/firestore';
 
 import { UserServicePort } from '../../domain/users/ports';
 import { UserData } from '../../domain/users/models/users.entity';
+import { FirebaseError } from '@angular/fire/app';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserAdapter implements UserServicePort {
-  /* TODO: Cambiar a Cloud Firestore */
   constructor(private auth: Auth, private firestore: Firestore) {}
+
+  async getByUid(uid: string): Promise<UserData> {
+    const userDoc = await getDoc(doc(this.firestore, 'users', uid));
+    if (!userDoc.exists())
+      throw new FirebaseError('auth/user-not-found', 'Perfil no encontrado');
+    return userDoc.data() as UserData;
+  }
 
   async create(
     user: Omit<UserData, 'uid' | 'state'>,
@@ -32,13 +39,12 @@ export class FirebaseUserAdapter implements UserServicePort {
       user.email,
       password
     );
-    console.log({ result });
     const uid = result?.user?.uid;
     const userDoc = doc(this.firestore, 'users', uid);
     await setDoc(userDoc, {
       ...user,
       uid,
-      state: 'active',
+      state: true,
     });
   }
 
@@ -46,20 +52,27 @@ export class FirebaseUserAdapter implements UserServicePort {
     await updateDoc(doc(this.firestore, 'users', uid), data);
   }
 
-  async deactivate(uid: string): Promise<void> {
-    await updateDoc(doc(this.firestore, 'users', uid), { state: 'inactive' });
+  async changeState(
+    uid: string,
+    newState: boolean,
+    updatedAt: Timestamp,
+    updater: { name: string; id: string }
+  ): Promise<void> {
+    await updateDoc(doc(this.firestore, 'users', uid), {
+      state: newState,
+      updatedAt,
+      updater,
+    });
   }
 
   async delete(uid: string): Promise<void> {
     await deleteDoc(doc(this.firestore, 'users', uid));
-    /* TODO: Revisar si requiere permisos...si no solo desactivar eliminarlo del doc
-    y si no existe no dejarlo ingresarlo */
-    /* const user = await obtenerUsuarioporID pendienteeee(uid);
-    await deleteUser(user); */
   }
 
   async getAll(): Promise<UserData[]> {
-    const querySnapshot = await getDocs(collection(this.firestore, 'users'));
+    const usersRef = collection(this.firestore, 'users');
+    const queryUser = query(usersRef, orderBy('updatedAt', 'desc'));
+    const querySnapshot = await getDocs(queryUser);
     return querySnapshot.docs.map((doc) => doc.data() as UserData);
   }
 }

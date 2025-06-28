@@ -1,16 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Output } from '@angular/core';
-import {
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { LoginUseCase } from '../../../../domain/auth/use-cases';
 import { FormsImportModule } from '../../../../shared/forms/forms-import.module';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 
 @Component({
   selector: 'app-login-form',
@@ -25,6 +20,7 @@ export class LoginFormComponent {
   private notification = inject(NOTIFICATION_PORT);
 
   @Output() loginSuccess = new EventEmitter<void>();
+  @Output() recoverPassword = new EventEmitter<void>();
 
   loading: boolean = false;
 
@@ -43,10 +39,14 @@ export class LoginFormComponent {
       await this.loginUseCase.execute(email!, password!);
       this.notification.success('Inicio de sesión exitoso');
       this.loginSuccess.emit();
-    } catch (error) {
-      this.notification.error('Credenciales incorrectas!.');
+    } catch (error) {     
+      this.notification.error(getFirebaseAuthErrorMessage(error));
     } finally {
       this.loading = false;
     }
+  }
+
+  goToRecoverPassword() {
+    this.recoverPassword.emit();
   }
 }

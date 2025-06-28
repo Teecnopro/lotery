@@ -1,38 +1,90 @@
-import { Component } from '@angular/core';
+import { Component, Input, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
+import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
+import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { DatePipe, CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 
 @Component({
   selector: 'app-alert-table',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, MatButtonModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule],
   templateUrl: './table.component.html',
-  styleUrl: './table.component.scss'
+  styleUrl: './table.component.scss',
 })
-export class AlertTableComponent {
-  displayedColumns: string[] = ['title', 'type', 'priority', 'actions'];
-  
-  dataSource = [
-    { id: 1, title: 'Alerta de Sistema', type: 'email', priority: 'high' },
-    { id: 2, title: 'Notificación de Pago', type: 'sms', priority: 'medium' },
-    { id: 3, title: 'Alerta Crítica', type: 'push', priority: 'critical' },
-    { id: 4, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 5, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 6, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 7, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 8, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 9, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' },
-    { id: 10, title: 'Webhook de Actualización', type: 'webhook', priority: 'low' }
+export class AlertTableComponent implements OnInit {
+  @Input() alertObservable: Subject<AlertParameterization> | null = null;
+  @Input() updateTable: Subject<boolean> | null = null;
+  private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
+  private notification = inject(NOTIFICATION_PORT);
+    private dialog = inject(MatDialog);
+
+  loading: boolean = false;
+  dataSource: AlertParameterization[] = [];
+
+  displayedColumns: string[] = [
+    'digits',
+    'value',
+    'description',
+    'createdBy',
+    'createdAt',
+    'updatedBy',
+    'updatedAt',
+    'actions',
   ];
 
-  editAlert(element: any) {
-    console.log('Editar alerta:', element);
-    // Aquí puedes implementar la lógica para editar
+  ngOnInit() {
+    this.getDataSource();
+    this.updateTable?.subscribe(() => {
+      this.getDataSource();
+    });
   }
 
-  deleteAlert(element: any) {
-    console.log('Eliminar alerta:', element);
-    // Aquí puedes implementar la lógica para eliminar
+  async getDataSource() {
+    this.loading = true;
+    try {
+      const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
+      localStorage.removeItem('alertDataSource');
+      localStorage.setItem('alertDataSource', JSON.stringify(dataSource.map(alert => {
+        delete alert.uid;
+        delete alert.id;
+        return alert;
+      })));
+      this.dataSource = dataSource;
+      this.loading = false;
+    } catch (error: any) {
+      console.error('Error fetching alert parameterizations:', error);
+      this.notification.error(error?.message || 'Error al cargar las parametrizaciones de alerta');
+      this.loading = false;
+    }
+  }
+
+  editAlert(element: AlertParameterization) {
+    this.alertObservable?.next(element);
+  }
+
+  async deleteAlert(element: AlertParameterization) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Eliminar parametrización de alerta',
+        message: '¿Está seguro que desea eliminar esta parametrización de alerta?'
+      },
+    });
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+    if (confirmed) {
+      try {
+        await this.alertParameterizationUseCase.deleteAlertParameterization(element.uid!);
+        this.notification.success('Parametrización de alerta eliminada exitosamente');
+        this.getDataSource(); // Refresh the table
+      } catch (error: any) {
+        console.error('Error deleting alert parameterization:', error);
+        this.notification.error(error?.message || 'Error al eliminar la parametrización de alerta');
+      }
+    }
   }
 }
