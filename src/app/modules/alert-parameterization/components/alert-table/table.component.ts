@@ -2,11 +2,13 @@ import { Component, Input, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
-import { Subject, Subscription } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { DatePipe, CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 
 @Component({
   selector: 'app-alert-table',
@@ -20,10 +22,11 @@ export class AlertTableComponent implements OnInit {
   @Input() updateTable: Subject<boolean> | null = null;
   private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
+    private dialog = inject(MatDialog);
 
   loading: boolean = false;
   dataSource: AlertParameterization[] = [];
-  
+
   displayedColumns: string[] = [
     'digits',
     'value',
@@ -46,6 +49,12 @@ export class AlertTableComponent implements OnInit {
     this.loading = true;
     try {
       const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
+      localStorage.removeItem('alertDataSource');
+      localStorage.setItem('alertDataSource', JSON.stringify(dataSource.map(alert => {
+        delete alert.uid;
+        delete alert.id;
+        return alert;
+      })));
       this.dataSource = dataSource;
       this.loading = false;
     } catch (error: any) {
@@ -60,7 +69,14 @@ export class AlertTableComponent implements OnInit {
   }
 
   async deleteAlert(element: AlertParameterization) {
-    if (confirm('¿Está seguro que desea eliminar esta parametrización de alerta?')) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Eliminar parametrización de alerta',
+        message: '¿Está seguro que desea eliminar esta parametrización de alerta?'
+      },
+    });
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+    if (confirmed) {
       try {
         await this.alertParameterizationUseCase.deleteAlertParameterization(element.uid!);
         this.notification.success('Parametrización de alerta eliminada exitosamente');

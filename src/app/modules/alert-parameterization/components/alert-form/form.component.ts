@@ -93,14 +93,14 @@ export class AlertFormComponent implements OnInit, OnDestroy {
         return;
       } 
       if (!this.isEditing) {
-        alertData.updatedBy = currentUser;
-        alertData.updatedAt = Date.now();
-        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
-      } else {
         alertData.uid = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         alertData.createdBy = currentUser;
         alertData.createdAt = Date.now();
         await this.alertUseCases.createAlertParameterization(alertData);
+      } else {
+        alertData.updatedBy = currentUser;
+        alertData.updatedAt = Date.now();
+        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
       }
       this.notification.success(`Parametrización de alerta ${this.isEditing ? 'actualizada' : 'creada'} exitosamente`)
       this.limpiarFormulario(form);

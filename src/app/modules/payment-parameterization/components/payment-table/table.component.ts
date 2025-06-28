@@ -3,10 +3,12 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { PaymentParameterization } from '../../../../domain/payment-parameterization/models/payment-parameterization.entity';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { PaymentParameterizationUseCase } from '../../../../domain/payment-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { DatePipe, CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 
 @Component({
   selector: 'app-payment-table',
@@ -20,6 +22,7 @@ export class PaymentTableComponent implements OnInit {
   @Input() updateTable: Subject<boolean> | null = null;
   private paymentParameterizationUseCase = inject(PaymentParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
+  private dialog = inject(MatDialog);
 
   loading: boolean = false;
   dataSource: PaymentParameterization[] = [];
@@ -50,6 +53,12 @@ export class PaymentTableComponent implements OnInit {
     this.loading = true;
     try {
       const dataSource = await this.paymentParameterizationUseCase.listPaymentParameterizations();
+      localStorage.removeItem('paymentDataSource');
+      localStorage.setItem('paymentDataSource', JSON.stringify(dataSource.map(payment => {
+        delete payment.uid;
+        return payment;
+      }
+      )));
       this.dataSource = dataSource;
     } catch (error: any) {
       console.error('Error fetching payment parameterizations:', error);
@@ -64,7 +73,14 @@ export class PaymentTableComponent implements OnInit {
   }
 
   async deletePayment(element: PaymentParameterization) {
-    if (confirm('¿Está seguro que desea eliminar esta parametrización de pago?')) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Eliminar parametrización de pago',
+        message: '¿Está seguro que desea eliminar esta parametrización de pago?',
+      },
+    });
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+    if (confirmed) {
       try {
         await this.paymentParameterizationUseCase.deletePaymentParameterization(element.uid!);
         this.notification.success('Parametrización de pago eliminada exitosamente');
