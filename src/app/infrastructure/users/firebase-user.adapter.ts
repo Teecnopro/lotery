@@ -15,6 +15,7 @@ import {
 
 import { UserServicePort } from '../../domain/users/ports';
 import { UserData } from '../../domain/users/models/users.entity';
+import { FirebaseError } from '@angular/fire/app';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserAdapter implements UserServicePort {
@@ -22,7 +23,8 @@ export class FirebaseUserAdapter implements UserServicePort {
 
   async getByUid(uid: string): Promise<UserData> {
     const userDoc = await getDoc(doc(this.firestore, 'users', uid));
-    if (!userDoc.exists()) throw new Error('Perfil no encontrado');
+    if (!userDoc.exists())
+      throw new FirebaseError('auth/user-not-found', 'Perfil no encontrado');
     return userDoc.data() as UserData;
   }
 

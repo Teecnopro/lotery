@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
-  
+  deleteUser
 } from '@angular/fire/auth';
 
 import { AuthServicePort } from '../../domain/auth/ports/auth-service.port';

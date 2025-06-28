@@ -39,7 +39,7 @@ export class LoginFormComponent {
       await this.loginUseCase.execute(email!, password!);
       this.notification.success('Inicio de sesión exitoso');
       this.loginSuccess.emit();
-    } catch (error) {
+    } catch (error) {     
       this.notification.error(getFirebaseAuthErrorMessage(error));
     } finally {
       this.loading = false;

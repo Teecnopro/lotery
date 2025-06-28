@@ -5,10 +5,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Timestamp } from '@angular/fire/firestore';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
 import {
   DeactivateUserUseCase,
+  DeleteUserUseCase,
   GetUsersUseCase,
 } from '../../../../domain/users/use-cases';
 import { UserData } from '../../../../domain/users/models/users.entity';
@@ -16,7 +18,6 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 import { UserStateService } from '../../service/user-state.service';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
-import { Timestamp } from '@angular/fire/firestore';
 import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
 
 @Component({
@@ -29,6 +30,7 @@ import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
 export class UserListComponent implements OnInit, OnDestroy {
   private getUseCase = inject(GetUsersUseCase);
   private changeStatus = inject(DeactivateUserUseCase);
+  private deleteUseCase = inject(DeleteUserUseCase);
   private notification = inject(NOTIFICATION_PORT);
   private breakpointObserver = inject(BreakpointObserver);
   private destroy$ = new Subject<void>();
@@ -136,5 +138,23 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteUser(userData: UserData) {}
+  async deleteUser(userData: UserData) {
+    const confirm = window.confirm(
+      `Esta seguro que quiere eliminar al usuario: ${userData?.name}`
+    );
+
+    if (!confirm) return;
+
+    this.loadingIcon = true;
+
+    try {
+      await this.deleteUseCase.execute(userData?.uid!);
+      this.notification.success(`Usuario eliminado exitosamente`);
+      await this.getUsers();
+    } catch (error) {
+      this.notification.error(getFirebaseAuthErrorMessage(error));
+    } finally {
+      this.loadingIcon = false;
+    }
+  }
 }

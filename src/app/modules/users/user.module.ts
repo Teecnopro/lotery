@@ -6,6 +6,7 @@ import { FirebaseUserAdapter } from '../../infrastructure/users/firebase-user.ad
 import {
   CreateUserUseCase,
   DeactivateUserUseCase,
+  DeleteUserUseCase,
   GetUsersUseCase,
   UpdateUserUseCase,
 } from '../../domain/users/use-cases';
@@ -21,6 +22,7 @@ import {
     CreateUserUseCase,
     UpdateUserUseCase,
     DeactivateUserUseCase,
+    DeleteUserUseCase,
   ],
 })
 export class UserModule {}
