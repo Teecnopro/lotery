@@ -11,6 +11,7 @@ import { GetUsersUseCase } from '../../../../domain/users/use-cases';
 import { UserData } from '../../../../domain/users/models/users.entity';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
+import { UserStateService } from '../../service/user-state.service';
 
 @Component({
   selector: 'app-user-list',
@@ -24,6 +25,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   private notification = inject(NOTIFICATION_PORT);
   private breakpointObserver = inject(BreakpointObserver);
   private destroy$ = new Subject<void>();
+  private userState = inject(UserStateService);
 
   private fullColumns = [
     'name',
@@ -63,9 +65,19 @@ export class UserListComponent implements OnInit, OnDestroy {
       });
   }
 
+  private async refreshList() {
+    this.userState.refreshList$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async (res) => {
+        if (!res) return;
+        await this.getUsers();
+      });
+  }
+
   async ngOnInit(): Promise<void> {
     this.adaptarResponsive();
     await this.getUsers();
+    await this.refreshList();
   }
 
   ngOnDestroy(): void {
@@ -73,7 +85,9 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  editUser(userData: UserData) {}
+  editUser(userData: UserData) {
+    this.userState.setSelectedUser(userData);
+  }
 
   deleteUser(userData: UserData) {}
 }
