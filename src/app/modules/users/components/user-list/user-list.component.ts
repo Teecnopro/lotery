@@ -7,11 +7,17 @@ import { MatPaginator } from '@angular/material/paginator';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
-import { GetUsersUseCase } from '../../../../domain/users/use-cases';
+import {
+  DeactivateUserUseCase,
+  GetUsersUseCase,
+} from '../../../../domain/users/use-cases';
 import { UserData } from '../../../../domain/users/models/users.entity';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 import { UserStateService } from '../../service/user-state.service';
+import { AUTH_SESSION } from '../../../../domain/auth/ports';
+import { Timestamp } from '@angular/fire/firestore';
+import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
 
 @Component({
   selector: 'app-user-list',
@@ -22,10 +28,12 @@ import { UserStateService } from '../../service/user-state.service';
 })
 export class UserListComponent implements OnInit, OnDestroy {
   private getUseCase = inject(GetUsersUseCase);
+  private changeStatus = inject(DeactivateUserUseCase);
   private notification = inject(NOTIFICATION_PORT);
   private breakpointObserver = inject(BreakpointObserver);
   private destroy$ = new Subject<void>();
   private userState = inject(UserStateService);
+  private userSession = inject(AUTH_SESSION);
 
   private fullColumns = [
     'name',
@@ -42,8 +50,10 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  currentUser!: AuthUser;
   dataSource = new MatTableDataSource<UserData>([]);
   displayedColumns: string[] = [];
+  loadingIcon: boolean = false;
 
   private async getUsers() {
     try {
@@ -75,6 +85,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
+    this.currentUser = this.userSession.getUser()!;
     this.adaptarResponsive();
     await this.getUsers();
     await this.refreshList();
@@ -87,6 +98,42 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   editUser(userData: UserData) {
     this.userState.setSelectedUser(userData);
+  }
+
+  async toggleState(userData: UserData) {
+    const confirm = window.confirm(
+      userData.state
+        ? '¿Estás seguro de desactivar este usuario?'
+        : '¿Quieres activar este usuario?'
+    );
+
+    if (!confirm) return;
+
+    this.loadingIcon = true;
+
+    try {
+      const updater = {
+        id: this.currentUser?.uid ?? '',
+        name: this.currentUser?.name || this.currentUser?.email || '',
+      };
+
+      await this.changeStatus.execute(
+        userData?.uid!,
+        !userData?.state,
+        Timestamp.now(),
+        updater
+      );
+
+      this.notification.success(
+        `Usuario ${userData?.state ? 'desactivado' : 'activado'} exitosamente`
+      );
+
+      await this.getUsers();
+    } catch (error) {
+      this.notification.error(getFirebaseAuthErrorMessage(error));
+    } finally {
+      this.loadingIcon = false;
+    }
   }
 
   deleteUser(userData: UserData) {}

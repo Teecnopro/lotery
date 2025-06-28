@@ -1,6 +1,8 @@
 import { inject } from '@angular/core';
 
-import { AUTH_SERVICE, AUTH_SESSION } from '../ports';
+import { FirebaseError } from '@angular/fire/app';
+
+import { AUTH_SERVICE } from '../ports';
 import { LoadUserProfileUseCase } from '../../users/use-cases';
 
 export class LoginUseCase {
@@ -10,6 +12,12 @@ export class LoginUseCase {
   async execute(email: string, password: string) {
     const user = await this.authService.login(email, password);
     const profile = await this.loadUserProfile.execute(user?.uid!);
+
+    if (!profile.state) {
+      await this.authService.logout();
+      throw new FirebaseError('auth/user-disabled', 'Usuario desactivado.');
+    }
+
     return profile;
   }
 }

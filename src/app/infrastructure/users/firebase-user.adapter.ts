@@ -9,6 +9,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  Timestamp,
   updateDoc,
 } from '@angular/fire/firestore';
 
@@ -47,16 +48,21 @@ export class FirebaseUserAdapter implements UserServicePort {
     await updateDoc(doc(this.firestore, 'users', uid), data);
   }
 
-  async deactivate(uid: string): Promise<void> {
-    await updateDoc(doc(this.firestore, 'users', uid), { state: false });
+  async changeState(
+    uid: string,
+    newState: boolean,
+    updatedAt: Timestamp,
+    updater: { name: string; id: string }
+  ): Promise<void> {
+    await updateDoc(doc(this.firestore, 'users', uid), {
+      state: newState,
+      updatedAt,
+      updater,
+    });
   }
 
   async delete(uid: string): Promise<void> {
     await deleteDoc(doc(this.firestore, 'users', uid));
-    /* TODO: Revisar si requiere permisos...si no solo desactivar eliminarlo del doc
-    y si no existe no dejarlo ingresarlo */
-    /* const user = await obtenerUsuarioporID pendienteeee(uid);
-    await deleteUser(user); */
   }
 
   async getAll(): Promise<UserData[]> {

@@ -8,7 +8,7 @@ export function getFirebaseAuthErrorMessage(error: unknown): string {
     'auth/user-disabled': 'Este usuario ha sido deshabilitado.',
     'auth/too-many-requests': 'Demasiados intentos fallidos. Intenta luego.',
     'auth/invalid-credential': 'Credenciales invalidas.',
-    "auth/email-already-in-use": "El email ya se encuentra en uso."
+    'auth/email-already-in-use': 'El email ya se encuentra en uso.',
   };
 
   return map[code] || 'Ocurrió un error inesperado.';

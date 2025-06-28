@@ -49,14 +49,27 @@
           color="primary"
           (click)="editUser(user)"
           matTooltip="Editar"
+          [disabled]="loadingIcon || user?.uid === currentUser.uid"
         >
           <mat-icon>edit</mat-icon>
         </button>
+
+        <button
+          mat-icon-button
+          [color]="user.state ? 'warn' : 'accent'"
+          (click)="toggleState(user)"
+          [matTooltip]="user.state ? 'Desactivar usuario' : 'Activar usuario'"
+          [disabled]="loadingIcon || user?.uid === currentUser.uid"
+        >
+          <mat-icon>{{ user.state ? "block" : "check_circle" }}</mat-icon>
+        </button>
+
         <button
           mat-icon-button
           color="warn"
           (click)="deleteUser(user)"
           matTooltip="Eliminar"
+          [disabled]="loadingIcon || user?.uid === currentUser.uid"
         >
           <mat-icon>delete</mat-icon>
         </button>
