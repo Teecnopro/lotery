@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 
 import { FormBuilder, Validators } from '@angular/forms';
 import { Timestamp } from '@angular/fire/firestore';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { FormsImportModule } from '../../../../shared/forms/forms-import.module';
 import { MaterialModule } from '../../../../shared/material/material.module';
@@ -27,8 +29,10 @@ export class UserFormComponent {
   private updateUseCase = inject(UpdateUserUseCase);
   private notification = inject(NOTIFICATION_PORT);
   private userSession = inject(AUTH_SESSION);
+  private breakpointObserver = inject(BreakpointObserver);
 
   loading: boolean = false;
+  isMobile: boolean = false;
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -36,6 +40,15 @@ export class UserFormComponent {
     name: ['', Validators.required],
     isAdmin: [false],
   });
+
+  constructor() {
+    this.breakpointObserver
+      .observe([Breakpoints.Handset])
+      .pipe(takeUntilDestroyed())
+      .subscribe((result) => {
+        this.isMobile = result.matches;
+      });
+  }
 
   async create() {
     if (this.form.invalid) return;
