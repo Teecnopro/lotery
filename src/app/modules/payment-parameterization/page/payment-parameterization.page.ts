@@ -30,4 +30,5 @@ import { MaterialNotificationAdapter } from '../../../shared/infrastructure/mats
 })
 export class PaymentParameterizationPageComponent {
   paymentObservable: Subject<PaymentParameterization> = new Subject<PaymentParameterization>();
+  updateTable: Subject<boolean> = new Subject<boolean>();
 }

@@ -36,12 +36,13 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 })
 export class AlertFormComponent implements OnInit, OnDestroy {
   @Input() alertObservable: Subject<AlertParameterization> | null = null;
+  @Input() updateTable: Subject<boolean> | null = null;
   private subscription?: Subscription;
   private user = inject(AUTH_SESSION);
   private alertUseCases = inject(AlertParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
-  
-  constructor(private cdr: ChangeDetectorRef) {}
+
+  constructor(private cdr: ChangeDetectorRef) { }
   textButton: string = 'Crear Alerta';
   alert: AlertParameterization = {};
   isEditing: boolean = false;
@@ -81,44 +82,27 @@ export class AlertFormComponent implements OnInit, OnDestroy {
     this.loading = true;
     const formData = { ...form.value };
     const alertData = { ...this.alert };
-    
+    alertData.value = formData.value;
     try {
-      alertData.value = formData.value;
-      
       if (!this.isEditing) {
-        // Generate a unique ID for new alerts
         alertData.uid = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         alertData.createdBy = currentUser;
         alertData.createdAt = Date.now();
-        
-        try {
-          await this.alertUseCases.createAlertParameterization(alertData);
-          this.notification.success('Parametrización de alerta creada exitosamente');
-          this.limpiarFormulario(form);
-          this.loading = false;
-        } catch (error: any) {
-          console.error('Error saving alert parameterization:', error);
-          this.notification.error(error?.message || 'Error al guardar la parametrización de alerta');
-          this.loading = false;
-        }
+        await this.alertUseCases.createAlertParameterization(alertData);
       } else {
         alertData.updatedBy = currentUser;
         alertData.updatedAt = Date.now();
-        
-        try {
-          await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
-          this.notification.success('Parametrización de alerta actualizada exitosamente');
-          this.limpiarFormulario(form);
-          this.loading = false;
-        } catch (error: any) {
-          console.error('Error saving alert parameterization:', error);
-          this.notification.error(error?.message || 'Error al guardar la parametrización de alerta');
-          this.loading = false;
-        }
+        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
       }
+      this.notification.success(`Parametrización de alerta ${this.isEditing ? 'actualizada' : 'creada'} exitosamente`);
+      this.limpiarFormulario(form);
+      this.loading = false;
+      this.updateTable?.next(true);
     } catch (error: any) {
       console.error('Error saving alert parameterization:', error);
       this.notification.error(error?.message || 'Error al guardar la parametrización de alerta');
+      this.loading = false;
+    } finally {
       this.loading = false;
     }
   }

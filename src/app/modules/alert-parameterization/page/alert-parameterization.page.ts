@@ -30,4 +30,5 @@ import { MaterialNotificationAdapter } from '../../../shared/infrastructure/mats
 })
 export class AlertParameterizationPageComponent {
   alertObservable: Subject<AlertParameterization> = new Subject<AlertParameterization>();
+  updateTable: Subject<boolean> = new Subject<boolean>();
 }

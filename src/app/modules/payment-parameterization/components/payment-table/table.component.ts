@@ -17,12 +17,13 @@ import { DatePipe, CommonModule } from '@angular/common';
 })
 export class PaymentTableComponent implements OnInit {
   @Input() paymentObservable: Subject<PaymentParameterization> | null = null;
+  @Input() updateTable: Subject<boolean> | null = null;
   private paymentParameterizationUseCase = inject(PaymentParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
 
   loading: boolean = false;
   dataSource: PaymentParameterization[] = [];
-  
+
   displayedColumns: string[] = [
     'digits',
     'amount',
@@ -34,15 +35,21 @@ export class PaymentTableComponent implements OnInit {
     'actions',
   ];
 
+  constructor() {
+
+  }
+
   ngOnInit() {
     this.getDataSource();
+    this.updateTable?.subscribe((value) => {
+      this.getDataSource();
+    });
   }
 
   async getDataSource() {
     this.loading = true;
     try {
       const dataSource = await this.paymentParameterizationUseCase.listPaymentParameterizations();
-      console.log('Data source fetched:', dataSource);
       this.dataSource = dataSource;
     } catch (error: any) {
       console.error('Error fetching payment parameterizations:', error);

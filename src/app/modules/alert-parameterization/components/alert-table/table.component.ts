@@ -17,6 +17,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 })
 export class AlertTableComponent implements OnInit {
   @Input() alertObservable: Subject<AlertParameterization> | null = null;
+  @Input() updateTable: Subject<boolean> | null = null;
   private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
 
@@ -34,13 +35,15 @@ export class AlertTableComponent implements OnInit {
 
   ngOnInit() {
     this.getDataSource();
+    this.updateTable?.subscribe(() => {
+      this.getDataSource();
+    });
   }
 
   async getDataSource() {
     this.loading = true;
     try {
       const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
-      console.log('Alert data source fetched:', dataSource);
       this.dataSource = dataSource;
       this.loading = false;
     } catch (error: any) {
