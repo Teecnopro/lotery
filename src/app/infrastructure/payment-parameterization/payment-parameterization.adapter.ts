@@ -10,8 +10,10 @@ import {
     Firestore,
     getDoc,
     getDocs,
+    query,
     setDoc,
     updateDoc,
+    where,
 } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
@@ -57,5 +59,19 @@ export class FirebasePaymentParameterizationAdapter
         return querySnapshot.docs.map(
             (doc) => doc.data() as PaymentParameterization
         );
+    }
+
+    async getPaymentParameterizationByValue(
+        amount: number | string | undefined,
+        digits?: number | undefined,
+        combined?: boolean | undefined
+    ): Promise<PaymentParameterization | null> {
+        const collectionRef = collection(this.firestore, 'payment-parameterization');
+        let q = query(collectionRef, where('amount', '==', amount), where('digits', '==', digits), where('combined', '==', combined));
+        return getDocs(q).then((snapshot) => {
+            if (snapshot.empty) return null;
+            const doc = snapshot.docs[0];
+            return { id: doc.id, ...doc.data() } as PaymentParameterization;
+        });
     }
 }

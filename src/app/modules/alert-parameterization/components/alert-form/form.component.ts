@@ -81,20 +81,28 @@ export class AlertFormComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     const formData = { ...form.value };
-    const alertData = { ...this.alert };
-    alertData.value = formData.value;
+    const alertData = { ...this.alert, value: formData.value, description: formData.description, digits: formData.digits };
     try {
+      const existingAlert = await this.alertUseCases.getAlertParameterizationsByValue(
+        alertData.value, 
+        alertData.digits
+      );
+      if (existingAlert && !this.isEditing) {
+        this.notification.error('Ya existe una parametrización de alerta con este valor');
+        this.loading = false;
+        return;
+      } 
       if (!this.isEditing) {
+        alertData.updatedBy = currentUser;
+        alertData.updatedAt = Date.now();
+        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
+      } else {
         alertData.uid = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         alertData.createdBy = currentUser;
         alertData.createdAt = Date.now();
         await this.alertUseCases.createAlertParameterization(alertData);
-      } else {
-        alertData.updatedBy = currentUser;
-        alertData.updatedAt = Date.now();
-        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
       }
-      this.notification.success(`Parametrización de alerta ${this.isEditing ? 'actualizada' : 'creada'} exitosamente`);
+      this.notification.success(`Parametrización de alerta ${this.isEditing ? 'actualizada' : 'creada'} exitosamente`)
       this.limpiarFormulario(form);
       this.loading = false;
       this.updateTable?.next(true);

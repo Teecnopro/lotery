@@ -20,4 +20,11 @@ export class PaymentParameterizationUseCase {
   listPaymentParameterizations(): Promise<PaymentParameterization[]> {
     return this.paymentParameterization.getAll();
   }
+  getPaymentParameterizationByValue(
+    amount: number | string | undefined,
+    digits?: number | undefined,
+    combined?: boolean | undefined
+  ): Promise<PaymentParameterization | null> {
+    return this.paymentParameterization.getPaymentParameterizationByValue(amount, digits, combined);
+  }
 }

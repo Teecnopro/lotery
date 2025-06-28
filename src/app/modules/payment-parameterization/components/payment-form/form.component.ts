@@ -76,13 +76,23 @@ export class PaymentFormComponent {
 
     this.loading = true;
     const formData = { ...form.value };
-    const paymentData = { ...this.payment };
-
+    const paymentData = { ...this.payment, amount: formData.amount, combined: formData.combined, digits: formData.digits };
     try {
-      paymentData.amount = formData.amount;
-      paymentData.combined = formData.combined;
-      paymentData.digits = formData.digits;
-
+      if (paymentData.digits <= 2 && paymentData.combined) {
+        this.notification.error('Los dígitos deben ser mayores a 2 si la opción combinada está activada');
+        this.loading = false;
+        return;
+      }
+      const existingPayment = await this.paymentUseCases.getPaymentParameterizationByValue(
+        paymentData.amount,
+        paymentData.digits,
+        paymentData.combined
+      );
+      if (existingPayment && !this.isEditing) {
+        this.notification.error('Ya existe una parametrización de pago con este valor y dígitos');
+        this.loading = false;
+        return;
+      }
       if (!this.isEditing) {
         // Generate a unique ID for new payments
         paymentData.uid = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

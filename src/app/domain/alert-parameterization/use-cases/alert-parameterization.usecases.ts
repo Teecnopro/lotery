@@ -23,4 +23,10 @@ export class AlertParameterizationUseCase {
   listAlertParameterizations(): Promise<AlertParameterization[]> {
     return this.alertParameterization.listAlertParameterizations();
   }
+  getAlertParameterizationsByValue(
+    value: number | string  | undefined,
+    digits?: number | undefined
+  ): Promise<AlertParameterization | null> {
+    return this.alertParameterization.getAlertParameterizationByValue(value, digits);
+  }
 }

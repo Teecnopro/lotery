@@ -25,7 +25,9 @@ export class AlertTableComponent implements OnInit {
   dataSource: AlertParameterization[] = [];
   
   displayedColumns: string[] = [
+    'digits',
     'value',
+    'description',
     'createdBy',
     'createdAt',
     'updatedBy',

@@ -6,4 +6,9 @@ export abstract class PaymentParameterizationServicePort {
   abstract delete(uid: string): Promise<void>;
   abstract getAll(): Promise<PaymentParameterization[]>;
   abstract getByUid(uid: string): Promise<PaymentParameterization | null>;
+  abstract getPaymentParameterizationByValue(
+    amount: number | string | undefined,
+    digits?: number | undefined,
+    combined?: boolean | undefined
+  ): Promise<PaymentParameterization | null>;
 }

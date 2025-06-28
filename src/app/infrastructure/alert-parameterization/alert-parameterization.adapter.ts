@@ -10,8 +10,10 @@ import {
     Firestore,
     getDoc,
     getDocs,
+    query,
     setDoc,
     updateDoc,
+    where,
 } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
@@ -65,5 +67,18 @@ export class FirebaseAlertParameterizationAdapter
                 (doc) => ({ id: doc.id, ...doc.data() } as AlertParameterization)
             )
         );
+    }
+
+    getAlertParameterizationByValue(
+        value: number | string | undefined,
+        digits?: number | undefined
+    ): Promise<AlertParameterization | null> {
+        const collectionRef = collection(this.firestore, 'alert-parameterizations');
+        let q = query(collectionRef, where('value', '==', value), where('digits', '==', digits));
+        return getDocs(q).then((snapshot) => {
+            if (snapshot.empty) return null;
+            const doc = snapshot.docs[0];
+            return { id: doc.id, ...doc.data() } as AlertParameterization;
+        });
     }
 }

@@ -2,6 +2,7 @@ import { AuthUser } from "../../auth/models/auth-user.entity";
 
 export interface AlertParameterization {
     uid?: string;
+    digits?: number;
     value?: number;
     description?: string;
     createdBy?: AuthUser | null;

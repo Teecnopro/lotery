@@ -6,4 +6,5 @@ export interface AlertParameterizationServicePort {
   deleteAlertParameterization(id: string): Promise<void>;
   getAlertParameterization(id: string): Promise<AlertParameterization | null>;
   listAlertParameterizations(): Promise<AlertParameterization[]>;
+  getAlertParameterizationByValue(value: number | string | undefined, digits?: number | undefined): Promise<AlertParameterization | null>;
 }
