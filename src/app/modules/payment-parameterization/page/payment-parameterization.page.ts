@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { PaymentFormComponent } from '../components/payment-form/form.component';
 import { PaymentTableComponent } from '../components/payment-table/table.component';
+import { Subject } from 'rxjs';
+import { PaymentParameterization } from '../../../domain/payment-parameterization/models/payment-parameterization.entity';
 
 @Component({
   selector: 'app-payment-parameterization-page',
@@ -9,4 +11,6 @@ import { PaymentTableComponent } from '../components/payment-table/table.compone
   templateUrl: './payment-parameterization.page.html',
   styleUrls: ['./payment-parameterization.page.scss'],
 })
-export class PaymentParameterizationPageComponent {}
+export class PaymentParameterizationPageComponent {
+  paymentObservable: Subject<PaymentParameterization> = new Subject<PaymentParameterization>();
+}

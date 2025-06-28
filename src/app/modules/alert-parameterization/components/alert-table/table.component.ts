@@ -2,7 +2,8 @@ import { Component, Input, input } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Component({
   selector: 'app-alert-table',
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './table.component.scss',
 })
 export class AlertTableComponent {
-  @Input() alertObservable: any;
+  @Input() alertObservable: Subject<AlertParameterization> | null = null;
 
   displayedColumns: string[] = [
     'value',
@@ -35,12 +36,12 @@ export class AlertTableComponent {
   ];
 
   editAlert(element: any) {
-    this.alertObservable.next(element);
+    this.alertObservable?.next(element);
     // Aquí puedes implementar la lógica para editar
   }
 
   deleteAlert(element: any) {
-    this.alertObservable.next(element);
+    this.alertObservable?.next(element);
     // Aquí puedes implementar la lógica para eliminar
   }
 }

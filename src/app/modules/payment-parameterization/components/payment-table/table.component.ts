@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
+import { PaymentParameterization } from '../../../../domain/payment-parameterization/models/payment-parameterization.entity';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-payment-table',
@@ -11,6 +13,7 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './table.component.scss'
 })
 export class PaymentTableComponent {
+  @Input() paymentObservable: Subject<PaymentParameterization> | null = null;
   displayedColumns: string[] = ['digits', 'amount', 'combined', 'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'actions'];
   
   dataSource = [

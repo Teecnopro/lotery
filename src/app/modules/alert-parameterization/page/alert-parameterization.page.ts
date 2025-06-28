@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AlertFormComponent } from '../components/alert-form/form.component';
 import { AlertTableComponent } from '../components/alert-table/table.component';
 import { Subject } from 'rxjs';
+import { AlertParameterization } from '../../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Component({
   selector: 'app-alert-parameterization-page',
@@ -11,10 +12,10 @@ import { Subject } from 'rxjs';
   styleUrls: ['./alert-parameterization.page.scss'],
 })
 export class AlertParameterizationPageComponent {
-  alertObservable: Subject<any> = new Subject<any>();
+  alertObservable: Subject<AlertParameterization> = new Subject<AlertParameterization>();
   constructor() {
     this.alertObservable.next({
-      id: 1,
+      uid: "1",
     });
   }
 }
