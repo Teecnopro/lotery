@@ -8,6 +8,8 @@ import {
   Firestore,
   getDoc,
   getDocs,
+  orderBy,
+  query,
   setDoc,
   Timestamp,
   updateDoc,
@@ -68,7 +70,9 @@ export class FirebaseUserAdapter implements UserServicePort {
   }
 
   async getAll(): Promise<UserData[]> {
-    const querySnapshot = await getDocs(collection(this.firestore, 'users'));
+    const usersRef = collection(this.firestore, 'users');
+    const queryUser = query(usersRef, orderBy('updatedAt', 'desc'));
+    const querySnapshot = await getDocs(queryUser);
     return querySnapshot.docs.map((doc) => doc.data() as UserData);
   }
 }

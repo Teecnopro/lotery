@@ -14,6 +14,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { NOTIFICATION_PORT } from '../ports';
 import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
@@ -34,6 +35,7 @@ import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notif
     MatTableModule,
     MatPaginatorModule,
     MatDialogModule,
+    MatChipsModule,
   ],
   providers: [
     {

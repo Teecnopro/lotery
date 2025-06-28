@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Timestamp } from '@angular/fire/firestore';
 import { MatDialog } from '@angular/material/dialog';
@@ -52,8 +51,6 @@ export class UserListComponent implements OnInit, OnDestroy {
   ];
 
   private mobileColumns = ['name', 'email', 'actions'];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   currentUser!: AuthUser;
   dataSource = new MatTableDataSource<UserData>([]);
