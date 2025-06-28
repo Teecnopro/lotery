@@ -1,12 +1,21 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import {
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  inject,
+} from '@angular/core';
+import { FormsModule, NgForm, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { AUTH_SESSION } from '../../../../domain/auth/ports';
+import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Component({
   selector: 'app-alert-form',
@@ -18,21 +27,29 @@ import { Subscription } from 'rxjs';
     MatSelectModule,
     MatOptionModule,
     MatButtonModule,
-    MatCardModule
+    MatCardModule,
   ],
   templateUrl: './form.component.html',
-  styleUrl: './form.component.scss'
+  styleUrls: ['./form.component.scss'],
 })
 export class AlertFormComponent implements OnInit, OnDestroy {
-  @Input() alertObservable: any;
+  @Input() alertObservable: Subject<AlertParameterization> | null = null;
   private subscription?: Subscription;
-  alertForm?: NgForm;
+  private user = inject(AUTH_SESSION);
+  constructor(private cdr: ChangeDetectorRef) {}
+  textButton: string = 'Crear Alerta';
+  alert: AlertParameterization = {};
+  isEditing: boolean = false;
 
   ngOnInit() {
     if (this.alertObservable) {
       this.subscription = this.alertObservable.subscribe((alertData: any) => {
-        console.log('Received alert data:', alertData);
-        // Here you can handle the received alert data, e.g., populate the form
+        if (alertData && alertData.id !== undefined) {
+          this.textButton = 'Editar Alerta';
+          this.isEditing = true;
+        }
+        this.alert = { ...alertData };
+        this.cdr.detectChanges();
       });
     }
   }
@@ -44,12 +61,28 @@ export class AlertFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(form: NgForm) {
+    const fm = { ...form.value };
+    const alertData = { ...this.alert };
     if (form.valid) {
-      console.log('Alert form submitted:', form.value);
-      // Here you can process the alert form data
-      // For example, call a service to save the alert configuration
+      alertData.value = fm.value;
+      if (!this.isEditing) {
+        alertData.createdBy = this.user.getUser();
+        alertData.createdAt = Date.now();
+      } else {
+        alertData.updatedBy = this.user.getUser();
+        alertData.updatedAt = Date.now();
+      }
+      console.log('Alert form submitted:', alertData);
     } else {
       console.log('Alert form is invalid');
     }
+    this.limpiarFormulario(form);
+  }
+  limpiarFormulario(form: NgForm) {
+    form.resetForm();
+    this.textButton = 'Crear Alerta';
+    this.isEditing = false;
+    this.alert = {};
+    this.cdr.detectChanges();
   }
 }

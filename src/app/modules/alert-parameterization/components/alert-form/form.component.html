@@ -5,16 +5,16 @@
     </mat-card-header>
 
     <mat-card-content>
-      <form #alertForm="ngForm" (ngSubmit)="onSubmit(alertForm)" class="alert-form">
+      <form #alertForm="ngForm" (ngSubmit)="onSubmit(alertForm)" class="alert-form" >
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Valor</mat-label>
-          <input matInput type="number" name="value" ngModel required placeholder="Ingrese el valor">
+          <input matInput type="number" name="value" [(ngModel)]="alert.value" required placeholder="Ingrese el valor">
         </mat-form-field>
         <div class="button-group">
           <button mat-raised-button color="primary" type="submit" [disabled]="!alertForm.valid">
-            Crear Alerta
+            {{textButton}}
           </button>
-          <button mat-outlined-button type="button" (click)="alertForm.resetForm()">
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(alertForm)">
             Limpiar
           </button>
         </div>
