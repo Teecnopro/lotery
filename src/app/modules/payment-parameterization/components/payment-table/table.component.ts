@@ -9,11 +9,12 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { DatePipe, CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-payment-table',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule, MatIconModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
