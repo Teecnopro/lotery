@@ -78,6 +78,7 @@ export class AlertFormComponent implements OnInit, OnDestroy {
     }
     this.limpiarFormulario(form);
   }
+  
   limpiarFormulario(form: NgForm) {
     form.resetForm();
     this.textButton = 'Crear Alerta';
