@@ -3,19 +3,31 @@ import { AlertFormComponent } from '../components/alert-form/form.component';
 import { AlertTableComponent } from '../components/alert-table/table.component';
 import { Subject } from 'rxjs';
 import { AlertParameterization } from '../../../domain/alert-parameterization/models/alert-parameterization.entity';
+import { CommonModule } from '@angular/common';
+import { ALERT_PARAMETERIZATION_SERVICE } from '../../../domain/alert-parameterization/ports';
+import { FirebaseAlertParameterizationAdapter } from '../../../infrastructure/alert-parameterization/alert-parameterization.adapter';
+import { AlertParameterizationUseCase } from '../../../domain/alert-parameterization/use-cases';
+import { NOTIFICATION_PORT } from '../../../shared/ports';
+import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
 
 @Component({
   selector: 'app-alert-parameterization-page',
   standalone: true,
-  imports: [AlertFormComponent, AlertTableComponent],
+  imports: [AlertFormComponent, AlertTableComponent, CommonModule],
+  providers: [
+    {
+      provide: ALERT_PARAMETERIZATION_SERVICE,
+      useClass: FirebaseAlertParameterizationAdapter,
+    },
+    {
+      provide: NOTIFICATION_PORT,
+      useClass: MaterialNotificationAdapter,
+    },
+    AlertParameterizationUseCase,
+  ],
   templateUrl: './alert-parameterization.page.html',
   styleUrls: ['./alert-parameterization.page.scss'],
 })
 export class AlertParameterizationPageComponent {
   alertObservable: Subject<AlertParameterization> = new Subject<AlertParameterization>();
-  constructor() {
-    this.alertObservable.next({
-      uid: "1",
-    });
-  }
 }

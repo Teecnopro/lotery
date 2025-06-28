@@ -1,9 +1,9 @@
 import { PaymentParameterization } from '../models/payment-parameterization.entity'
 
-export interface PaymentParameterizationServicePort {
-  createPaymentParameterization(data: PaymentParameterization): Promise<PaymentParameterization>;
-  updatePaymentParameterization(id: string, data: PaymentParameterization): Promise<PaymentParameterization>;
-  deletePaymentParameterization(id: string): Promise<void>;
-  getPaymentParameterization(id: string): Promise<PaymentParameterization | null>;
-  listPaymentParameterizations(): Promise<PaymentParameterization[]>;
+export abstract class PaymentParameterizationServicePort {
+  abstract create(data: PaymentParameterization): Promise<void>;
+  abstract update(uid: string, data: PaymentParameterization): Promise<void>;
+  abstract delete(uid: string): Promise<void>;
+  abstract getAll(): Promise<PaymentParameterization[]>;
+  abstract getByUid(uid: string): Promise<PaymentParameterization | null>;
 }

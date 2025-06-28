@@ -4,11 +4,27 @@ import { PaymentTableComponent } from '../components/payment-table/table.compone
 import { Subject } from 'rxjs';
 import { PaymentParameterization } from '../../../domain/payment-parameterization/models/payment-parameterization.entity';
 import { CommonModule } from '@angular/common';
+import { PAYMENT_PARAMETERIZATION_SERVICE } from '../../../domain/payment-parameterization/ports';
+import { FirebasePaymentParameterizationAdapter } from '../../../infrastructure/payment-parameterization/payment-parameterization.adapter';
+import { PaymentParameterizationUseCase } from '../../../domain/payment-parameterization/use-cases';
+import { NOTIFICATION_PORT } from '../../../shared/ports';
+import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
 
 @Component({
   selector: 'app-payment-parameterization-page',
   standalone: true,
   imports: [PaymentFormComponent, PaymentTableComponent, CommonModule],
+  providers: [
+    {
+      provide: PAYMENT_PARAMETERIZATION_SERVICE,
+      useClass: FirebasePaymentParameterizationAdapter,
+    },
+    {
+      provide: NOTIFICATION_PORT,
+      useClass: MaterialNotificationAdapter,
+    },
+    PaymentParameterizationUseCase,
+  ],
   templateUrl: './payment-parameterization.page.html',
   styleUrls: ['./payment-parameterization.page.scss'],
 })

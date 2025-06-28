@@ -22,8 +22,11 @@ export class FirebaseAlertParameterizationAdapter
     createAlertParameterization(
         data: AlertParameterization
     ): Promise<AlertParameterization> {
-        const docRef = doc(collection(this.firestore, 'alert-parameterizations'));
-        return setDoc(docRef, data).then(() => data);
+        // Use provided uid or generate one
+        const uid = data.uid || `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const docRef = doc(collection(this.firestore, 'alert-parameterizations'), uid);
+        const dataWithId = { ...data, uid };
+        return setDoc(docRef, dataWithId).then(() => dataWithId);
     }
     updateAlertParameterization(
         id: string,

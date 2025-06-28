@@ -16,6 +16,8 @@ import { MatCardModule } from '@angular/material/card';
 import { Subscription, Subject } from 'rxjs';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
+import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
+import { NOTIFICATION_PORT } from '../../../../shared/ports';
 
 @Component({
   selector: 'app-alert-form',
@@ -36,10 +38,14 @@ export class AlertFormComponent implements OnInit, OnDestroy {
   @Input() alertObservable: Subject<AlertParameterization> | null = null;
   private subscription?: Subscription;
   private user = inject(AUTH_SESSION);
+  private alertUseCases = inject(AlertParameterizationUseCase);
+  private notification = inject(NOTIFICATION_PORT);
+  
   constructor(private cdr: ChangeDetectorRef) {}
   textButton: string = 'Crear Alerta';
   alert: AlertParameterization = {};
   isEditing: boolean = false;
+  loading: boolean = false;
 
   ngOnInit() {
     if (this.alertObservable) {
@@ -60,23 +66,61 @@ export class AlertFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSubmit(form: NgForm) {
+  async onSubmit(form: NgForm) {
+    if (!form.valid) {
+      this.notification.error('Por favor, complete todos los campos requeridos');
+      return;
+    }
+
+    const currentUser = this.user.getUser();
+    if (!currentUser) {
+      this.notification.error('Usuario no autenticado');
+      return;
+    }
+
+    this.loading = true;
     const formData = { ...form.value };
     const alertData = { ...this.alert };
-    if (form.valid) {
+    
+    try {
       alertData.value = formData.value;
+      
       if (!this.isEditing) {
-        alertData.createdBy = this.user.getUser();
+        // Generate a unique ID for new alerts
+        alertData.uid = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        alertData.createdBy = currentUser;
         alertData.createdAt = Date.now();
+        
+        try {
+          await this.alertUseCases.createAlertParameterization(alertData);
+          this.notification.success('Parametrización de alerta creada exitosamente');
+          this.limpiarFormulario(form);
+          this.loading = false;
+        } catch (error: any) {
+          console.error('Error saving alert parameterization:', error);
+          this.notification.error(error?.message || 'Error al guardar la parametrización de alerta');
+          this.loading = false;
+        }
       } else {
-        alertData.updatedBy = this.user.getUser();
+        alertData.updatedBy = currentUser;
         alertData.updatedAt = Date.now();
+        
+        try {
+          await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
+          this.notification.success('Parametrización de alerta actualizada exitosamente');
+          this.limpiarFormulario(form);
+          this.loading = false;
+        } catch (error: any) {
+          console.error('Error saving alert parameterization:', error);
+          this.notification.error(error?.message || 'Error al guardar la parametrización de alerta');
+          this.loading = false;
+        }
       }
-      console.log('Alert form submitted:', alertData);
-    } else {
-      console.log('Alert form is invalid');
+    } catch (error: any) {
+      console.error('Error saving alert parameterization:', error);
+      this.notification.error(error?.message || 'Error al guardar la parametrización de alerta');
+      this.loading = false;
     }
-    this.limpiarFormulario(form);
   }
 
   limpiarFormulario(form: NgForm) {

@@ -1,23 +1,28 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { PaymentParameterization } from '../../../../domain/payment-parameterization/models/payment-parameterization.entity';
 import { Subject } from 'rxjs';
+import { PaymentParameterizationUseCase } from '../../../../domain/payment-parameterization/use-cases';
+import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { DatePipe, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-payment-table',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, MatButtonModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
-export class PaymentTableComponent {
+export class PaymentTableComponent implements OnInit {
   @Input() paymentObservable: Subject<PaymentParameterization> | null = null;
+  private paymentParameterizationUseCase = inject(PaymentParameterizationUseCase);
+  private notification = inject(NOTIFICATION_PORT);
 
-  constructor() {
-    this.getDataSource();
-  }
+  loading: boolean = false;
+  dataSource: PaymentParameterization[] = [];
+  
   displayedColumns: string[] = [
     'digits',
     'amount',
@@ -29,61 +34,38 @@ export class PaymentTableComponent {
     'actions',
   ];
 
-  dataSource: PaymentParameterization[] = [];
-
-  getDataSource() {
-    const dataSource = [
-      {
-        uid: '1',
-        digits: 1,
-        combined: false,
-        amount: 100,
-        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-      {
-        uid: '2',
-        digits: 2,
-        combined: false,
-        amount: 250,
-        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-      {
-        uid: '3',
-        digits: 3,
-        combined: false,
-        amount: 75,
-        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-      {
-        uid: '4',
-        digits: 3,
-        combined: true,
-        amount: 300,
-        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-    ];
-    this.dataSource = dataSource;
+  ngOnInit() {
+    this.getDataSource();
   }
 
-  editPayment(element: any) {
-    this.paymentObservable?.next(element);
-    // Aquí puedes implementar la lógica para editar
+  async getDataSource() {
+    this.loading = true;
+    try {
+      const dataSource = await this.paymentParameterizationUseCase.listPaymentParameterizations();
+      console.log('Data source fetched:', dataSource);
+      this.dataSource = dataSource;
+    } catch (error: any) {
+      console.error('Error fetching payment parameterizations:', error);
+      this.notification.error(error?.message || 'Error al cargar las parametrizaciones de pago');
+    } finally {
+      this.loading = false;
+    }
   }
 
-  deletePayment(element: any) {
+  editPayment(element: PaymentParameterization) {
     this.paymentObservable?.next(element);
-    // Aquí puedes implementar la lógica para eliminar
+  }
+
+  async deletePayment(element: PaymentParameterization) {
+    if (confirm('¿Está seguro que desea eliminar esta parametrización de pago?')) {
+      try {
+        await this.paymentParameterizationUseCase.deletePaymentParameterization(element.uid!);
+        this.notification.success('Parametrización de pago eliminada exitosamente');
+        await this.getDataSource(); // Refresh the table
+      } catch (error: any) {
+        console.error('Error deleting payment parameterization:', error);
+        this.notification.error(error?.message || 'Error al eliminar la parametrización de pago');
+      }
+    }
   }
 }

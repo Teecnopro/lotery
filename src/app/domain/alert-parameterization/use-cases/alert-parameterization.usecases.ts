@@ -8,19 +8,19 @@ import { AlertParameterization } from '../models/alert-parameterization.entity';
 export class AlertParameterizationUseCase {
   private alertParameterization = inject(ALERT_PARAMETERIZATION_SERVICE);
 
-  createAlertParameterization(data: AlertParameterization): Observable<AlertParameterization> {
-    return from(this.alertParameterization.createAlertParameterization(data));
+  createAlertParameterization(data: AlertParameterization): Promise<AlertParameterization> {
+    return this.alertParameterization.createAlertParameterization(data);
   }
-  updateAlertParameterization(id: string, data: AlertParameterization): Observable<AlertParameterization> {
-    return from(this.alertParameterization.updateAlertParameterization(id, data));
+  updateAlertParameterization(id: string, data: AlertParameterization): Promise<AlertParameterization> {
+    return this.alertParameterization.updateAlertParameterization(id, data);
   }
-  deleteAlertParameterization(id: string): Observable<void> {
-    return from(this.alertParameterization.deleteAlertParameterization(id));
+  deleteAlertParameterization(id: string): Promise<void> {
+    return this.alertParameterization.deleteAlertParameterization(id);
   }
-  getAlertParameterization(id: string): Observable<AlertParameterization | null> {
-    return from(this.alertParameterization.getAlertParameterization(id));
+  getAlertParameterization(id: string): Promise<AlertParameterization | null> {
+    return this.alertParameterization.getAlertParameterization(id);
   }
-  listAlertParameterizations(): Observable<AlertParameterization[]> {
-    return from(this.alertParameterization.listAlertParameterizations());
+  listAlertParameterizations(): Promise<AlertParameterization[]> {
+    return this.alertParameterization.listAlertParameterizations();
   }
 }

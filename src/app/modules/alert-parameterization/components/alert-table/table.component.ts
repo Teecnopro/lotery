@@ -1,20 +1,28 @@
-import { Component, Input, input } from '@angular/core';
+import { Component, Input, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject, Subscription } from 'rxjs';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
+import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
+import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { DatePipe, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-alert-table',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, MatButtonModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
-export class AlertTableComponent {
+export class AlertTableComponent implements OnInit {
   @Input() alertObservable: Subject<AlertParameterization> | null = null;
+  private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
+  private notification = inject(NOTIFICATION_PORT);
 
+  loading: boolean = false;
+  dataSource: AlertParameterization[] = [];
+  
   displayedColumns: string[] = [
     'value',
     'createdBy',
@@ -24,48 +32,38 @@ export class AlertTableComponent {
     'actions',
   ];
 
-  dataSource: AlertParameterization[] = [];
-
-  constructor() {
+  ngOnInit() {
     this.getDataSource();
   }
-  getDataSource() {
-    // Aquí puedes implementar la lógica para obtener los datos de la fuente de datos
-    this.dataSource = [
-      {
-        uid: '1',
-        value: 10000,
-        createdBy: { name: 'Samuel Suarez', uid: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', uid: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-      {
-        uid: '2',
-        value: 25000,
-        createdBy: { name: 'Samuel Suarez', uid: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', uid: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-      {
-        uid: '3',
-        value: 7500,
-        createdBy: { name: 'Samuel Suarez', uid: 'user-1' },
-        createdAt: new Date('12-6-2025 12:32:32').getTime(),
-        updatedBy: { name: 'Samuel Suarez', uid: 'user-1' },
-        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
-      },
-    ];
+
+  async getDataSource() {
+    this.loading = true;
+    try {
+      const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
+      console.log('Alert data source fetched:', dataSource);
+      this.dataSource = dataSource;
+      this.loading = false;
+    } catch (error: any) {
+      console.error('Error fetching alert parameterizations:', error);
+      this.notification.error(error?.message || 'Error al cargar las parametrizaciones de alerta');
+      this.loading = false;
+    }
   }
 
-  editAlert(element: any) {
+  editAlert(element: AlertParameterization) {
     this.alertObservable?.next(element);
-    // Aquí puedes implementar la lógica para editar
   }
 
-  deleteAlert(element: any) {
-    this.alertObservable?.next(element);
-    // Aquí puedes implementar la lógica para eliminar
+  async deleteAlert(element: AlertParameterization) {
+    if (confirm('¿Está seguro que desea eliminar esta parametrización de alerta?')) {
+      try {
+        await this.alertParameterizationUseCase.deleteAlertParameterization(element.uid!);
+        this.notification.success('Parametrización de alerta eliminada exitosamente');
+        this.getDataSource(); // Refresh the table
+      } catch (error: any) {
+        console.error('Error deleting alert parameterization:', error);
+        this.notification.error(error?.message || 'Error al eliminar la parametrización de alerta');
+      }
+    }
   }
 }
