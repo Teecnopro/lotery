@@ -26,7 +26,7 @@ export class AlertTableComponent {
 
   dataSource = [
     {
-      id: 1,
+      uid: 1,
       value: 10000,
       createdBy: 'Samuel Suarez',
       createdAt: '12-6-2025 12:32:32',

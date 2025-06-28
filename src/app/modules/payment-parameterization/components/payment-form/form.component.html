@@ -9,12 +9,19 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Digitos</mat-label>
-          <input matInput type="number" name="digitos" ngModel required min="1" placeholder="Ingrese los digitos">
+          <input matInput type="number" name="digitos" [(ngModel)]="payment.digits" required min="1" placeholder="Ingrese los digitos">
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Valor</mat-label>
-          <input matInput type="number" name="valor" ngModel required min="0" placeholder="Ingrese el valor">
+          <input matInput type="number" name="valor" [(ngModel)]="payment.amount" required min="0" placeholder="Ingrese el valor">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Combinado</mat-label>
+          <mat-select name="combined" [(ngModel)]="payment.combined" required>
+            <mat-option [value]="true">Sí</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
         </mat-form-field>
 
         <div class="button-group">

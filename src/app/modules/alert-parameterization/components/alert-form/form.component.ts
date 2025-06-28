@@ -43,12 +43,12 @@ export class AlertFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.alertObservable) {
-      this.subscription = this.alertObservable.subscribe((alertData: any) => {
-        if (alertData && alertData.id !== undefined) {
+      this.subscription = this.alertObservable.subscribe((data: AlertParameterization) => {
+        if (data && data.uid !== undefined) {
           this.textButton = 'Editar Alerta';
           this.isEditing = true;
         }
-        this.alert = { ...alertData };
+        this.alert = { ...data };
         this.cdr.detectChanges();
       });
     }
@@ -61,10 +61,10 @@ export class AlertFormComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(form: NgForm) {
-    const fm = { ...form.value };
+    const formData = { ...form.value };
     const alertData = { ...this.alert };
     if (form.valid) {
-      alertData.value = fm.value;
+      alertData.value = formData.value;
       if (!this.isEditing) {
         alertData.createdBy = this.user.getUser();
         alertData.createdAt = Date.now();
@@ -78,7 +78,7 @@ export class AlertFormComponent implements OnInit, OnDestroy {
     }
     this.limpiarFormulario(form);
   }
-  
+
   limpiarFormulario(form: NgForm) {
     form.resetForm();
     this.textButton = 'Crear Alerta';
