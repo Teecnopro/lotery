@@ -75,7 +75,8 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   }
 
   visibleMenuItems() {
-    return this.menuItems.filter((item) => this.router.url !== item.route);
+    const isAdmin = this.authSession.getUser()?.isAdmin;
+    return this.menuItems.filter((item) => this.router.url !== item.route && (!item.onlyAdmin || isAdmin));
   }
 
   toggleMenu() {
