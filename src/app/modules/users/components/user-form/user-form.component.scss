@@ -63,34 +63,3 @@
     }
   }
 }
-
-// Responsive design
-@media (max-width: 768px) {
-  .form-container {
-    padding: 12px;
-  }
-
-  .form-card {
-    padding: 12px;
-  }
-
-  .button-group {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-    }
-  }
-}
-
-// When inside a two-column layout
-@media (min-width: 1025px) {
-  .form-container {
-    padding: 0;
-    height: auto;
-  }
-
-  .form-card {
-    max-width: 350px;
-  }
-}

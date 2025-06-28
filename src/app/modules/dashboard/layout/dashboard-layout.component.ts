@@ -37,9 +37,10 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   menuItems = MENU_ITEMS;
   currentUserName: string | undefined = 'Invitado';
 
-  isHandset = this.breakpointObserver
-    .observe(Breakpoints.Handset)
-    .pipe(map((result) => result.matches));
+  isHandset = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+    map((result) => result?.matches),
+    takeUntil(this.destroy$)
+  );
 
   constructor() {
     this.router.events

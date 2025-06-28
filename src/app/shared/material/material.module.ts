@@ -14,6 +14,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { NOTIFICATION_PORT } from '../ports';
 import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   exports: [
@@ -28,6 +30,8 @@ import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notif
     MatListModule,
     MatTooltipModule,
     MatCheckboxModule,
+    MatTableModule,
+    MatPaginatorModule,
   ],
   providers: [
     {
