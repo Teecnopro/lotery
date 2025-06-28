@@ -14,6 +14,10 @@ import { Subject } from 'rxjs';
 })
 export class PaymentTableComponent {
   @Input() paymentObservable: Subject<PaymentParameterization> | null = null;
+
+  constructor() {
+    this.getDataSource();
+  }
   displayedColumns: string[] = [
     'digits',
     'amount',
@@ -25,48 +29,53 @@ export class PaymentTableComponent {
     'actions',
   ];
 
-  dataSource = [
-    {
-      uid: 1,
-      digits: 1,
-      combined: false,
-      amount: 100,
-      createdBy: 'Samuel Suarez',
-      createdAt: '12-6-2025 12:32:32',
-      updatedBy: 'Samuel Suarez',
-      updatedAt: '12-6-2025 12:32:32',
-    },
-    {
-      uid: 2,
-      digits: 2,
-      combined: false,
-      amount: 250,
-      createdBy: 'Samuel Suarez',
-      createdAt: '12-6-2025 12:32:32',
-      updatedBy: 'Samuel Suarez',
-      updatedAt: '12-6-2025 12:32:32',
-    },
-    {
-      uid: 3,
-      digits: 3,
-      combined: false,
-      amount: 75,
-      createdBy: 'Samuel Suarez',
-      createdAt: '12-6-2025 12:32:32',
-      updatedBy: 'Samuel Suarez',
-      updatedAt: '12-6-2025 12:32:32',
-    },
-    {
-      uid: 4,
-      digits: 3,
-      combined: true,
-      amount: 300,
-      createdBy: 'Samuel Suarez',
-      createdAt: '12-6-2025 12:32:32',
-      updatedBy: 'Samuel Suarez',
-      updatedAt: '12-6-2025 12:32:32',
-    },
-  ];
+  dataSource: PaymentParameterization[] = [];
+
+  getDataSource() {
+    const dataSource = [
+      {
+        uid: '1',
+        digits: 1,
+        combined: false,
+        amount: 100,
+        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+      {
+        uid: '2',
+        digits: 2,
+        combined: false,
+        amount: 250,
+        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+      {
+        uid: '3',
+        digits: 3,
+        combined: false,
+        amount: 75,
+        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+      {
+        uid: '4',
+        digits: 3,
+        combined: true,
+        amount: 300,
+        createdBy: { name: 'Samuel Suarez', id: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', id: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+    ];
+    this.dataSource = dataSource;
+  }
 
   editPayment(element: any) {
     this.paymentObservable?.next(element);

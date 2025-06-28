@@ -24,16 +24,40 @@ export class AlertTableComponent {
     'actions',
   ];
 
-  dataSource = [
-    {
-      uid: 1,
-      value: 10000,
-      createdBy: 'Samuel Suarez',
-      createdAt: '12-6-2025 12:32:32',
-      updatedBy: 'Samuel Suarez',
-      updatedAt: '12-6-2025 12:32:32',
-    },
-  ];
+  dataSource: AlertParameterization[] = [];
+
+  constructor() {
+    this.getDataSource();
+  }
+  getDataSource() {
+    // Aquí puedes implementar la lógica para obtener los datos de la fuente de datos
+    this.dataSource = [
+      {
+        uid: '1',
+        value: 10000,
+        createdBy: { name: 'Samuel Suarez', uid: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', uid: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+      {
+        uid: '2',
+        value: 25000,
+        createdBy: { name: 'Samuel Suarez', uid: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', uid: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+      {
+        uid: '3',
+        value: 7500,
+        createdBy: { name: 'Samuel Suarez', uid: 'user-1' },
+        createdAt: new Date('12-6-2025 12:32:32').getTime(),
+        updatedBy: { name: 'Samuel Suarez', uid: 'user-1' },
+        updatedAt: new Date('12-6-2025 12:32:32').getTime(),
+      },
+    ];
+  }
 
   editAlert(element: any) {
     this.alertObservable?.next(element);
