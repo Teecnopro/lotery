@@ -30,7 +30,7 @@ export class PaymentFormComponent {
   private subscription?: Subscription;
   private user = inject(AUTH_SESSION);
   constructor(private cdr: ChangeDetectorRef) {}
-  textButton: string = 'Crear Alerta';
+  textButton: string = 'Crear Pago';
   payment: PaymentParameterization = {};
   isEditing: boolean = false;
 
@@ -39,7 +39,7 @@ export class PaymentFormComponent {
       this.subscription = this.paymentObservable.subscribe(
         (data: PaymentParameterization) => {
           if (data && data.uid !== undefined) {
-            this.textButton = 'Editar Alerta';
+            this.textButton = 'Editar Pago';
             this.isEditing = true;
           }
           this.payment = { ...data };
@@ -81,7 +81,7 @@ export class PaymentFormComponent {
 
   limpiarFormulario(form: NgForm) {
     form.resetForm();
-    this.textButton = 'Crear Alerta';
+    this.textButton = 'Crear Pago';
     this.isEditing = false;
     this.payment = {};
     this.cdr.detectChanges();

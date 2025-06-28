@@ -26,9 +26,9 @@
 
         <div class="button-group">
           <button mat-raised-button color="primary" type="submit" [disabled]="!paymentForm.valid">
-            Crear Pago
+            {{textButton}}
           </button>
-          <button mat-outlined-button type="button" (click)="paymentForm.resetForm()">
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(paymentForm)">
             Limpiar
           </button>
         </div>
