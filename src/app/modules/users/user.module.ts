@@ -5,6 +5,8 @@ import { USER_SERVICE } from '../../domain/users/ports';
 import { FirebaseUserAdapter } from '../../infrastructure/users/firebase-user.adapter';
 import {
   CreateUserUseCase,
+  DeactivateUserUseCase,
+  DeleteUserUseCase,
   GetUsersUseCase,
   UpdateUserUseCase,
 } from '../../domain/users/use-cases';
@@ -19,6 +21,8 @@ import {
     GetUsersUseCase,
     CreateUserUseCase,
     UpdateUserUseCase,
+    DeactivateUserUseCase,
+    DeleteUserUseCase,
   ],
 })
 export class UserModule {}

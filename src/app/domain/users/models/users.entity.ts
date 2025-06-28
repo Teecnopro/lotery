@@ -7,8 +7,8 @@ export interface UserData {
   password?: string;
   isAdmin: boolean;
   state?: boolean;
-  createdAt: Timestamp;
-  creator: { name: string; id: string };
-  updatedAt: Timestamp;
-  updater: { name: string; id: string };
+  createdAt?: Timestamp;
+  creator?: { name: string; id: string };
+  updatedAt?: Timestamp;
+  updater?: { name: string; id: string };
 }

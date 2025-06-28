@@ -7,7 +7,7 @@
     <mat-card-content>
       <form
         [formGroup]="form"
-        (ngSubmit)="create()"
+        (ngSubmit)="detectAction()"
         class="alert-form"
         autocomplete="off"
       >
@@ -22,7 +22,11 @@
           >
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          *ngIf="!isEditMode"
+        >
           <mat-label>Contraseña</mat-label>
           <input matInput formControlName="password" type="password" />
           <mat-error *ngIf="form.get('password')?.hasError('required')"
@@ -50,7 +54,7 @@
             type="submit"
             [disabled]="!form.valid"
           >
-            Crear Usuario
+            {{ isEditMode ? "Actualizar Usuario" : "Crear Usuario" }}
           </button>
           <button mat-outlined-button type="button" (click)="form.reset()">
             Limpiar

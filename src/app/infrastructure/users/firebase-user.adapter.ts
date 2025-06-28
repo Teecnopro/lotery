@@ -9,11 +9,13 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  Timestamp,
   updateDoc,
 } from '@angular/fire/firestore';
 
 import { UserServicePort } from '../../domain/users/ports';
 import { UserData } from '../../domain/users/models/users.entity';
+import { FirebaseError } from '@angular/fire/app';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserAdapter implements UserServicePort {
@@ -21,7 +23,8 @@ export class FirebaseUserAdapter implements UserServicePort {
 
   async getByUid(uid: string): Promise<UserData> {
     const userDoc = await getDoc(doc(this.firestore, 'users', uid));
-    if (!userDoc.exists()) throw new Error('Perfil no encontrado');
+    if (!userDoc.exists())
+      throw new FirebaseError('auth/user-not-found', 'Perfil no encontrado');
     return userDoc.data() as UserData;
   }
 
@@ -47,16 +50,21 @@ export class FirebaseUserAdapter implements UserServicePort {
     await updateDoc(doc(this.firestore, 'users', uid), data);
   }
 
-  async deactivate(uid: string): Promise<void> {
-    await updateDoc(doc(this.firestore, 'users', uid), { state: false });
+  async changeState(
+    uid: string,
+    newState: boolean,
+    updatedAt: Timestamp,
+    updater: { name: string; id: string }
+  ): Promise<void> {
+    await updateDoc(doc(this.firestore, 'users', uid), {
+      state: newState,
+      updatedAt,
+      updater,
+    });
   }
 
   async delete(uid: string): Promise<void> {
     await deleteDoc(doc(this.firestore, 'users', uid));
-    /* TODO: Revisar si requiere permisos...si no solo desactivar eliminarlo del doc
-    y si no existe no dejarlo ingresarlo */
-    /* const user = await obtenerUsuarioporID pendienteeee(uid);
-    await deleteUser(user); */
   }
 
   async getAll(): Promise<UserData[]> {
