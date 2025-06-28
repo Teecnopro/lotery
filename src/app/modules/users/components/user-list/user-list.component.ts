@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Timestamp } from '@angular/fire/firestore';
+import { MatDialog } from '@angular/material/dialog';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
 import {
@@ -19,6 +20,7 @@ import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFire
 import { UserStateService } from '../../service/user-state.service';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 
 @Component({
   selector: 'app-user-list',
@@ -36,6 +38,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private userState = inject(UserStateService);
   private userSession = inject(AUTH_SESSION);
+  private dialog = inject(MatDialog);
 
   private fullColumns = [
     'name',
@@ -103,13 +106,18 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   async toggleState(userData: UserData) {
-    const confirm = window.confirm(
-      userData.state
-        ? '¿Estás seguro de desactivar este usuario?'
-        : '¿Quieres activar este usuario?'
-    );
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: userData.state ? 'Desactivar usuario' : 'Activar usuario',
+        message: userData.state
+          ? '¿Estás seguro de desactivar este usuario?'
+          : '¿Quieres activar este usuario?',
+      },
+    });
 
-    if (!confirm) return;
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+
+    if (!confirmed) return;
 
     this.loadingIcon = true;
 
@@ -139,10 +147,14 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   async deleteUser(userData: UserData) {
-    const confirm = window.confirm(
-      `Esta seguro que quiere eliminar al usuario: ${userData?.name}`
-    );
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Eliminar usuario',
+        message: `¿Está seguro que desea eliminar al usuario: ${userData?.name}?`,
+      },
+    });
 
+    const confirm = await firstValueFrom(dialogRef.afterClosed());
     if (!confirm) return;
 
     this.loadingIcon = true;
