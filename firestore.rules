@@ -9,29 +9,34 @@ service cloud.firestore {
       // Allow admins to create/update users
       allow create, update: if request.auth != null && isAdmin();
     }
-    
+
     // Payment parameterization rules
     match /payment-parameterization/{docId} {
       allow read, write: if request.auth != null && isAuthenticated();
     }
-    
-    // Alert parameterization rules  
+
+    // Alert parameterization rules
     match /alert-parameterizations/{docId} {
       allow read, write: if request.auth != null && isAuthenticated();
     }
-    
+
     // Sellers rules
     match /sellers/{docId} {
       allow read, write: if request.auth != null && isAuthenticated();
     }
-    
+
+    // Register bets rules
+    match /register-bets-detail/{docId} {
+      allow read, write: if request.auth != null && isAuthenticated();
+    }
+
     // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     function isAdmin() {
-      return request.auth != null && 
+      return request.auth != null &&
              exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }

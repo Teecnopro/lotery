@@ -48,7 +48,7 @@
         <div class="number-check">
           <mat-form-field appearance="outline">
             <mat-label>Número</mat-label>
-            <input #inputNumber matInput type="number" formControlName="lotteryNumber" (keydown.enter)="inputCombined.focus()"/>
+            <input #inputNumber matInput type="text" formControlName="lotteryNumber" (keydown.enter)="inputCombined.focus()"/>
           </mat-form-field>
 
           <mat-checkbox #inputCombined color="primary" formControlName="combined" class="checkbox" (keydown.enter)="inputValue.focus()">
