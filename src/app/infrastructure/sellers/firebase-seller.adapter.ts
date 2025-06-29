@@ -95,4 +95,13 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     nameSnapshot.docs.forEach(doc => sellersMap.set(doc.id, { id: doc.id, ...doc.data() } as ISeller));
     return Array.from(sellersMap.values());
   }
+  async updateState(id: string, state: boolean): Promise<ISeller> {
+    const sellerRef = doc(this.firestore, 'sellers', id);
+    await updateDoc(sellerRef, { state });
+    const updatedSnap = await getDoc(sellerRef);
+    if (!updatedSnap.exists()) {
+      throw new Error('Seller not found');
+    }
+    return { id: updatedSnap.id, ...updatedSnap.data() } as ISeller;
+  }
 }

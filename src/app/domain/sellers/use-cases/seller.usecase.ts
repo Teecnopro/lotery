@@ -32,4 +32,7 @@ export class SellerUseCase {
     async getSellersByCodeOrName(codeOrName: string): Promise<ISeller[]> {
         return this.sellerRepository.getSellersByCodeOrName(codeOrName);
     }
+    async updateState(id: string, state: boolean): Promise<ISeller> {
+        return this.sellerRepository.updateState(id, state);
+    }
 }
