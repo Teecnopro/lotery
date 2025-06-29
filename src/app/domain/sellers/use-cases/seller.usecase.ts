@@ -18,11 +18,14 @@ export class SellerUseCase {
         return this.sellerRepository.create(seller);
     }
 
-    async updateSeller(seller: ISeller): Promise<ISeller> {
-        return this.sellerRepository.update(seller);
+    async updateSeller(uid: string, seller: ISeller): Promise<ISeller> {
+        return this.sellerRepository.update(uid, seller);
     }
 
     async deleteSeller(id: string): Promise<void> {
         return this.sellerRepository.delete(id);
+    }
+    async getSellerByCode(code: string): Promise<ISeller | null> {
+        return this.sellerRepository.getSellerByCode(code);
     }
 }

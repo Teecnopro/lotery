@@ -6,8 +6,8 @@ export interface ISeller {
     code?: string
     state?: boolean
     name?: string
-    createdAt?: Date
-    updatedAt?: Date
+    createdAt?: number
+    updatedAt?: number
     createdBy?: AuthUser
     updatedBy?: AuthUser
 }

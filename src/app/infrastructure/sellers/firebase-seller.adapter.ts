@@ -45,16 +45,13 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
   }
 
   async create(seller: any) {
-    const sellerRef = doc(this.firestore, 'sellers', seller.id);
+    const sellerRef = doc(this.firestore, 'sellers', seller.uid);
     await setDoc(sellerRef, seller);
     return seller;
   }
 
-  async update(seller: ISeller): Promise<ISeller> {
-    if (!seller.id) {
-      throw new Error('Seller id is required for update.');
-    }
-    const sellerRef = doc(this.firestore, 'sellers', seller.id);
+  async update(uid: string, seller: ISeller): Promise<ISeller> {
+    const sellerRef = doc(this.firestore, 'sellers', uid);
     const { id, ...sellerData } = seller;
     await updateDoc(sellerRef, sellerData);
     return seller;
@@ -70,5 +67,13 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     const q = query(sellersRef, where(field, '==', value));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }
+
+  async getSellerByCode(code: string): Promise<ISeller | null> {
+    const sellersRef = collection(this.firestore, 'sellers');
+    const q = query(sellersRef, where('code', '==', code));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as ISeller;
   }
 }
