@@ -60,6 +60,9 @@ export class PaymentFormComponent {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    if (this.updateTable) {
+      this.updateTable.unsubscribe();
+    }
   }
 
   async onSubmit(form: NgForm) {

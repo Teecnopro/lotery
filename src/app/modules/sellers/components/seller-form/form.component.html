@@ -1,0 +1,37 @@
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Parametrización de Vendedores</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form #sellerForm="ngForm" (ngSubmit)="onSubmit(sellerForm)" class="seller-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Código</mat-label>
+          <input matInput type="number" name="code" [(ngModel)]="seller.code" required min="1" placeholder="Ingrese el código">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput type="text" name="name" [(ngModel)]="seller.name" required placeholder="Ingrese el nombre">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Estado</mat-label>
+          <mat-select name="state" [(ngModel)]="seller.state" required>
+            <mat-option [value]="true">Sí</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!sellerForm.valid || loading">
+            {{loading ? 'Guardando...' : textButton}}
+          </button>
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(sellerForm)" [disabled]="loading">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

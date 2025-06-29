@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,9 +39,7 @@ export class PaymentTableComponent implements OnInit {
     'actions',
   ];
 
-  constructor() {
-
-  }
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.getDataSource();
@@ -50,12 +48,18 @@ export class PaymentTableComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.paymentObservable?.unsubscribe();
+    this.updateTable?.unsubscribe();
+  }
+
   async getDataSource() {
     this.loading = true;
     try {
       const dataSource = await this.paymentParameterizationUseCase.listPaymentParameterizations();
+      const copyDataSource = [JSON.parse(JSON.stringify(dataSource))] as PaymentParameterization[];
       localStorage.removeItem('paymentDataSource');
-      localStorage.setItem('paymentDataSource', JSON.stringify(dataSource.map(payment => {
+      localStorage.setItem('paymentDataSource', JSON.stringify(copyDataSource.map(payment => {
         delete payment.uid;
         return payment;
       }
