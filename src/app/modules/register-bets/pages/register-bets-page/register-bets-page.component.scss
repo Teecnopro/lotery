@@ -1,0 +1,35 @@
+.custom-div {
+  margin: 0 auto;
+  height: calc(100vh - 150px);
+  max-height: calc(100vh - 150px);
+  width: 50vw;
+  padding: 1rem;
+  overflow: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .form-resume {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+
+    .item-form-resume {
+      width: calc(50% - 7.5px);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-div {
+    width: 90vw;
+
+    .form-resume {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      .item-form-resume {
+        width: 100%;
+      }
+    }
+  }
+}
