@@ -8,8 +8,11 @@ import {
     Firestore,
     getDoc,
     getDocs,
+    limit,
+    orderBy,
     query,
     setDoc,
+    startAt,
     updateDoc,
     where,
 } from '@angular/fire/firestore';
@@ -103,5 +106,24 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
       throw new Error('Seller not found');
     }
     return { id: updatedSnap.id, ...updatedSnap.data() } as ISeller;
+  }
+  async getSellerByPagination(
+    pageIndex: number,
+    pageSize: number
+  ): Promise<ISeller[]> {
+    const sellersRef = collection(this.firestore, 'sellers');
+    const q = query(
+      sellersRef,
+      orderBy('createdAt', 'desc'),
+      limit(pageSize)
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ISeller));
+  }
+
+  async getTotalItems(): Promise<number> {
+    const sellersRef = collection(this.firestore, 'sellers');
+    const querySnapshot = await getDocs(sellersRef);
+    return querySnapshot.size;
   }
 }

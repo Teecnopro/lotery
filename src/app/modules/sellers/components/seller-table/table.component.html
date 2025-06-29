@@ -76,6 +76,13 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
     </table>
 
-    <!-- <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Seleccionar página de pagos" *ngIf="!loading">
-    </mat-paginator> -->
+    <mat-paginator 
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[1, 10, 20]" 
+        showFirstLastButtons 
+        aria-label="Seleccionar página de pagos" 
+        *ngIf="!loading"
+        (page)="onPageChange($event)">
+    </mat-paginator>
 </div>

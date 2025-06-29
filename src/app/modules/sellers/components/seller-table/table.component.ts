@@ -16,6 +16,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { AUTH_SESSION } from "../../../../domain/auth/ports";
 import { AuthUser } from "../../../../domain/auth/models/auth-user.entity";
+import { MatPaginatorModule } from "@angular/material/paginator";
 
 @Component({
   selector: 'app-seller-table',
@@ -25,7 +26,8 @@ import { AuthUser } from "../../../../domain/auth/models/auth-user.entity";
     MatFormFieldModule,
     MatInputModule,
     MatCardModule,
-    MatTooltipModule],
+    MatTooltipModule,
+    MatPaginatorModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
@@ -44,6 +46,9 @@ export class SellerTableComponent {
   loading: boolean = false;
   dataSource: ISeller[] = [];
   codeOrNameFilter: string = '';
+  pageSize: number = 1; // Default page size
+  totalItems: number = 0; // Total number of items for pagination
+  pageIndex: number = 0; // Current page index
 
   displayedColumns: string[] = [
     'code',
@@ -56,7 +61,7 @@ export class SellerTableComponent {
     'actions',
   ];
 
-  constructor(private cdr: ChangeDetectorRef) { 
+  constructor(private cdr: ChangeDetectorRef) {
     this.currentUser = this.userSession.getUser() as AuthUser;
   }
 
@@ -75,7 +80,9 @@ export class SellerTableComponent {
   async getDataSource() {
     this.loading = true;
     try {
-      const dataSource = await this.sellerUseCase.getAllSellers();
+      const dataSource = await this.sellerUseCase.getSellerByPagination(this.pageIndex, this.pageSize);
+      this.totalItems = await this.sellerUseCase.getTotalItems();
+
       const copyDataSource = JSON.parse(JSON.stringify(dataSource)) as ISeller[];
       localStorage.removeItem('sellerDataSource');
       localStorage.setItem('sellerDataSource', JSON.stringify(copyDataSource.map(seller => {
@@ -118,7 +125,7 @@ export class SellerTableComponent {
   }
 
   async applyFilter(filterValue: string) {
-    if(filterValue && filterValue.length >= 3) {
+    if (filterValue && filterValue.length >= 3) {
       const lowerCaseFilter = filterValue.toLowerCase();
       const filteredData = await this.sellerUseCase.getSellersByCodeOrName(lowerCaseFilter);
       this.dataSource = filteredData;
@@ -149,6 +156,13 @@ export class SellerTableComponent {
         }
       }
     });
+  }
+
+  onPageChange(event: any) {
+    console.log('Page changed:', event);
+    this.pageIndex = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    this.getDataSource();
   }
 
 }

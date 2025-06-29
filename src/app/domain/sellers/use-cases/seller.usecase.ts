@@ -35,4 +35,14 @@ export class SellerUseCase {
     async updateState(id: string, state: boolean): Promise<ISeller> {
         return this.sellerRepository.updateState(id, state);
     }
+    async getSellerByPagination(
+        page: number,
+        pageSize: number
+    ): Promise<ISeller[]> {
+        return this.sellerRepository.getSellerByPagination(page, pageSize);
+    }
+    async getTotalItems(): Promise<number> {
+        const sellers = await this.sellerRepository.getAll();
+        return sellers.length;
+    }
 }
