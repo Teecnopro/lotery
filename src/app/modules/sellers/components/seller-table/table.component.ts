@@ -9,11 +9,19 @@ import { SellerUseCase } from "../../../../domain/sellers/use-cases";
 import { NOTIFICATION_PORT } from "../../../../shared/ports";
 import { MatDialog } from "@angular/material/dialog";
 import { ConfirmDialogComponent } from "../../../../shared/components/confirm-dialog.component";
+import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { FormsModule } from "@angular/forms";
+import { MatCardModule } from "@angular/material/card";
 
 @Component({
   selector: 'app-seller-table',
   standalone: true,
-  imports: [MatTableModule, MatIconModule, MatButtonModule, CommonModule],
+  imports: [MatTableModule, MatIconModule, MatButtonModule, CommonModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
@@ -29,6 +37,7 @@ export class SellerTableComponent {
   isEditing: boolean = false;
   loading: boolean = false;
   dataSource: ISeller[] = [];
+  codeOrNameFilter: string = '';
 
   displayedColumns: string[] = [
     'code',
@@ -97,6 +106,18 @@ export class SellerTableComponent {
         this.notification.error('Error al eliminar el vendedor: ' + error.message);
         console.error('Error deleting seller:', error);
       }
+    }
+  }
+
+  async applyFilter(filterValue: string) {
+    if(filterValue && filterValue.length >= 3) {
+      const lowerCaseFilter = filterValue.toLowerCase();
+      const filteredData = await this.sellerUseCase.getSellersByCodeOrName(lowerCaseFilter);
+      this.dataSource = filteredData;
+      this.cdr.detectChanges();
+    } else {
+      this.getDataSource();
+      this.cdr.detectChanges();
     }
   }
 

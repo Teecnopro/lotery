@@ -28,4 +28,8 @@ export class SellerUseCase {
     async getSellerByCode(code: string): Promise<ISeller | null> {
         return this.sellerRepository.getSellerByCode(code);
     }
+
+    async getSellersByCodeOrName(codeOrName: string): Promise<ISeller[]> {
+        return this.sellerRepository.getSellersByCodeOrName(codeOrName);
+    }
 }

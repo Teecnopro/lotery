@@ -76,4 +76,23 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     if (querySnapshot.empty) return null;
     return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as ISeller;
   }
+  async getSellersByCodeOrName(codeOrName: string): Promise<ISeller[]> {
+    const sellersRef = collection(this.firestore, 'sellers');
+    const q = query(
+      sellersRef,
+      where('code', '>=', codeOrName),
+      where('code', '<', codeOrName + '\uf8ff')
+    );
+    const q2 = query(
+      sellersRef,
+      where('name', '>=', codeOrName),
+      where('name', '<', codeOrName + '\uf8ff')
+    );
+    const [codeSnapshot, nameSnapshot] = await Promise.all([getDocs(q), getDocs(q2)]);
+    // Unir resultados y eliminar duplicados por id
+    const sellersMap = new Map<string, ISeller>();
+    codeSnapshot.docs.forEach(doc => sellersMap.set(doc.id, { id: doc.id, ...doc.data() } as ISeller));
+    nameSnapshot.docs.forEach(doc => sellersMap.set(doc.id, { id: doc.id, ...doc.data() } as ISeller));
+    return Array.from(sellersMap.values());
+  }
 }

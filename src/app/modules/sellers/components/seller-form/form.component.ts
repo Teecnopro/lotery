@@ -9,7 +9,6 @@ import { MatSelectModule } from "@angular/material/select";
 import { Subject, Subscription } from "rxjs";
 import { ISeller } from "../../../../domain/sellers/models/seller.model";
 import { AUTH_SESSION } from "../../../../domain/auth/ports";
-import { PaymentParameterizationUseCase } from "../../../../domain/payment-parameterization/use-cases";
 import { NOTIFICATION_PORT } from "../../../../shared/ports";
 import { SellerUseCase } from '../../../../domain/sellers/use-cases/seller.usecase';
 
@@ -79,7 +78,7 @@ export class SellerFormComponent {
 
         this.loading = true;
         const formData = { ...form.value };
-        const sellerData = { ...this.seller, code: formData.code, name: formData.name, state: formData.state };
+        const sellerData = { ...this.seller, code: formData.code.toLowerCase().trim(), name: formData.name.toLowerCase().trim(), state: formData.state };
         try {
             const existingSeller = await this.SellerUseCase.getSellerByCode(sellerData.code);
             if (existingSeller && !this.isEditing) {
@@ -113,7 +112,11 @@ export class SellerFormComponent {
         form.resetForm();
         this.textButton = 'Crear Vendedor';
         this.isEditing = false;
-        this.seller = {};
+        this.seller = {
+            state: true,
+            code: '',
+            name: '',
+        };
         this.cdr.detectChanges();
     }
 }

@@ -7,4 +7,5 @@ export abstract class SellerRepositoryPort {
   abstract update(uid: string, seller: ISeller): Promise<ISeller>;
   abstract delete(id: string): Promise<void>;
   abstract getSellerByCode(code: string): Promise<ISeller | null>;
+  abstract getSellersByCodeOrName(codeOrName: string): Promise<ISeller[]>;
 }
