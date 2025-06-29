@@ -25,8 +25,5 @@ export interface RegisterBets {
   combined?: boolean;
   warning?: boolean;
   date?: Timestamp;
-  createdAt?: Timestamp;
-  creator?: AuthUser | null;
   updatedAt?: Timestamp;
-  updater?: AuthUser | null;
 }

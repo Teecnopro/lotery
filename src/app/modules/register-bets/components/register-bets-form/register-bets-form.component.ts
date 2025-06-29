@@ -94,13 +94,13 @@ export class RegisterBetsFormComponent {
   buildObj(): RegisterBetsDetail {
     const form = this.registerBetForm.getRawValue();
 
-    const currentUser = this.user.getUser();
+    const { uid, name } = this.user.getUser()!;
 
     const date = new Date(form.date);
     date.setHours(0, 0, 0, 0);
 
     return {
-      lottery: { id: form.lottery._id, name: form.lottery.name},
+      lottery: { id: form.lottery._id, name: form.lottery.name },
       date: Timestamp.fromDate(date),
       lotteryNumber: form.lotteryNumber,
       seller: { id: form.seller._id, name: form.seller.seller },
@@ -108,9 +108,9 @@ export class RegisterBetsFormComponent {
       value: form.value,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
-      creator: currentUser,
-      updater: currentUser,
-      groupedBetId: "1234",
+      creator: { uid, name },
+      updater: { uid, name },
+      groupedBetId: '1234',
     };
   }
 }
