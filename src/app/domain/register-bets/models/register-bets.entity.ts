@@ -14,7 +14,6 @@ export interface RegisterBetsDetail {
   creator?: AuthUser | null;
   updatedAt?: Timestamp;
   updater?: AuthUser | null;
-  groupedBetId?: string;
 }
 
 export interface RegisterBets {

@@ -21,7 +21,7 @@
           <div class="lottery-select">
             <mat-form-field appearance="outline">
               <mat-label>Lotería</mat-label>
-              <mat-select #lotterySelect formControlName="lottery" (valueChange)="activeDeactiveSelect('deactive'); selectSeller.open()">
+              <mat-select #lotterySelect formControlName="lottery" (selectionChange)="activeDeactiveSelect('deactive'); selectSeller.open(); getData('reset')">
                 <mat-option *ngFor="let item of arrayLotteries" [value]="item"><span [style.color]="item.color">{{ item.name }}</span></mat-option>
               </mat-select>
             </mat-form-field>

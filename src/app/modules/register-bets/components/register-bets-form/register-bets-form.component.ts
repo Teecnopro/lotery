@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -23,10 +23,18 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { lotteries, sellers } from '../../mocks/mocks';
 import { NgFor } from '@angular/common';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
-import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
-import { Timestamp } from '@angular/fire/firestore';
+import {
+  RegisterBets,
+  RegisterBetsDetail,
+} from '../../../../domain/register-bets/models/register-bets.entity';
+import {
+  DocumentData,
+  QueryDocumentSnapshot,
+  Timestamp,
+} from '@angular/fire/firestore';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { WhereCondition } from '../../../../shared/models/query.entity';
 
 @Component({
   selector: 'app-register-bets-form',
@@ -48,7 +56,7 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
   styleUrl: './register-bets-form.component.scss',
   providers: [provideNativeDateAdapter()],
 })
-export class RegisterBetsFormComponent {
+export class RegisterBetsFormComponent implements OnInit {
   @ViewChild('lotterySelect') lotterySelect!: MatSelect;
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
@@ -57,6 +65,14 @@ export class RegisterBetsFormComponent {
 
   private user = inject(AUTH_SESSION);
   private notification = inject(NOTIFICATION_PORT);
+
+  hasNext = false;
+  hasPrev = false;
+
+  private defaultConditions: WhereCondition[] = [];
+  private defaultDate!: Timestamp;
+
+  listBets: RegisterBets[] = [];
 
   registerBetForm: FormGroup = this.formBuilder.group({
     date: [new Date(), [Validators.required]],
@@ -75,6 +91,15 @@ export class RegisterBetsFormComponent {
 
   constructor() {}
 
+  async ngOnInit() {
+    this.registerBetForm?.get('lottery')?.setValue(lotteries[0]);
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    this.defaultDate = Timestamp.fromDate(date);
+
+    await this.getData('reset');
+  }
+
   activeDeactiveSelect(action: 'active' | 'deactive'): void {
     const lottery = this.registerBetForm.get('lottery');
 
@@ -83,12 +108,32 @@ export class RegisterBetsFormComponent {
       : lottery?.disable();
   }
 
+  async getData(direction: 'next' | 'prev' | 'reset' = 'next') {
+    const lottery = this.registerBetForm.get('lottery')?.value;
+
+    this.defaultConditions = [
+      ["lottery.id", "==", lottery?._id],
+      ["date", "==", this.defaultDate],
+    ]
+
+
+    const { data, hasNext, hasPrev } =
+      await this.registerBetsUseCase.getRegisterBetsByQuery({
+        direction,
+        whereConditions: this.defaultConditions
+      });
+
+    this.listBets = data;
+    this.hasNext = hasNext as boolean;
+    this.hasPrev = hasPrev as boolean;
+  }
+
   async sendData() {
     const betDetail = this.buildObj();
 
     await this.registerBetsUseCase.createRegisterBets(betDetail);
 
-    this.notification.success('Apuesta creada correctamente');
+    await this.getData('reset');
   }
 
   buildObj(): RegisterBetsDetail {
@@ -109,8 +154,7 @@ export class RegisterBetsFormComponent {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       creator: { uid, name },
-      updater: { uid, name },
-      groupedBetId: '1234',
+      updater: { uid, name }
     };
   }
 }
