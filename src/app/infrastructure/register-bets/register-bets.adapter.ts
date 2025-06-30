@@ -54,7 +54,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async create(data: RegisterBetsDetail): Promise<void> {
-    data.warning = (data.value as number) > this.tope;
+    data.warning = (data.value as number) >= this.tope;
     const bets = collection(this.firestore, 'register-bets-detail');
     await addDoc(bets, {
       ...data,
@@ -180,7 +180,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     data: RegisterBetsDetail,
     total: number
   ): Promise<void> {
-    const warning = total > this.tope;
+    const warning = total >= this.tope;
 
     const dataGroupedBets: RegisterBets = {
       lotteryNumber: data.lotteryNumber,
