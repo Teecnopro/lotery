@@ -26,3 +26,8 @@ export interface RegisterBets {
   date?: Timestamp;
   updatedAt?: Timestamp;
 }
+
+export interface ListBets {
+  date: Timestamp,
+  lottery: any;
+}

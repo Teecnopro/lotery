@@ -65,14 +65,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   private user = inject(AUTH_SESSION);
   private notification = inject(NOTIFICATION_PORT);
-
-  hasNext = false;
-  hasPrev = false;
-
-  private defaultConditions: WhereCondition[] = [];
   private defaultDate!: Timestamp;
-
-  listBets: RegisterBets[] = [];
 
   registerBetForm: FormGroup = this.formBuilder.group({
     date: [new Date(), [Validators.required]],
@@ -92,12 +85,17 @@ export class RegisterBetsFormComponent implements OnInit {
   constructor() {}
 
   async ngOnInit() {
+    // Inicializando valores por defecto
     this.registerBetForm?.get('lottery')?.setValue(lotteries[0]);
     const date = new Date();
     date.setHours(0, 0, 0, 0);
     this.defaultDate = Timestamp.fromDate(date);
 
-    await this.getData('reset');
+    // Actualizando metodo del listado
+    this.registerBetsUseCase.updateList$({
+      date: this.defaultDate,
+      lottery: this.registerBetForm.get('lottery')?.value,
+    });
   }
 
   activeDeactiveSelect(action: 'active' | 'deactive'): void {
@@ -107,33 +105,12 @@ export class RegisterBetsFormComponent implements OnInit {
       ? (lottery?.enable(), this.lotterySelect.open())
       : lottery?.disable();
   }
-
-  async getData(direction: 'next' | 'prev' | 'reset' = 'next') {
-    const lottery = this.registerBetForm.get('lottery')?.value;
-
-    this.defaultConditions = [
-      ["lottery.id", "==", lottery?._id],
-      ["date", "==", this.defaultDate],
-    ]
-
-
-    const { data, hasNext, hasPrev } =
-      await this.registerBetsUseCase.getRegisterBetsByQuery({
-        direction,
-        whereConditions: this.defaultConditions
-      });
-
-    this.listBets = data;
-    this.hasNext = hasNext as boolean;
-    this.hasPrev = hasPrev as boolean;
-  }
-
   async sendData() {
     const betDetail = this.buildObj();
 
     await this.registerBetsUseCase.createRegisterBets(betDetail);
 
-    await this.getData('reset');
+    this.updateList();
   }
 
   buildObj(): RegisterBetsDetail {
@@ -154,7 +131,20 @@ export class RegisterBetsFormComponent implements OnInit {
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       creator: { uid, name },
-      updater: { uid, name }
+      updater: { uid, name },
     };
+  }
+
+  updateList() {
+    const form = this.registerBetForm.getRawValue();
+
+    const date = new Date(form.date);
+    date.setHours(0, 0, 0, 0);
+
+    // Actualizando metodo del listado
+    this.registerBetsUseCase.updateList$({
+      date: Timestamp.fromDate(date),
+      lottery: form.lottery,
+    });
   }
 }

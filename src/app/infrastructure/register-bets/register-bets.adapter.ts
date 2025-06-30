@@ -24,13 +24,17 @@ import {
 } from '@angular/fire/firestore';
 import { RegisterBetsServicePort } from '../../domain/register-bets/ports';
 import {
+  ListBets,
   RegisterBets,
   RegisterBetsDetail,
 } from '../../domain/register-bets/models/register-bets.entity';
 import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
+  private betsSubject: BehaviorSubject<ListBets | null> = new BehaviorSubject<ListBets | null>(null);
+
   private tope = 12000;
   private pageSize = 5;
 
@@ -40,6 +44,14 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   private hasNext = false;
 
   constructor(private firestore: Firestore) {}
+
+  listBets$(): Observable<ListBets | null> | null {
+    return this.betsSubject.asObservable();
+  }
+
+  updateList$(data: ListBets) {
+    return this.betsSubject.next(data);
+  }
 
   async create(data: RegisterBetsDetail): Promise<void> {
     data.warning = (data.value as number) > this.tope;
@@ -89,7 +101,6 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
 
     constraints.push(limit(this.pageSize));
-    console.log(constraints);
 
     q = query(betRef, ...constraints);
 

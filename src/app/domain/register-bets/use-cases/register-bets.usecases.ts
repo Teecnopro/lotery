@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 
-import { RegisterBets, RegisterBetsDetail } from '../models/register-bets.entity';
+import { ListBets, RegisterBets, RegisterBetsDetail } from '../models/register-bets.entity';
 import { REGISTER_BETS_SERVICE } from '../ports';
 import { FirebaseQuery, ResponseQuery } from '../../../shared/models/query.entity';
+import { Observable } from 'rxjs';
 
 export class RegisterBetsUseCase {
   private registerBets = inject(REGISTER_BETS_SERVICE);
@@ -20,5 +21,13 @@ export class RegisterBetsUseCase {
   }
   getRegisterBetsByUid(uid: string): Promise<RegisterBets | null> {
     return this.registerBets.getByUid(uid);
+  }
+
+  listBets$(): Observable<ListBets | null> | null {
+    return this.registerBets.listBets$();
+  }
+
+  updateList$(data: ListBets) {
+    return this.registerBets.updateList$(data);
   }
 }
