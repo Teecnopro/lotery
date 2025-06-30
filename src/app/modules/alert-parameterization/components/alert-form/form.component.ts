@@ -81,7 +81,7 @@ export class AlertFormComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     const formData = { ...form.value };
-    const alertData = { ...this.alert, value: formData.value, description: formData.description, digits: formData.digits };
+    const alertData = { ...this.alert, value: formData.value, description: formData.description.trim(), digits: formData.digits };
     try {
       const existingAlert = await this.alertUseCases.getAlertParameterizationsByValue(
         alertData.value, 

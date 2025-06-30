@@ -9,11 +9,12 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { DatePipe, CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-alert-table',
   standalone: true,
-  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule],
+  imports: [MatTableModule, MatPaginatorModule, MatButtonModule, DatePipe, CommonModule, MatIconModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
 })
@@ -49,8 +50,9 @@ export class AlertTableComponent implements OnInit {
     this.loading = true;
     try {
       const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
+      const copyDataSource = JSON.parse(JSON.stringify(dataSource)) as AlertParameterization[];
       localStorage.removeItem('alertDataSource');
-      localStorage.setItem('alertDataSource', JSON.stringify(dataSource.map(alert => {
+      localStorage.setItem('alertDataSource', JSON.stringify(copyDataSource.map(alert => {
         delete alert.uid;
         delete alert.id;
         return alert;

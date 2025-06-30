@@ -50,6 +50,16 @@ export const routesDashboard: Routes = [
           title: 'Registrar apuestas',
         },
       },
+      {
+        path: 'vendors',
+        loadChildren: () =>
+          import('../sellers/seller.routes').then(
+            (m) => m.routesSeller
+          ),
+        data: {
+          title: 'Vendedores',
+        },
+      },
     ],
   },
 ];
