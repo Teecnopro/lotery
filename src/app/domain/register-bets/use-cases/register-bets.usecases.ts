@@ -30,4 +30,8 @@ export class RegisterBetsUseCase {
   updateList$(data: ListBets) {
     return this.registerBets.updateList$(data);
   }
+
+  getDataToResume(query: FirebaseQuery): Promise<any> {
+    return this.registerBets.getDataToResume(query);
+  }
 }

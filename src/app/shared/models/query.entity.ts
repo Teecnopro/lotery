@@ -5,7 +5,7 @@ export type WhereCondition = [string, WhereFilterOp, unknown];
 
 export interface FirebaseQuery {
   cursor?: QueryDocumentSnapshot<DocumentData>,
-  direction: 'next' | 'prev' | 'reset',
+  direction?: 'next' | 'prev' | 'reset',
   whereConditions: WhereCondition[];
 }
 

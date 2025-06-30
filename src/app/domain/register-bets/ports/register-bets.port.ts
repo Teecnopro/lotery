@@ -11,4 +11,5 @@ export interface RegisterBetsServicePort {
   getByUid(uid: string): Promise<RegisterBets | null>;
   listBets$(): Observable<ListBets | null> | null ;
   updateList$(data: ListBets): void;
+  getDataToResume(query: FirebaseQuery): Promise<any>;
 }

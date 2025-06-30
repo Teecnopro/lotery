@@ -29,7 +29,7 @@ import {
   RegisterBetsDetail,
 } from '../../domain/register-bets/models/register-bets.entity';
 import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, concatMapTo, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
@@ -226,5 +226,51 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       where('lottery.id', '==', data.lottery?.id),
       where('combined', '==', data.combined)
     );
+  }
+
+  async getDataToResume({
+    whereConditions,
+  }: FirebaseQuery): Promise<any> {
+    const betRef = collection(this.firestore, 'register-bets');
+
+    // Aplicando filtros
+    const constraints: QueryConstraint[] = [];
+
+    for (const [field, op, value] of whereConditions) {
+      constraints.push(where(field, op, value));
+    }
+
+    const q = query(betRef, ...constraints);
+
+    const snapshot = await getDocs(q);
+    const data = snapshot.docs.map(
+      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBets)
+    );
+
+    return this.parseDataToResume(data);
+  }
+
+  parseDataToResume(data: RegisterBets[]) {
+    let objParse: any = {};
+
+    for (let item of data) {
+      if (objParse[item?.lottery?.name as string]) continue;
+
+      // Filtrar por lotería
+      const lotteryFiltered = data.filter(bet => bet?.lottery?.name === item.lottery?.name);
+
+      objParse[item?.lottery?.name as string] = this.getTotalResume(lotteryFiltered);
+    }
+
+    return objParse;
+  }
+
+  getTotalResume(data: RegisterBets[]) {
+    let cont = 0;
+    for (let item of data) {
+      cont += item.groupedValue as number;
+    }
+
+    return cont;
   }
 }
