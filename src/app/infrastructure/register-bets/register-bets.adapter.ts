@@ -36,7 +36,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   private betsSubject: BehaviorSubject<ListBets | null> = new BehaviorSubject<ListBets | null>(null);
 
   private tope = 12000;
-  private pageSize = 5;
+  private pageSize = 25;
 
   // Pagination
   history: QueryDocumentSnapshot<DocumentData>[] = [];
@@ -231,7 +231,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   async getDataToResume({
     whereConditions,
   }: FirebaseQuery): Promise<any> {
-    const betRef = collection(this.firestore, 'register-bets');
+    const betRef = collection(this.firestore, 'register-bets-detail');
 
     // Aplicando filtros
     const constraints: QueryConstraint[] = [];
@@ -244,13 +244,13 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
     const snapshot = await getDocs(q);
     const data = snapshot.docs.map(
-      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBets)
+      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBetsDetail)
     );
 
     return this.parseDataToResume(data);
   }
 
-  parseDataToResume(data: RegisterBets[]) {
+  parseDataToResume(data: RegisterBetsDetail[]) {
     let objParse: any = {};
 
     for (let item of data) {
@@ -262,15 +262,18 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       objParse[item?.lottery?.name as string] = this.getTotalResume(lotteryFiltered);
     }
 
+    objParse["Total"] = this.getTotalResume(data);
+    objParse["Advertencias"] = this.getTotalResume(data.filter(item => item.warning));
+
     return objParse;
   }
 
-  getTotalResume(data: RegisterBets[]) {
+  getTotalResume(data: RegisterBetsDetail[]) {
     let cont = 0;
     for (let item of data) {
-      cont += item.groupedValue as number;
+      cont += item.value as number;
     }
 
-    return cont;
+    return {cont, totalData: data.length};
   }
 }
