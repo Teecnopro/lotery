@@ -21,6 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class PaymentTableComponent implements OnInit {
   @Input() paymentObservable: Subject<PaymentParameterization> | null = null;
   @Input() updateTable: Subject<boolean> | null = null;
+  @Input() showFormObservable: Subject<boolean> | null = null;
   private paymentParameterizationUseCase = inject(PaymentParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
@@ -83,7 +84,10 @@ export class PaymentTableComponent implements OnInit {
     if (document.activeElement && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    this.paymentObservable?.next(element);
+    this.showFormObservable?.next(true);
+    setTimeout(() => {
+      this.paymentObservable?.next(element);
+    }, 100);
   }
 
   async deletePayment(element: PaymentParameterization) {

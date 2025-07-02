@@ -32,8 +32,22 @@ import { MaterialModule } from '../../../shared/material/material.module';
 export class AlertParameterizationPageComponent {
   alertObservable: Subject<AlertParameterization> = new Subject<AlertParameterization>();
   updateTable: Subject<boolean> = new Subject<boolean>();
+  showFormObservable: Subject<boolean> = new Subject<boolean>();
   showForm: boolean = false;
   isMobile: boolean = false;
+
+  ngOnInit() {
+    this.showFormObservable.next(false);
+    this.showFormObservable.subscribe((editing) => {
+      this.showForm = editing;
+    });
+  }
+
+  ngOnDestroy() {
+    this.alertObservable.complete();
+    this.updateTable.complete();
+    this.showFormObservable.complete();
+  }
 
   toggleForm() {
     this.showForm = !this.showForm;

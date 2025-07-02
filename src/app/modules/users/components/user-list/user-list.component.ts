@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { firstValueFrom, Subject, takeUntil } from 'rxjs';
 
 import { MatTableDataSource } from '@angular/material/table';
@@ -29,6 +29,7 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
   styleUrl: './user-list.component.scss',
 })
 export class UserListComponent implements OnInit, OnDestroy {
+  @Input() showFormObservable: Subject<boolean> | null = null;
   private getUseCase = inject(GetUsersUseCase);
   private changeStatus = inject(DeactivateUserUseCase);
   private deleteUseCase = inject(DeleteUserUseCase);
@@ -99,7 +100,10 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   editUser(userData: UserData) {
-    this.userState.setSelectedUser(userData);
+    this.showFormObservable?.next(true);
+    setTimeout(() => {
+      this.userState.setSelectedUser(userData);
+    }, 100);
   }
 
   async toggleState(userData: UserData) {

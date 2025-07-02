@@ -23,18 +23,23 @@ import { MaterialModule } from '../../../shared/material/material.module';
         <app-user-form></app-user-form>
       </div>
       <div class="table-section">
-        <app-user-list></app-user-list>
+        <app-user-list [showFormObservable]="showFormObservable"></app-user-list>
       </div>
     </div>`,
 })
 export class UsersPageComponent implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
   private destroy$ = new Subject<void>();
+  showFormObservable: Subject<boolean> = new Subject<boolean>();
 
   isMobile: boolean = false;
   showForm: boolean = false;
 
   ngOnInit(): void {
+    this.showFormObservable.next(false);
+    this.showFormObservable.subscribe((editing) => {
+      this.showForm = editing;
+    });
     this.breakpointObserver
       .observe([Breakpoints.Handset])
       .pipe(takeUntil(this.destroy$))
@@ -50,5 +55,6 @@ export class UsersPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.showFormObservable.complete();
   }
 }

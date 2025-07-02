@@ -32,6 +32,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
 export class PaymentParameterizationPageComponent implements OnDestroy {
   paymentObservable: Subject<PaymentParameterization> = new Subject<PaymentParameterization>();
   updateTable: Subject<boolean> = new Subject<boolean>();
+  showFormObservable: Subject<boolean> = new Subject<boolean>();
   showForm: boolean = false;
   isMobile: boolean = false;
 
@@ -39,9 +40,17 @@ export class PaymentParameterizationPageComponent implements OnDestroy {
     this.showForm = !this.showForm;
   }
 
+  ngOnInit() {
+    this.showFormObservable.next(false);
+    this.showFormObservable.subscribe((editing) => {
+      this.showForm = editing;
+    });
+  }
+
   ngOnDestroy() {
     // Cerrar los Subjects cuando el componente padre se destruye
     this.paymentObservable.complete();
     this.updateTable.complete();
+    this.showFormObservable.complete();
   }
 }
