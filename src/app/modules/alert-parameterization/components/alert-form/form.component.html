@@ -9,12 +9,12 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Digítos</mat-label>
           <input matInput type="number" name="digits" [(ngModel)]="alert.digits" required
-            placeholder="Ingrese la cantidad de dígitos">
+            placeholder="Ingrese la cantidad de dígitos" [min]="1">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Valor</mat-label>
           <input matInput type="number" name="value" [(ngModel)]="alert.value" required 
-          placeholder="Ingrese el valor">
+          placeholder="Ingrese el valor" [min]="1">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Descripción Alerta</mat-label>
