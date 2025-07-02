@@ -29,7 +29,7 @@ import { MaterialModule } from "../../../shared/material/material.module";
   templateUrl: './seller.page.html',
   styleUrls: ['./seller.page.scss'],
 })
-export class SellerPageComponent {
+export class SellerPageComponent implements OnDestroy {
   sellerObservable: Subject<ISeller> = new Subject<ISeller>();
   updateTable: Subject<boolean> = new Subject<boolean>();
   showForm: boolean = false;
@@ -37,5 +37,11 @@ export class SellerPageComponent {
 
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+
+  ngOnDestroy() {
+    // Cerrar los Subjects cuando el componente padre se destruye
+    this.sellerObservable.complete();
+    this.updateTable.complete();
   }
 }

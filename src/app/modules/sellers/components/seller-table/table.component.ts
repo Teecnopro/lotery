@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, Input } from "@angular/core";
 import { ISeller } from "../../../../domain/sellers/models/seller.model";
-import { first, firstValueFrom, Subject } from "rxjs";
+import { first, firstValueFrom, Subject, Subscription } from "rxjs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
@@ -38,6 +38,7 @@ export class SellerTableComponent {
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
   private userSession = inject(AUTH_SESSION);
+  private updateSubscription?: Subscription;
   currentUser: AuthUser
 
   seller: any = {};
@@ -53,7 +54,6 @@ export class SellerTableComponent {
   displayedColumns: string[] = [
     'code',
     'name',
-    'state',
     'createdBy',
     'createdAt',
     'updatedBy',
@@ -67,14 +67,18 @@ export class SellerTableComponent {
 
   ngOnInit() {
     this.getDataSource();
-    this.updateTable?.subscribe(() => {
-      this.getDataSource();
-    });
+    if (this.updateTable) {
+      this.updateSubscription = this.updateTable.subscribe(() => {
+        this.getDataSource();
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.sellerObservable?.unsubscribe();
-    this.updateTable?.unsubscribe();
+    if (this.updateSubscription) {
+      this.updateSubscription.unsubscribe();
+    }
+    // No hacer unsubscribe de los Subjects ya que son manejados por el componente padre
   }
 
   async getDataSource() {

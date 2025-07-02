@@ -3,7 +3,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { PaymentParameterization } from '../../../../domain/payment-parameterization/models/payment-parameterization.entity';
-import { firstValueFrom, Subject } from 'rxjs';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
 import { PaymentParameterizationUseCase } from '../../../../domain/payment-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { DatePipe, CommonModule } from '@angular/common';
@@ -24,6 +24,7 @@ export class PaymentTableComponent implements OnInit {
   private paymentParameterizationUseCase = inject(PaymentParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
+  private updateSubscription?: Subscription;
 
   loading: boolean = false;
   dataSource: PaymentParameterization[] = [];
@@ -43,14 +44,18 @@ export class PaymentTableComponent implements OnInit {
 
   ngOnInit() {
     this.getDataSource();
-    this.updateTable?.subscribe((value) => {
-      this.getDataSource();
-    });
+    if (this.updateTable) {
+      this.updateSubscription = this.updateTable.subscribe((value) => {
+        this.getDataSource();
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.paymentObservable?.unsubscribe();
-    this.updateTable?.unsubscribe();
+    if (this.updateSubscription) {
+      this.updateSubscription.unsubscribe();
+    }
+    // No hacer unsubscribe de los Subjects ya que son manejados por el componente padre
   }
 
   async getDataSource() {
@@ -74,10 +79,19 @@ export class PaymentTableComponent implements OnInit {
   }
 
   editPayment(element: PaymentParameterization) {
+    // Remover foco del botón antes de la acción
+    if (document.activeElement && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     this.paymentObservable?.next(element);
   }
 
   async deletePayment(element: PaymentParameterization) {
+    // Remover foco del botón antes de abrir el dialog
+    if (document.activeElement && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Eliminar parametrización de pago',
