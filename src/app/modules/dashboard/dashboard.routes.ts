@@ -11,7 +11,6 @@ export const routesDashboard: Routes = [
         (m) => m.DashboardLayoutComponent
       ),
     children: [
-      /* Agregar los faltantes aca */
       {
         path: 'users',
         loadChildren: () =>
@@ -53,11 +52,17 @@ export const routesDashboard: Routes = [
       {
         path: 'vendors',
         loadChildren: () =>
-          import('../sellers/seller.routes').then(
-            (m) => m.routesSeller
-          ),
+          import('../sellers/seller.routes').then((m) => m.routesSeller),
         data: {
           title: 'Vendedores',
+        },
+      },
+      {
+        path: 'reports',
+        loadChildren: () =>
+          import('../reports/reports.routes').then((m) => m.routesReports),
+        data: {
+          title: 'Reportes',
         },
       },
     ],
