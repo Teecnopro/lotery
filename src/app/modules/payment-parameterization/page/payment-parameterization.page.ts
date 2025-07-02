@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { PaymentFormComponent } from '../components/payment-form/form.component';
 import { PaymentTableComponent } from '../components/payment-table/table.component';
 import { Subject } from 'rxjs';
@@ -29,7 +29,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
   templateUrl: './payment-parameterization.page.html',
   styleUrls: ['./payment-parameterization.page.scss'],
 })
-export class PaymentParameterizationPageComponent {
+export class PaymentParameterizationPageComponent implements OnDestroy {
   paymentObservable: Subject<PaymentParameterization> = new Subject<PaymentParameterization>();
   updateTable: Subject<boolean> = new Subject<boolean>();
   showForm: boolean = false;
@@ -37,5 +37,11 @@ export class PaymentParameterizationPageComponent {
 
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+
+  ngOnDestroy() {
+    // Cerrar los Subjects cuando el componente padre se destruye
+    this.paymentObservable.complete();
+    this.updateTable.complete();
   }
 }

@@ -7,7 +7,7 @@ import { MaterialNotificationAdapter } from "../../../shared/infrastructure/mats
 import { SellerUseCase } from "../../../domain/sellers/use-cases";
 import { ISeller } from "../../../domain/sellers/models/seller.model";
 import { Subject } from "rxjs";
-import { Component } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { SellerTableComponent } from "../components/seller-table/table.component";
 import { MaterialModule } from "../../../shared/material/material.module";
 
