@@ -9,11 +9,12 @@ import { FirebaseAlertParameterizationAdapter } from '../../../infrastructure/al
 import { AlertParameterizationUseCase } from '../../../domain/alert-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../shared/ports';
 import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
+import { MaterialModule } from '../../../shared/material/material.module';
 
 @Component({
   selector: 'app-alert-parameterization-page',
   standalone: true,
-  imports: [AlertFormComponent, AlertTableComponent, CommonModule],
+  imports: [AlertFormComponent, AlertTableComponent, CommonModule, MaterialModule],
   providers: [
     {
       provide: ALERT_PARAMETERIZATION_SERVICE,
@@ -31,4 +32,10 @@ import { MaterialNotificationAdapter } from '../../../shared/infrastructure/mats
 export class AlertParameterizationPageComponent {
   alertObservable: Subject<AlertParameterization> = new Subject<AlertParameterization>();
   updateTable: Subject<boolean> = new Subject<boolean>();
+  showForm: boolean = false;
+  isMobile: boolean = false;
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+  }
 }

@@ -1,8 +1,17 @@
 <div class="alert-layout">
-  <div class="form-section">
-    <app-alert-form [alertObservable]="alertObservable" [updateTable]="updateTable"></app-alert-form>
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      {{ showForm ? 'Ocultar formulario' : 'Crear Alerta' }}
+    </button>
   </div>
-  <div class="table-section">
-    <app-alert-table [alertObservable]="alertObservable" [updateTable]="updateTable"></app-alert-table>
+  <div class="layout" [class.column]="isMobile">
+    <div class="form-section" *ngIf="showForm">
+      <div class="form-section">
+        <app-alert-form [alertObservable]="alertObservable" [updateTable]="updateTable"></app-alert-form>
+      </div>
+    </div>
+    <div class="table-section">
+      <app-alert-table [alertObservable]="alertObservable" [updateTable]="updateTable"></app-alert-table>
+    </div>
   </div>
 </div>

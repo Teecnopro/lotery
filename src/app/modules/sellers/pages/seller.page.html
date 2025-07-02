@@ -1,8 +1,17 @@
-<div class="seller-layout">
-  <div class="form-section">
-    <app-seller-form [sellerObservable]="sellerObservable" [updateTable]="updateTable"></app-seller-form>
+<div class="alert-layout">
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      {{ showForm ? 'Ocultar formulario' : 'Crear Vendedor' }}
+    </button>
   </div>
-  <div class="table-section">
-    <app-seller-table [sellerObservable]="sellerObservable" [updateTable]="updateTable"></app-seller-table>
+  <div class="layout" [class.column]="isMobile">
+    <div class="form-section" *ngIf="showForm">
+      <div class="form-section">
+        <app-seller-form [sellerObservable]="sellerObservable" [updateTable]="updateTable"></app-seller-form>
+      </div>
+    </div>
+    <div class="table-section">
+      <app-seller-table [sellerObservable]="sellerObservable" [updateTable]="updateTable"></app-seller-table>
+    </div>
   </div>
 </div>

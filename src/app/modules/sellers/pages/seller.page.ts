@@ -9,11 +9,12 @@ import { ISeller } from "../../../domain/sellers/models/seller.model";
 import { Subject } from "rxjs";
 import { Component } from "@angular/core";
 import { SellerTableComponent } from "../components/seller-table/table.component";
+import { MaterialModule } from "../../../shared/material/material.module";
 
 @Component({
   selector: 'app-seller-page',
   standalone: true,
-  imports: [SellerFormComponent, SellerTableComponent, CommonModule],
+  imports: [SellerFormComponent, SellerTableComponent, CommonModule, MaterialModule],
   providers: [
     {
       provide: SELLER_REPOSITORY,
@@ -31,4 +32,10 @@ import { SellerTableComponent } from "../components/seller-table/table.component
 export class SellerPageComponent {
   sellerObservable: Subject<ISeller> = new Subject<ISeller>();
   updateTable: Subject<boolean> = new Subject<boolean>();
+  showForm: boolean = false;
+  isMobile: boolean = false;
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+  }
 }

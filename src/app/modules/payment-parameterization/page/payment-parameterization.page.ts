@@ -9,11 +9,12 @@ import { FirebasePaymentParameterizationAdapter } from '../../../infrastructure/
 import { PaymentParameterizationUseCase } from '../../../domain/payment-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../shared/ports';
 import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
+import { MaterialModule } from '../../../shared/material/material.module';
 
 @Component({
   selector: 'app-payment-parameterization-page',
   standalone: true,
-  imports: [PaymentFormComponent, PaymentTableComponent, CommonModule],
+  imports: [PaymentFormComponent, PaymentTableComponent, CommonModule, MaterialModule],
   providers: [
     {
       provide: PAYMENT_PARAMETERIZATION_SERVICE,
@@ -31,4 +32,10 @@ import { MaterialNotificationAdapter } from '../../../shared/infrastructure/mats
 export class PaymentParameterizationPageComponent {
   paymentObservable: Subject<PaymentParameterization> = new Subject<PaymentParameterization>();
   updateTable: Subject<boolean> = new Subject<boolean>();
+  showForm: boolean = false;
+  isMobile: boolean = false;
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+  }
 }
