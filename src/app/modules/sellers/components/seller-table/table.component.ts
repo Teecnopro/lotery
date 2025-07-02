@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, Input } from "@angular/core";
 import { ISeller } from "../../../../domain/sellers/models/seller.model";
-import { first, firstValueFrom, Subject } from "rxjs";
+import { first, firstValueFrom, Subject, Subscription } from "rxjs";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
@@ -34,10 +34,12 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 export class SellerTableComponent {
   @Input() sellerObservable: Subject<ISeller> | null = null;
   @Input() updateTable: Subject<boolean> | null = null;
+  @Input() showFormObservable: Subject<boolean> | null = null;
   private sellerUseCase = inject(SellerUseCase);
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
   private userSession = inject(AUTH_SESSION);
+  private updateSubscription?: Subscription;
   currentUser: AuthUser
 
   seller: any = {};
@@ -46,14 +48,13 @@ export class SellerTableComponent {
   loading: boolean = false;
   dataSource: ISeller[] = [];
   codeOrNameFilter: string = '';
-  pageSize: number = 1; // Default page size
+  pageSize: number = 10; // Default page size
   totalItems: number = 0; // Total number of items for pagination
-  pageIndex: number = 0; // Current page index
+  pageIndex: number = 1; // Current page index (backend expects 1-based indexing)
 
   displayedColumns: string[] = [
     'code',
     'name',
-    'state',
     'createdBy',
     'createdAt',
     'updatedBy',
@@ -67,14 +68,18 @@ export class SellerTableComponent {
 
   ngOnInit() {
     this.getDataSource();
-    this.updateTable?.subscribe(() => {
-      this.getDataSource();
-    });
+    if (this.updateTable) {
+      this.updateSubscription = this.updateTable.subscribe(() => {
+        this.getDataSource();
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.sellerObservable?.unsubscribe();
-    this.updateTable?.unsubscribe();
+    if (this.updateSubscription) {
+      this.updateSubscription.unsubscribe();
+    }
+    // No hacer unsubscribe de los Subjects ya que son manejados por el componente padre
   }
 
   async getDataSource() {
@@ -82,7 +87,6 @@ export class SellerTableComponent {
     try {
       const dataSource = await this.sellerUseCase.getSellerByPagination(this.pageIndex, this.pageSize);
       this.totalItems = await this.sellerUseCase.getTotalItems();
-
       const copyDataSource = JSON.parse(JSON.stringify(dataSource)) as ISeller[];
       localStorage.removeItem('sellerDataSource');
       localStorage.setItem('sellerDataSource', JSON.stringify(copyDataSource.map(seller => {
@@ -92,16 +96,17 @@ export class SellerTableComponent {
       this.dataSource = dataSource;
     } catch (error: any) {
       this.notification.error('Error al cargar los vendedores: ' + error.message);
-      console.error('Error fetching sellers:', error);
     } finally {
       this.loading = false;
       this.cdr.detectChanges();
     }
-    // Fetch the data source for the table
   }
 
   editSeller(seller: ISeller) {
-    this.sellerObservable?.next(seller);
+    this.showFormObservable?.next(true);
+    setTimeout(() => {
+      this.sellerObservable?.next(seller);
+    }, 100);
   }
 
   async deleteSeller(seller: ISeller) {
@@ -119,13 +124,12 @@ export class SellerTableComponent {
         this.getDataSource(); // Refresh the table
       } catch (error: any) {
         this.notification.error('Error al eliminar el vendedor: ' + error.message);
-        console.error('Error deleting seller:', error);
       }
     }
   }
 
   async applyFilter(filterValue: string) {
-    if (filterValue && filterValue.length >= 3) {
+    if (filterValue && filterValue.length >= 1) {
       const lowerCaseFilter = filterValue.toLowerCase();
       const filteredData = await this.sellerUseCase.getSellersByCodeOrName(lowerCaseFilter);
       this.dataSource = filteredData;
@@ -152,15 +156,13 @@ export class SellerTableComponent {
           this.getDataSource();
         } catch (error: any) {
           this.notification.error('Error al cambiar el estado del vendedor: ' + error.message);
-          console.error('Error toggling seller state:', error);
         }
       }
     });
   }
 
   onPageChange(event: any) {
-    console.log('Page changed:', event);
-    this.pageIndex = event.pageIndex + 1;
+    this.pageIndex = event.pageIndex === 0 ? 1 : event.pageIndex + 1;  
     this.pageSize = event.pageSize;
     this.getDataSource();
   }

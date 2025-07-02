@@ -1,8 +1,24 @@
+<div class="alert-layout">
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      {{ showForm ? 'Ocultar formulario' : 'Crear Pago' }}
+    </button>
+  </div>
+  <div class="layout" [class.column]="isMobile">
+    <div class="form-section" *ngIf="showForm">
+      <div class="form-section">
+        <app-payment-form [paymentObservable]="paymentObservable" [updateTable]="updateTable"></app-payment-form>
+      </div>
+    </div>
+    <div class="table-section">
+    <app-payment-table [paymentObservable]="paymentObservable" [updateTable]="updateTable" [showFormObservable]="showFormObservable"></app-payment-table>
+    </div>
+  </div>
+</div>
+
 <div class="payment-layout">
   <div class="form-section">
-    <app-payment-form [paymentObservable]="paymentObservable" [updateTable]="updateTable"></app-payment-form>
   </div>
   <div class="table-section">
-    <app-payment-table [paymentObservable]="paymentObservable" [updateTable]="updateTable"></app-payment-table>
   </div>
 </div>

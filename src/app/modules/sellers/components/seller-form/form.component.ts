@@ -57,12 +57,10 @@ export class SellerFormComponent {
     }
 
     ngOnDestroy() {
-        if (this.sellerObservable) {
-            this.sellerObservable.unsubscribe();
+        if (this.subscription) {
+            this.subscription.unsubscribe();
         }
-        if (this.updateTable) {
-            this.updateTable.unsubscribe();
-        }
+        // No hacer unsubscribe de los Subjects ya que son manejados por el componente padre
     }
 
     async onSubmit(form: NgForm) {

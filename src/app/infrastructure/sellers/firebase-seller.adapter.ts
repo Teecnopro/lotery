@@ -12,6 +12,7 @@ import {
     orderBy,
     query,
     setDoc,
+    startAfter,
     startAt,
     updateDoc,
     where,
@@ -111,14 +112,85 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     pageIndex: number,
     pageSize: number
   ): Promise<ISeller[]> {
+    // Validar parámetros de entrada
+    if (pageIndex < 1) {
+      throw new Error('pageIndex debe ser mayor o igual a 1');
+    }
+    
+    if (pageSize < 1) {
+      throw new Error('pageSize debe ser mayor a 0');
+    }
+    
     const sellersRef = collection(this.firestore, 'sellers');
-    const q = query(
-      sellersRef,
-      orderBy('createdAt', 'desc'),
-      limit(pageSize)
-    );
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ISeller));
+    
+    // Convertir pageIndex de base 1 a base 0 para los cálculos
+    const zeroBasedPageIndex = pageIndex - 1;
+    
+    // Calcular cuántos documentos saltar
+    const documentsToSkip = zeroBasedPageIndex * pageSize;
+    
+    if (documentsToSkip === 0) {
+      // Primera página - no necesita offset
+      const q = query(
+        sellersRef,
+        orderBy('createdAt', 'desc'),
+        limit(pageSize)
+      );
+      const querySnapshot = await getDocs(q);
+      const results = querySnapshot.docs.map(doc => ({ 
+        uid: doc.id, 
+        ...doc.data() 
+      } as ISeller));
+      
+      return results;
+    } else {
+      // Para páginas posteriores, necesitamos obtener el documento de inicio
+      if (documentsToSkip > 0) {
+        const startQuery = query(
+          sellersRef,
+          orderBy('createdAt', 'desc'),
+          limit(documentsToSkip)
+        );
+        const startSnapshot = await getDocs(startQuery);
+        
+        if (startSnapshot.docs.length < documentsToSkip) {
+          return [];
+        }
+        
+        // Obtener el último documento como punto de inicio
+        const lastDoc = startSnapshot.docs[startSnapshot.docs.length - 1];
+        
+        // Consulta para la página actual
+        const q = query(
+          sellersRef,
+          orderBy('createdAt', 'desc'),
+          startAfter(lastDoc),
+          limit(pageSize)
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const results = querySnapshot.docs.map(doc => ({ 
+          uid: doc.id, 
+          ...doc.data() 
+        } as ISeller));
+        
+        return results;
+      } else {
+        // Fallback a primera página
+        const q = query(
+          sellersRef,
+          orderBy('createdAt', 'desc'),
+          limit(pageSize)
+        );
+        const querySnapshot = await getDocs(q);
+        const results = querySnapshot.docs.map(doc => ({ 
+          uid: doc.id, 
+          ...doc.data() 
+        } as ISeller));
+        
+        return results;
+      }
+    }
   }
 
   async getTotalItems(): Promise<number> {

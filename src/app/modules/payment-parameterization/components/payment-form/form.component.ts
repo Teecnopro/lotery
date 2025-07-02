@@ -60,9 +60,7 @@ export class PaymentFormComponent {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    if (this.updateTable) {
-      this.updateTable.unsubscribe();
-    }
+    // No hacer unsubscribe del updateTable Subject ya que es manejado por el componente padre
   }
 
   async onSubmit(form: NgForm) {

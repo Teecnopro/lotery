@@ -7,13 +7,14 @@ import { MaterialNotificationAdapter } from "../../../shared/infrastructure/mats
 import { SellerUseCase } from "../../../domain/sellers/use-cases";
 import { ISeller } from "../../../domain/sellers/models/seller.model";
 import { Subject } from "rxjs";
-import { Component } from "@angular/core";
+import { Component, OnDestroy } from "@angular/core";
 import { SellerTableComponent } from "../components/seller-table/table.component";
+import { MaterialModule } from "../../../shared/material/material.module";
 
 @Component({
   selector: 'app-seller-page',
   standalone: true,
-  imports: [SellerFormComponent, SellerTableComponent, CommonModule],
+  imports: [SellerFormComponent, SellerTableComponent, CommonModule, MaterialModule],
   providers: [
     {
       provide: SELLER_REPOSITORY,
@@ -28,7 +29,29 @@ import { SellerTableComponent } from "../components/seller-table/table.component
   templateUrl: './seller.page.html',
   styleUrls: ['./seller.page.scss'],
 })
-export class SellerPageComponent {
+export class SellerPageComponent implements OnDestroy {
   sellerObservable: Subject<ISeller> = new Subject<ISeller>();
   updateTable: Subject<boolean> = new Subject<boolean>();
+  showFormObservable: Subject<boolean> = new Subject<boolean>();
+  showForm: boolean = false;
+  isMobile: boolean = false;
+  
+  ngOnInit() {
+    this.showFormObservable.next(false);
+    this.showFormObservable.subscribe((editing) => {
+      this.showForm = editing;
+    });
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    this.showFormObservable.next(this.showForm);
+  }
+
+  ngOnDestroy() {
+    // Cerrar los Subjects cuando el componente padre se destruye
+    this.sellerObservable.complete();
+    this.updateTable.complete();
+    this.showFormObservable.complete();
+  }
 }

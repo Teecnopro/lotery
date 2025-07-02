@@ -21,6 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class AlertTableComponent implements OnInit {
   @Input() alertObservable: Subject<AlertParameterization> | null = null;
   @Input() updateTable: Subject<boolean> | null = null;
+  @Input() showFormObservable: Subject<boolean> | null = null;
   private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
     private dialog = inject(MatDialog);
@@ -67,7 +68,10 @@ export class AlertTableComponent implements OnInit {
   }
 
   editAlert(element: AlertParameterization) {
-    this.alertObservable?.next(element);
+    this.showFormObservable?.next(true);
+    setTimeout(() => {
+      this.alertObservable?.next(element);
+    }, 100);
   }
 
   async deleteAlert(element: AlertParameterization) {
