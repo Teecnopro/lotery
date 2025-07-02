@@ -41,7 +41,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Vendedor</mat-label>
           <mat-select #selectSeller formControlName="seller" (valueChange)="inputNumber.focus()">
-            <mat-option *ngFor="let item of arraySellers" [value]="item"><span>{{ item.seller }}</span></mat-option>
+            <mat-option *ngFor="let item of arraySellers" [value]="item"><span>{{ item.name }}</span></mat-option>
           </mat-select>
         </mat-form-field>
 

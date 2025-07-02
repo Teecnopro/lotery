@@ -32,8 +32,8 @@ export class SellerUseCase {
     async getSellersByCodeOrName(codeOrName: string): Promise<ISeller[]> {
         return this.sellerRepository.getSellersByCodeOrName(codeOrName);
     }
-    async updateState(id: string, state: boolean): Promise<ISeller> {
-        return this.sellerRepository.updateState(id, state);
+    async updateState(uid: string, state: boolean): Promise<ISeller> {
+        return this.sellerRepository.updateState(uid, state);
     }
     async getSellerByPagination(
         page: number,
@@ -44,5 +44,8 @@ export class SellerUseCase {
     async getTotalItems(): Promise<number> {
         const sellers = await this.sellerRepository.getAll();
         return sellers.length;
+    }
+    getSellersActive(): Promise<ISeller[]> {
+        return this.sellerRepository.getSellersActive();
     }
 }

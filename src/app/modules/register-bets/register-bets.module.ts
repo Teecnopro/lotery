@@ -4,6 +4,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { REGISTER_BETS_SERVICE } from '../../domain/register-bets/ports';
 import { FirebaseRegisterBetsAdapter } from '../../infrastructure/register-bets/register-bets.adapter';
 import { RegisterBetsUseCase } from '../../domain/register-bets/use-cases';
+import { SELLER_REPOSITORY } from '../../domain/sellers/ports';
+import { FirebaseSellerAdapter } from '../../infrastructure/sellers/firebase-seller.adapter';
 
 
 
@@ -18,7 +20,12 @@ import { RegisterBetsUseCase } from '../../domain/register-bets/use-cases';
       provide: REGISTER_BETS_SERVICE,
       useClass: FirebaseRegisterBetsAdapter
     },
-    RegisterBetsUseCase
+    {
+      provide: SELLER_REPOSITORY,
+      useClass: FirebaseSellerAdapter
+    },
+    RegisterBetsUseCase,
+    FirebaseSellerAdapter
   ]
 })
 export class RegisterBetsModule { }
