@@ -5,10 +5,63 @@
     </mat-card-header>
 
     <mat-card-content>
-      <ul>
-        <li *ngFor="let item of resume">{{ item.key + ": " + item.value }}</li>
-      </ul>
+      <div>
+        <table
+          mat-table
+          [dataSource]="resume"
+          class="mat-elevation-z8"
+        >
+          <!-- Columna de Dígitos -->
+          <ng-container matColumnDef="lottery">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              style="font-weight: bold;"
+            >
+              {{ element.key }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="records">
+            <th mat-header-cell *matHeaderCellDef>Registros</th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              style="text-align: right"
+            >
+              {{ element.value.totalData }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td
+              mat-cell
+              *matCellDef="let element"
+              style="text-align: right"
+            >
+              <span>{{
+                element.value.cont
+                  | currency : "COP" : "symbol-narrow" : "1.0-0"
+              }}</span>
+            </td>
+          </ng-container>
 
+          <!-- Encabezado y filas -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="table-row"
+            [ngClass]="{
+              'color-total': row.key === 'Total',
+              'color-warning': row.key === 'Advertencias'
+            }"
+          ></tr>
+        </table>
+
+        <!-- <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Seleccionar página de pagos" *ngIf="!loading">
+    </mat-paginator> -->
+      </div>
     </mat-card-content>
   </mat-card>
 </div>

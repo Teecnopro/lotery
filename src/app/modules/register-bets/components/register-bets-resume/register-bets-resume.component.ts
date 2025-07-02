@@ -10,6 +10,7 @@ import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases'
 import { Timestamp } from '@angular/fire/firestore';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-register-bets-resume',
@@ -22,7 +23,8 @@ import { CommonModule } from '@angular/common';
     MatOptionModule,
     MatButtonModule,
     MatCardModule,
-    CommonModule
+    CommonModule,
+    MatTableModule
   ],
   templateUrl: './register-bets-resume.component.html',
   styleUrl: './register-bets-resume.component.scss',
@@ -30,9 +32,14 @@ import { CommonModule } from '@angular/common';
 export class RegisterBetsResumeComponent implements OnInit {
   private registerBetsUseCase = inject(RegisterBetsUseCase);
 
-  resume: any;
+  resume: any = [];
   private defaultDate!: Timestamp;
 
+  displayedColumns: string[] = [
+    'lottery',
+    'records',
+    'total',
+  ];
 
   async ngOnInit() {
     this.registerBetsUseCase.listBets$()?.subscribe((value) => {
