@@ -1,6 +1,6 @@
 .table-container {
   padding: 20px;
-  height: 50%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   max-width: 800px; /* Limitar el ancho máximo */
@@ -20,7 +20,7 @@ table {
 
 // Filas más angostas
 .table-row {
-  height: 32px !important;
+  height: 20px !important;
 }
 
 .mat-mdc-header-row {
@@ -34,7 +34,7 @@ table {
 }
 
 mat-paginator {
-  border-radius: 0 0 8px 8px !important; /* Bordes inferiores redondeados */
+  border-radius: 0 0 8px 8px !important; /* Solo bordes superiores redondeados para la tabla */
   margin-top: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -46,7 +46,6 @@ mat-paginator {
 
 .actions-cell {
   text-align: center;
-  font-size: 15px !important;
   button {
     margin: 0 3px;
     width: 90px !important;
