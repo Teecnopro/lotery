@@ -131,7 +131,7 @@ export class RegisterBetsFormComponent implements OnInit {
       lottery: { id: form.lottery._id, name: form.lottery.name },
       date: Timestamp.fromDate(date),
       lotteryNumber: form.lotteryNumber,
-      seller: { id: form.seller._id, name: form.seller.seller },
+      seller: { id: form.seller.uid, name: form.seller.name },
       combined: form.combined,
       value: form.value,
       createdAt: Timestamp.now(),
