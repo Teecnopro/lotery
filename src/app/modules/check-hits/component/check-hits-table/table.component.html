@@ -1,1 +1,56 @@
-<h1>Tabla</h1>
+<div>
+    <div *ngIf="loading" class="loading-container">
+        <p>Consultando aciertos...</p>
+    </div>
+    
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!loading">
+
+        <!-- Columna de Número -->
+        <ng-container matColumnDef="numero">
+            <th mat-header-cell *matHeaderCellDef> Número </th>
+            <td mat-cell *matCellDef="let element"> {{element.numero}} </td>
+        </ng-container>
+
+        <!-- Columna de Vendedor -->
+        <ng-container matColumnDef="vendedor">
+            <th mat-header-cell *matHeaderCellDef> Vendedor </th>
+            <td mat-cell *matCellDef="let element"> {{element.vendedor}} </td>
+        </ng-container>
+
+        <!-- Columna de Combinado -->
+        <ng-container matColumnDef="combinado">
+            <th mat-header-cell *matHeaderCellDef> Combinado </th>
+            <td mat-cell *matCellDef="let element"> {{element.combinado}} </td>
+        </ng-container>
+
+        <!-- Columna de Valor -->
+        <ng-container matColumnDef="valor">
+            <th mat-header-cell *matHeaderCellDef> Valor </th>
+            <td mat-cell *matCellDef="let element"> ${{element.valor}} </td>
+        </ng-container>
+
+        <!-- Columna de Premio -->
+        <ng-container matColumnDef="premio">
+            <th mat-header-cell *matHeaderCellDef> Premio </th>
+            <td mat-cell *matCellDef="let element" [class.premio-winner]="element.premio > 0"> 
+                <span *ngIf="element.premio > 0; else noPremio">
+                    ${{element.premio}}
+                </span>
+                <ng-template #noPremio>
+                    <span class="no-prize">Sin premio</span>
+                </ng-template>
+            </td>
+        </ng-container>
+
+        <!-- Encabezado y filas -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator 
+        [pageSizeOptions]="[5, 10, 20]" 
+        showFirstLastButtons 
+        aria-label="Seleccionar página de aciertos" 
+        *ngIf="!loading && dataSource.length > 0">
+    </mat-paginator>
+</div>

@@ -1,1 +1,39 @@
-<h1>Formulario de Verificación de Aciertos</h1>
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Consultar Aciertos</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form #checkForm="ngForm" (ngSubmit)="onSubmit(checkForm)" class="check-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fecha</mat-label>
+          <input matInput type="date" name="date" [(ngModel)]="checkData.date" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Lotería</mat-label>
+          <mat-select name="lottery" [(ngModel)]="checkData.lottery" required>
+            <mat-option value="chance">Chance</mat-option>
+            <mat-option value="astro">Astro</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número apostado</mat-label>
+          <input matInput type="text" name="number" [(ngModel)]="checkData.number" required placeholder="Ingrese el número apostado">
+        </mat-form-field>
+
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!checkForm.valid || loading">
+            {{loading ? 'Consultando...' : 'Consultar'}}
+          </button>
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(checkForm)" [disabled]="loading">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

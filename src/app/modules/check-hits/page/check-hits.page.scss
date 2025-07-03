@@ -1,0 +1,42 @@
+.check-hits-page {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  min-height: calc(100vh - 80px);
+  background-color: #fafafa;
+}
+
+.form-section {
+  flex: 0 0 420px;
+  min-width: 320px;
+}
+
+.table-section {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .check-hits-page {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .form-section {
+    flex: none;
+    width: 100%;
+  }
+  
+  .table-section {
+    flex: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .check-hits-page {
+    padding: 12px;
+    gap: 12px;
+  }
+}

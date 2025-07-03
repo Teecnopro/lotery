@@ -1,2 +1,12 @@
-<app-check-hits-form></app-check-hits-form>
-<app-check-hits-table></app-check-hits-table>
+<div class="check-hits-page">
+  <div class="form-section">
+    <app-check-hits-form (searchResults)="onSearchResults($event)"></app-check-hits-form>
+  </div>
+  
+  <div class="table-section">
+    <app-check-hits-table 
+      [dataSource]="searchResults" 
+      [loading]="loading">
+    </app-check-hits-table>
+  </div>
+</div>
