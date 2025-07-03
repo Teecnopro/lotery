@@ -73,3 +73,36 @@
 .toolbar {
   padding: 16px 20px 0;
 }
+
+.options {
+  padding: 10px 20px 10px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: end;
+}
+
+.item-filter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;             // igual a mat-button default
+  padding: 0 16px;          // padding horizontal
+  font-size: 14px;          // tamaño de fuente estándar
+  font-weight: 500;
+  line-height: 36px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  background-color: #e0e0e0;
+  color: #0057a0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.color-selected {
+  background-color: #0057a0;
+  color: #fff;
+  border: 1px solid;
+  border-color: #fff;
+}

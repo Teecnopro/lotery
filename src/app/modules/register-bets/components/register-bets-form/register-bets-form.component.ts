@@ -20,7 +20,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
-import { lotteries, sellers } from '../../mocks/mocks';
+import { sellers } from '../../mocks/mocks';
 import { NgFor } from '@angular/common';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import {
@@ -37,6 +37,7 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import { FirebaseSellerAdapter } from '../../../../infrastructure/sellers/firebase-seller.adapter';
 import { ISeller } from '../../../../domain/sellers/models/seller.model';
+import { lotteries } from '../../../../shared/const';
 
 @Component({
   selector: 'app-register-bets-form',

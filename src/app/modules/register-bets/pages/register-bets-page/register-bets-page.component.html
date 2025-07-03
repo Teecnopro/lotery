@@ -1,14 +1,39 @@
+<div class="options">
+  <button
+    mat-raised-button
+    type="button"
+    color="warn"
+    *ngIf="isDetail"
+    (click)="isDetail = false"
+  >
+    Volver
+  </button>
+  <span
+    *ngFor="let item of filteredOptions"
+    class="item-filter"
+    [ngClass]="{ 'color-selected': item.selected }"
+    (click)="!item.selected ? onFilter(item) : onReset(item)"
+    >{{ !item.selected ? item.nameSelected : item.nameNoSelected }}</span
+  >
+</div>
+
 <div class="layout">
   <div class="form-section">
-    <div class="form-section-column ">
+    <div class="form-section-column">
       <app-register-bets-form></app-register-bets-form>
     </div>
-    <div class="form-section-column ">
+    <div class="form-section-column">
       <app-register-bets-resume></app-register-bets-resume>
     </div>
   </div>
 
   <div class="table-section">
-    <app-register-bets-list></app-register-bets-list>
+    <app-register-bets-list
+      *ngIf="!isDetail"
+      (viewDetail)="isDetail = $event"
+    ></app-register-bets-list>
+    <app-register-bets-list-detail
+      *ngIf="isDetail"
+    ></app-register-bets-list-detail>
   </div>
 </div>

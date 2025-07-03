@@ -1,5 +1,6 @@
 import { Timestamp } from "@angular/fire/firestore";
 import { AuthUser } from "../../auth/models/auth-user.entity";
+import { WhereCondition } from "../../../shared/models/query.entity";
 
 export interface RegisterBetsDetail {
   uid?: string;
@@ -31,4 +32,6 @@ export interface RegisterBets {
 export interface ListBets {
   date: Timestamp,
   lottery: any;
+  whereConditions?: WhereCondition;
+  resetFilter?: boolean;
 }

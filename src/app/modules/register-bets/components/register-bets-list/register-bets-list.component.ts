@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import {
@@ -33,6 +33,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './register-bets-list.component.scss',
 })
 export class RegisterBetsListComponent implements OnInit {
+  @Output() viewDetail = new EventEmitter<boolean>();
+
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
 
@@ -40,9 +42,9 @@ export class RegisterBetsListComponent implements OnInit {
   hasPrev = false;
   loading = false;
 
+  // Paginación
   total = 0; // opcional, si puedes estimar o contar
   pageSize = 25;
-
   currentPageIndex = 0; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
@@ -64,17 +66,33 @@ export class RegisterBetsListComponent implements OnInit {
       if (!value) return;
       this.defaultDate = value.date;
       this.lottery = value.lottery;
-      this.getData('reset');
+
+      let filter;
+
+      if (value.whereConditions) {
+        filter = value.whereConditions;
+      }
+
+      if (value.resetFilter) {
+        filter = undefined;
+      }
+
+      this.getData('reset', filter);
     });
   }
 
-  async getData(direction: 'next' | 'prev' | 'reset' = 'next') {
+  async getData(direction: 'next' | 'prev' | 'reset' = 'next', filter?: WhereCondition) {
     this.loading = true;
 
     this.defaultConditions = [
       ['lottery.id', '==', this.lottery?._id],
       ['date', '==', this.defaultDate],
     ];
+
+    if (filter) {
+      this.defaultConditions.push(filter)
+    }
+
 
     try {
       this.total = await this.registerBetsUseCase.getTotalBets({
@@ -117,5 +135,9 @@ export class RegisterBetsListComponent implements OnInit {
     this.currentPageIndex = newPage;
 
     this.getData(direction);
+  }
+
+  onViewDetail() {
+    this.viewDetail.emit(true);
   }
 }
