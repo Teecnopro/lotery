@@ -1,0 +1,17 @@
+<div class="alert-layout">
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      {{ showForm ? 'Ocultar formulario' : 'Consultar aciertos' }}
+    </button>
+  </div>
+  <div class="layout" [class.column]="isMobile">
+    <div class="form-section" *ngIf="showForm">
+      <div class="form-section">
+    <app-check-hits-form (searchResults)="onSearchResults($event)"></app-check-hits-form>
+      </div>
+    </div>
+    <div class="table-section">
+      <app-check-hits-table [dataSource]="searchResults" [loading]="loading"></app-check-hits-table>
+    </div>
+  </div>
+</div>

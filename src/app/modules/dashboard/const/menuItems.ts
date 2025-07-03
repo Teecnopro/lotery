@@ -15,4 +15,5 @@ export const MENU_ITEMS = [
   },
   { label: 'Registrar apuestas', icon: 'casino', route: 'register-bets', onlyAdmin: false },
   { label: 'Vendedores', icon: 'store', route: 'vendors', onlyAdmin: true },
+  { label: 'Consultar aciertos', icon: 'check_circle', route: 'check-hits', onlyAdmin: false },
 ];
