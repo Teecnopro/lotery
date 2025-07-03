@@ -8,7 +8,7 @@ import {
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,7 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
     DatePipe,
     CommonModule,
     MatIconModule,
-    CurrencyPipe
+    CurrencyPipe,
   ],
   templateUrl: './register-bets-list.component.html',
   styleUrl: './register-bets-list.component.scss',
@@ -35,6 +35,11 @@ export class RegisterBetsListComponent implements OnInit {
   hasNext = false;
   hasPrev = false;
   loading = false;
+
+  total = 0; // opcional, si puedes estimar o contar
+  pageSize = 25;
+
+  currentPageIndex = 0; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
   private defaultDate!: Timestamp;
@@ -69,8 +74,13 @@ export class RegisterBetsListComponent implements OnInit {
     ];
 
     try {
+      this.total = await this.registerBetsUseCase.getTotalBets({
+        whereConditions: this.defaultConditions,
+      });
+
       const { data, hasNext, hasPrev } =
         await this.registerBetsUseCase.getRegisterBetsByQuery({
+          pageSize: this.pageSize,
           direction,
           whereConditions: this.defaultConditions,
         });
@@ -86,5 +96,23 @@ export class RegisterBetsListComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  onPageChange(event: PageEvent) {
+    const newPage = event.pageIndex;
+
+    let direction: 'next' | 'prev' | 'reset' = 'next';
+
+    if (newPage === 0 && this.currentPageIndex !== 0) {
+      direction = 'reset';
+    } else if (newPage > this.currentPageIndex) {
+      direction = 'next';
+    } else if (newPage < this.currentPageIndex) {
+      direction = 'prev';
+    }
+
+    this.currentPageIndex = newPage;
+
+    this.getData(direction);
   }
 }

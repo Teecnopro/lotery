@@ -48,9 +48,14 @@
         mat-cell
         *matCellDef="let element"
         [ngClass]="{ 'warning-color': element.warning }"
-        style="text-align: right;"
+        style="text-align: right"
       >
-        <mat-icon color="warn" [ngClass]="{ 'icon-warning': element.warning }" *ngIf="element.warning">warning</mat-icon>
+        <mat-icon
+          color="warn"
+          [ngClass]="{ 'icon-warning': element.warning }"
+          *ngIf="element.warning"
+          >warning</mat-icon
+        >
         <span [ngClass]="{ 'text-warning': element.warning }">{{
           element.groupedValue | currency : "COP" : "symbol-narrow" : "1.0-0"
         }}</span>
@@ -75,6 +80,11 @@
     ></tr>
   </table>
 
-  <!-- <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Seleccionar página de pagos" *ngIf="!loading">
-    </mat-paginator> -->
+  <mat-paginator
+    [length]="total"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[25, 50, 75]"
+    (page)="onPageChange($event)"
+  >
+  </mat-paginator>
 </div>

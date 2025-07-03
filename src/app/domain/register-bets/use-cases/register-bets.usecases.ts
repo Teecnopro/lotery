@@ -34,4 +34,8 @@ export class RegisterBetsUseCase {
   getDataToResume(query: FirebaseQuery): Promise<any> {
     return this.registerBets.getDataToResume(query);
   }
+
+  async getTotalBets(query: FirebaseQuery): Promise<number> {
+    return this.registerBets.getTotalBets(query);
+  }
 }

@@ -9,6 +9,7 @@ import {
   doc,
   DocumentData,
   Firestore,
+  getCountFromServer,
   getDoc,
   getDocs,
   limit,
@@ -33,7 +34,8 @@ import { BehaviorSubject, concatMapTo, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
-  private betsSubject: BehaviorSubject<ListBets | null> = new BehaviorSubject<ListBets | null>(null);
+  private betsSubject: BehaviorSubject<ListBets | null> =
+    new BehaviorSubject<ListBets | null>(null);
 
   private tope = 12000;
   private pageSize = 25;
@@ -71,6 +73,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   async getByQuery({
     direction,
     whereConditions,
+    pageSize,
   }: FirebaseQuery): Promise<ResponseQuery<RegisterBets>> {
     const betRef = collection(this.firestore, 'register-bets');
 
@@ -100,7 +103,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       this.currentIndex -= 2; // retrocede manualmente
     }
 
-    constraints.push(limit(this.pageSize));
+    constraints.push(limit(pageSize || this.pageSize));
 
     q = query(betRef, ...constraints);
 
@@ -115,9 +118,26 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       this.history[this.currentIndex] = snapshot.docs[snapshot.docs.length - 1];
     }
 
-    this.hasNext = snapshot.docs.length === this.pageSize;
+    this.hasNext = snapshot.docs.length === (pageSize || this.pageSize);
 
     return { data, hasNext: this.hasNext, hasPrev: this.currentIndex > 0 };
+  }
+
+  async getTotalBets({ whereConditions }: FirebaseQuery): Promise<number> {
+    const betRef = collection(this.firestore, 'register-bets');
+
+    // Aplicando filtros
+    const constraints: QueryConstraint[] = [];
+
+    for (const [field, op, value] of whereConditions) {
+      constraints.push(where(field, op, value));
+    }
+
+    const q = query(betRef, ...constraints);
+
+    const snapshot = await getCountFromServer(q);
+
+    return snapshot.data().count;
   }
 
   async getByQueryDetail({
@@ -228,9 +248,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     );
   }
 
-  async getDataToResume({
-    whereConditions,
-  }: FirebaseQuery): Promise<any> {
+  async getDataToResume({ whereConditions }: FirebaseQuery): Promise<any> {
     const betRef = collection(this.firestore, 'register-bets-detail');
 
     // Aplicando filtros
@@ -257,13 +275,18 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       if (objParse[item?.lottery?.name as string]) continue;
 
       // Filtrar por lotería
-      const lotteryFiltered = data.filter(bet => bet?.lottery?.name === item.lottery?.name);
+      const lotteryFiltered = data.filter(
+        (bet) => bet?.lottery?.name === item.lottery?.name
+      );
 
-      objParse[item?.lottery?.name as string] = this.getTotalResume(lotteryFiltered);
+      objParse[item?.lottery?.name as string] =
+        this.getTotalResume(lotteryFiltered);
     }
 
-    objParse["Total"] = this.getTotalResume(data);
-    objParse["Advertencias"] = this.getTotalResume(data.filter(item => item.warning));
+    objParse['Total'] = this.getTotalResume(data);
+    objParse['Advertencias'] = this.getTotalResume(
+      data.filter((item) => item.warning)
+    );
 
     return objParse;
   }
@@ -274,6 +297,6 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       cont += item.value as number;
     }
 
-    return {cont, totalData: data.length};
+    return { cont, totalData: data.length };
   }
 }

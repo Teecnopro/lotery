@@ -7,6 +7,7 @@ export interface FirebaseQuery {
   cursor?: QueryDocumentSnapshot<DocumentData>,
   direction?: 'next' | 'prev' | 'reset',
   whereConditions: WhereCondition[];
+  pageSize?: number;
 }
 
 export interface ResponseQuery<T> {
