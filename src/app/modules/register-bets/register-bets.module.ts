@@ -6,6 +6,10 @@ import { FirebaseRegisterBetsAdapter } from '../../infrastructure/register-bets/
 import { RegisterBetsUseCase } from '../../domain/register-bets/use-cases';
 import { SELLER_REPOSITORY } from '../../domain/sellers/ports';
 import { FirebaseSellerAdapter } from '../../infrastructure/sellers/firebase-seller.adapter';
+import { ALERT_PARAMETERIZATION_SERVICE } from '../../domain/alert-parameterization/ports';
+import { FirebaseAlertParameterizationAdapter } from '../../infrastructure/alert-parameterization/alert-parameterization.adapter';
+import { SellerUseCase } from '../../domain/sellers/use-cases';
+import { AlertParameterizationUseCase } from '../../domain/alert-parameterization/use-cases';
 
 
 
@@ -24,8 +28,13 @@ import { FirebaseSellerAdapter } from '../../infrastructure/sellers/firebase-sel
       provide: SELLER_REPOSITORY,
       useClass: FirebaseSellerAdapter
     },
+    {
+      provide: ALERT_PARAMETERIZATION_SERVICE,
+      useClass: FirebaseAlertParameterizationAdapter // Assuming FirebaseSellerAdapter implements ALERT_PARAMETERIZATION_SERVICE
+    },
     RegisterBetsUseCase,
-    FirebaseSellerAdapter
+    SellerUseCase,
+    AlertParameterizationUseCase
   ]
 })
 export class RegisterBetsModule { }

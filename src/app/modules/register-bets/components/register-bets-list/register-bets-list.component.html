@@ -50,7 +50,8 @@
         [ngClass]="{ 'warning-color': element.warning }"
         style="text-align: right;"
       >
-        <mat-icon color="warn" [ngClass]="{ 'icon-warning': element.warning }" *ngIf="element.warning">warning</mat-icon>
+        <mat-icon 
+          matTooltip="{{ element.alertDescription ? element.alertDescription : '' }}" color="warn" [ngClass]="{ 'icon-warning': element.warning }" *ngIf="element.warning">warning</mat-icon>
         <span [ngClass]="{ 'text-warning': element.warning }">{{
           element.groupedValue | currency : "COP" : "symbol-narrow" : "1.0-0"
         }}</span>

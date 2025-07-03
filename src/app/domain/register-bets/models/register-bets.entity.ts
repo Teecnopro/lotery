@@ -23,6 +23,7 @@ export interface RegisterBets {
   groupedValue?: number;
   combined?: boolean;
   warning?: boolean;
+  alertDescription: string | undefined | null
   date?: Timestamp;
   updatedAt?: Timestamp;
 }

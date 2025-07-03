@@ -30,6 +30,7 @@ import {
 } from '../../domain/register-bets/models/register-bets.entity';
 import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
 import { BehaviorSubject, concatMapTo, Observable } from 'rxjs';
+import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
@@ -41,6 +42,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   // Pagination
   history: QueryDocumentSnapshot<DocumentData>[] = [];
   currentIndex = -1;
+  alertList: AlertParameterization[] = []
   private hasNext = false;
 
   constructor(private firestore: Firestore) {}
@@ -180,14 +182,15 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     data: RegisterBetsDetail,
     total: number
   ): Promise<void> {
-    const warning = total >= this.tope;
+    const warning = this.validateAlert(data.lotteryNumber!, total)
 
     const dataGroupedBets: RegisterBets = {
       lotteryNumber: data.lotteryNumber,
       lottery: data.lottery,
       groupedValue: total,
       combined: data.combined,
-      warning,
+      warning: warning.isAlert,
+      alertDescription: warning.description,
       date: data.date,
       updatedAt: data.updatedAt,
     };
@@ -275,5 +278,16 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
 
     return {cont, totalData: data.length};
+  }
+
+    async getAlerts(){
+    const alerts = localStorage.getItem('alertDataSource');
+    this.alertList = alerts ? JSON.parse(alerts) : [];
+  }
+
+  validateAlert(lotteryNumber: string, groupedValue: number){
+    if (!this.alertList || this.alertList.length === 0) return {isAlert: false, description: "No hay alertas disponibles"};
+    const alert = this.alertList.find(alert => groupedValue >= alert.value! && alert.digits === lotteryNumber?.length);
+    return {isAlert: !!alert, description: alert?.description} as { isAlert: boolean; description: string};
   }
 }

@@ -12,6 +12,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
+import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-register-bets-list',
@@ -23,7 +26,8 @@ import { MatIconModule } from '@angular/material/icon';
     DatePipe,
     CommonModule,
     MatIconModule,
-    CurrencyPipe
+    CurrencyPipe,
+    MatTooltipModule
   ],
   templateUrl: './register-bets-list.component.html',
   styleUrl: './register-bets-list.component.scss',
@@ -55,7 +59,6 @@ export class RegisterBetsListComponent implements OnInit {
       if (!value) return;
       this.defaultDate = value.date;
       this.lottery = value.lottery;
-
       this.getData('reset');
     });
   }
