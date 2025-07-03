@@ -12,6 +12,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-register-bets-list',
@@ -24,6 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     MatIconModule,
     CurrencyPipe,
+    MatTooltipModule
   ],
   templateUrl: './register-bets-list.component.html',
   styleUrl: './register-bets-list.component.scss',
