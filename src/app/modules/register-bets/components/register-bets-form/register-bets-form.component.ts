@@ -35,6 +35,10 @@ import {
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { WhereCondition } from '../../../../shared/models/query.entity';
+import { FirebaseSellerAdapter } from '../../../../infrastructure/sellers/firebase-seller.adapter';
+import { ISeller } from '../../../../domain/sellers/models/seller.model';
+import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
+import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Component({
   selector: 'app-register-bets-form',
@@ -60,6 +64,7 @@ export class RegisterBetsFormComponent implements OnInit {
   @ViewChild('lotterySelect') lotterySelect!: MatSelect;
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
+  private sellersUseCase = inject(FirebaseSellerAdapter);
 
   private formBuilder = inject(FormBuilder);
 
@@ -80,7 +85,7 @@ export class RegisterBetsFormComponent implements OnInit {
   });
 
   arrayLotteries = lotteries;
-  arraySellers = sellers;
+  arraySellers: ISeller[] = [];
 
   constructor() {}
 
@@ -96,6 +101,7 @@ export class RegisterBetsFormComponent implements OnInit {
       date: this.defaultDate,
       lottery: this.registerBetForm.get('lottery')?.value,
     });
+    this.getSellers();
   }
 
   activeDeactiveSelect(action: 'active' | 'deactive'): void {
@@ -125,7 +131,7 @@ export class RegisterBetsFormComponent implements OnInit {
       lottery: { id: form.lottery._id, name: form.lottery.name },
       date: Timestamp.fromDate(date),
       lotteryNumber: form.lotteryNumber,
-      seller: { id: form.seller._id, name: form.seller.seller },
+      seller: { id: form.seller.uid, name: form.seller.name },
       combined: form.combined,
       value: form.value,
       createdAt: Timestamp.now(),
@@ -146,5 +152,9 @@ export class RegisterBetsFormComponent implements OnInit {
       date: Timestamp.fromDate(date),
       lottery: form.lottery,
     });
+  }
+
+  async getSellers() {
+    this.arraySellers = await this.sellersUseCase.getSellersActive();
   }
 }

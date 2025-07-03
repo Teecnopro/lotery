@@ -56,7 +56,7 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
 
   async update(uid: string, seller: ISeller): Promise<ISeller> {
     const sellerRef = doc(this.firestore, 'sellers', uid);
-    const { id, ...sellerData } = seller;
+    const { ...sellerData } = seller;
     await updateDoc(sellerRef, sellerData);
     return seller;
   }
@@ -197,5 +197,12 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     const sellersRef = collection(this.firestore, 'sellers');
     const querySnapshot = await getDocs(sellersRef);
     return querySnapshot.size;
+  }
+
+  async getSellersActive(): Promise<ISeller[]> {
+    const sellersRef = collection(this.firestore, 'sellers');
+    const q = query(sellersRef, where('state', '==', true));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ISeller));
   }
 }

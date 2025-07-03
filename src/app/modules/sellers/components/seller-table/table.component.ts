@@ -147,11 +147,13 @@ export class SellerTableComponent {
         message: seller.state ? '¿Desea desactivar este vendedor?' : '¿Desea activar este vendedor?',
       },
     });
+    console.log(seller);
+    
 
     firstValueFrom(dialogRef.afterClosed()).then(async confirmed => {
       if (confirmed) {
         try {
-          await this.sellerUseCase.updateState(seller.id!, !seller.state);
+          await this.sellerUseCase.updateState(seller.uid!, !seller.state);
           this.notification.success(`Vendedor ${!seller.state ? 'activado' : 'desactivado'} exitosamente`);
           this.getDataSource();
         } catch (error: any) {

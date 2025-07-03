@@ -51,10 +51,12 @@
         style="text-align: right"
       >
         <mat-icon
+          matTooltip="{{
+            element.alertDescription ? element.alertDescription : ''
+          }}"
           color="warn"
           [ngClass]="{ 'icon-warning': element.warning }"
           *ngIf="element.warning"
-          matTooltip="Valor mayor al tope mínimo"
           >warning</mat-icon
         >
         <span [ngClass]="{ 'text-warning': element.warning }">{{
