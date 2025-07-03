@@ -12,13 +12,12 @@
           <input matInput type="date" name="date" [(ngModel)]="checkData.date" required>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Lotería</mat-label>
-          <mat-select name="lottery" [(ngModel)]="checkData.lottery" required>
-            <mat-option value="chance">Chance</mat-option>
-            <mat-option value="astro">Astro</mat-option>
-          </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Lotería</mat-label>
+              <mat-select #lotterySelect name="lottery" [(ngModel)]="checkData.lottery" required>
+                <mat-option *ngFor="let item of lotteries" [value]="item._id"><span [style.color]="item.color">{{ item.name }}</span></mat-option>
+              </mat-select>
+            </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Número apostado</mat-label>

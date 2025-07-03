@@ -37,8 +37,6 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import { FirebaseSellerAdapter } from '../../../../infrastructure/sellers/firebase-seller.adapter';
 import { ISeller } from '../../../../domain/sellers/models/seller.model';
-import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
-import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Component({
   selector: 'app-register-bets-form',

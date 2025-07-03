@@ -1,0 +1,1 @@
+export { lotteries } from './lotery';
