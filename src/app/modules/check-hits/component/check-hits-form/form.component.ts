@@ -6,6 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MaterialModule } from '../../../../shared/material/material.module';
 
 interface CheckData {
   date: string;
@@ -25,7 +26,8 @@ interface CheckData {
       MatSelectModule,
       MatButtonModule,
       FormsModule,
-      CommonModule
+      CommonModule,
+      MaterialModule
     ]
 })
 export class CheckHitsFormComponent {
