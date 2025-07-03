@@ -60,6 +60,16 @@ export const routesDashboard: Routes = [
           title: 'Vendedores',
         },
       },
+      {
+        path: 'check-hits',
+        loadChildren: () =>
+          import('../check-hits/check-hits.routes').then(
+            (m) => m.routesCheckHits
+          ),
+        data: {
+          title: 'Consultar aciertos',
+        },
+      },
     ],
   },
 ];
