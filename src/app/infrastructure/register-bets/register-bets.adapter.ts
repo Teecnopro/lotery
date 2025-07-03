@@ -88,7 +88,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       constraints.push(where(field, op, value));
     }
 
-    constraints.push(orderBy('updatedAt', 'desc'));
+    constraints.push(orderBy('warning', 'desc'));
 
     const cursor = this.history[this.currentIndex] ?? undefined;
 
