@@ -23,7 +23,9 @@ import { MaterialModule } from '../../../shared/material/material.module';
         <app-user-form></app-user-form>
       </div>
       <div class="table-section">
-        <app-user-list [showFormObservable]="showFormObservable"></app-user-list>
+        <app-user-list
+          [showFormObservable]="showFormObservable"
+        ></app-user-list>
       </div>
     </div>`,
 })
