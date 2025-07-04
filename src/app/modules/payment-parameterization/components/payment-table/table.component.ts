@@ -63,13 +63,6 @@ export class PaymentTableComponent implements OnInit {
     this.loading = true;
     try {
       const dataSource = await this.paymentParameterizationUseCase.listPaymentParameterizations();
-      const copyDataSource = [JSON.parse(JSON.stringify(dataSource))] as PaymentParameterization[];
-      localStorage.removeItem('paymentDataSource');
-      localStorage.setItem('paymentDataSource', JSON.stringify(copyDataSource.map(payment => {
-        delete payment.uid;
-        return payment;
-      }
-      )));
       this.dataSource = dataSource;
     } catch (error: any) {
       console.error('Error fetching payment parameterizations:', error);

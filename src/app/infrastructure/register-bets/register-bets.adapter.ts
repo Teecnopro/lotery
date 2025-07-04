@@ -20,6 +20,7 @@ import {
   setDoc,
   startAfter,
   startAt,
+  Timestamp,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
@@ -323,9 +324,16 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     const zeroBasedPageIndex = pageIndex - 1;
     const constraints: QueryConstraint[] = [];
 
-    if (queries) {
-      for (const [field, value] of Object.entries(queries)) {
-        constraints.push(where(field, '==', value));
+    if (queries && queries.length > 0) {
+      const fields = ["date", "lottery.id", "lotteryNumber"];
+      for (const field of fields) {
+        let value = queries.find(q => q[field])!;
+        if (field === "date") {
+          const date = new Date(`${value[field]}T00:00:00`);
+          constraints.push(where(field, '>=', Timestamp.fromDate(date)));
+        } else {
+          constraints.push(where(field, '==', value[field]));
+        }
       }
     }
 

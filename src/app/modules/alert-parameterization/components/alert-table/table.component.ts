@@ -51,13 +51,6 @@ export class AlertTableComponent implements OnInit {
     this.loading = true;
     try {
       const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
-      const copyDataSource = JSON.parse(JSON.stringify(dataSource)) as AlertParameterization[];
-      localStorage.removeItem('alertDataSource');
-      localStorage.setItem('alertDataSource', JSON.stringify(copyDataSource.map(alert => {
-        delete alert.uid;
-        delete alert.id;
-        return alert;
-      })));
       this.dataSource = dataSource;
       this.loading = false;
     } catch (error: any) {

@@ -7,6 +7,7 @@ import { PaymentParameterization } from '../../../../domain/payment-parameteriza
 import { FirebaseQuery } from '../../../../shared/models/query.entity';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-check-hits-table',
@@ -20,6 +21,7 @@ import { RegisterBetsDetail } from '../../../../domain/register-bets/models/regi
     ]
 })
 export class CheckHitsTableComponent {
+    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
     @Input() loading = false;
     private registerBetsUseCase = inject(RegisterBetsUseCase);
     private notification = inject(NOTIFICATION_PORT);
@@ -35,6 +37,9 @@ export class CheckHitsTableComponent {
     async ngOnInit() {
         await this.getDataSource();
         this.getPaymentParameterization();
+        this.queries.subscribe(async (queries) => {
+            await this.getDataSource(queries);
+        });
     }
 
     ngOnDestroy() {
@@ -46,6 +51,7 @@ export class CheckHitsTableComponent {
             this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
             this.totalItems = await this.registerBetsUseCase.getTotalBetsByQueries(queries);
         } catch (error: any) {
+            console.log('Error al cargar los vendedores:', error);
             this.notification.error('Error al cargar los vendedores: ' + error.message);
         } finally {
             this.loading = false;
@@ -67,5 +73,10 @@ export class CheckHitsTableComponent {
         this.pageIndex = event.pageIndex === 0 ? 1 : event.pageIndex + 1;
         this.pageSize = event.pageSize;
         this.getDataSource();
+    }
+
+    calculatePrize(bet: RegisterBetsDetail): number {
+        const payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === bet.combined);
+        return bet.value! * payment?.amount! || bet.value!;
     }
 }

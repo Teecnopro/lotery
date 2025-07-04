@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ChangeDetectorRef } from '@angular/core';
+import { Component, EventEmitter, Output, ChangeDetectorRef, Input, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,11 +8,13 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { lotteries } from '../../../../shared/const'; // Adjust the import path as necessary
+import { Subject } from 'rxjs';
+import { NOTIFICATION_PORT } from '../../../../shared/ports';
 
 interface CheckData {
     date: string;
     lottery: string;
-    number: string;
+    lotteryNumber: string;
 }
 
 @Component({
@@ -33,17 +35,20 @@ interface CheckData {
 })
 export class CheckHitsFormComponent {
     @Output() searchResults = new EventEmitter<any>();
+    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
+
+    private notification = inject(NOTIFICATION_PORT);
 
     checkData: CheckData = {
         date: '',
         lottery: '',
-        number: ''
+        lotteryNumber: ''
     };
 
     loading = false;
     lotteries = lotteries; // Assuming lotteries is an array of lottery objects
 
-    constructor(private ChangeDetectorRef: ChangeDetectorRef) {}
+    constructor(private ChangeDetectorRef: ChangeDetectorRef) { }
 
     ngOnInit(): void {
         this.checkData.lottery = lotteries[0]._id;
@@ -51,8 +56,17 @@ export class CheckHitsFormComponent {
     }
 
     onSubmit(form: NgForm): void {
+        if (!form.valid) {
+            this.notification.error('Por favor, complete todos los campos requeridos');
+            return;
+        }
         if (form.valid) {
-            this.loading = true;
+            const query: { [key: string]: any }[] = [
+                { "date": form.value.date },
+                { "lottery.id": form.value.lottery },
+                { "lotteryNumber": form.value.lotteryNumber }
+            ]
+            this.queries.next(query);
         }
     }
 
@@ -61,8 +75,8 @@ export class CheckHitsFormComponent {
         this.checkData = {
             date: '',
             lottery: '',
-            number: ''
+            lotteryNumber: ''
         };
-        // No emitir array vacío, dejar que la tabla muestre sus datos por defecto
+        this.queries.next([]);
     }
 }
