@@ -13,6 +13,7 @@ import {
   getDoc,
   getDocs,
   limit,
+  or,
   orderBy,
   query,
   QueryConstraint,
@@ -331,7 +332,18 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
         if (field === "date") {
           const date = new Date(`${value[field]}T00:00:00`);
           constraints.push(where(field, '>=', Timestamp.fromDate(date)));
-        } else {
+        } else if (field === "lotteryNumber") {
+          const lotteryNumberQueries = []
+          let copyValue = value[field];
+          lotteryNumberQueries.push(where('lotteryNumber', '==', copyValue));
+          for (let i = 0; i < value[field].length; i++) {
+            const query = copyValue.slice(i + 1);
+            if(query.length !== 0) {
+              lotteryNumberQueries.push(where('lotteryNumber', '==', query));
+            }
+          }
+          constraints.push(where('lotteryNumber', '==', value[field]));
+        }else {
           constraints.push(where(field, '==', value[field]));
         }
       }
@@ -391,5 +403,9 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     const q = query(betRef, ...constraints);
     const countSnapshot = await getCountFromServer(q);
     return countSnapshot.data().count;
+  }
+
+  returnOrQueries(lotteryNumber: string) {
+    
   }
 }

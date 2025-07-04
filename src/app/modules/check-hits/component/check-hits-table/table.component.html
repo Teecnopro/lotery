@@ -19,8 +19,8 @@
 
         <!-- Columna de Combinado -->
         <ng-container matColumnDef="combinado">
-            <th mat-header-cell *matHeaderCellDef> Combinado </th>
-            <td mat-cell *matCellDef="let element"> {{element.combined}} </td>
+            <th mat-header-cell *matHeaderCellDef> ¿Combinado? </th>
+            <td mat-cell *matCellDef="let element"> {{element.combined ? "Si" : "No"}} </td>
         </ng-container>
 
         <!-- Columna de Valor -->
