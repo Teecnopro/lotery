@@ -12,12 +12,17 @@ import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
 
 import { NOTIFICATION_PORT } from '../ports';
 import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
+import { getSpanishPaginatorIntl } from '../function/mat-paginator-intl-es';
 
 @NgModule({
   exports: [
@@ -36,12 +41,14 @@ import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notif
     MatPaginatorModule,
     MatDialogModule,
     MatChipsModule,
+    MatSelectModule,
   ],
   providers: [
     {
       provide: NOTIFICATION_PORT,
       useClass: MaterialNotificationAdapter,
     },
+    { provide: MatPaginatorIntl, useFactory: getSpanishPaginatorIntl },
   ],
 })
 export class MaterialModule {}
