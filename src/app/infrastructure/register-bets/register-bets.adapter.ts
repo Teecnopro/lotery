@@ -395,9 +395,27 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   ): Promise<number> {
     const betRef = collection(this.firestore, 'register-bets-detail');
     const constraints: QueryConstraint[] = [];
-    if (queries) {
-      for (const [field, value] of Object.entries(queries)) {
-        constraints.push(where(field, '==', value));
+    if (queries && queries.length > 0) {
+      const fields = ["date", "lottery.id", "lotteryNumber"];
+      for (const field of fields) {
+        let value = queries.find(q => q[field])!;
+        if (field === "date") {
+          const date = new Date(`${value[field]}T00:00:00`);
+          constraints.push(where(field, '>=', Timestamp.fromDate(date)));
+        } else if (field === "lotteryNumber") {
+          const lotteryNumberQueries = []
+          let copyValue = value[field];
+          lotteryNumberQueries.push(where('lotteryNumber', '==', copyValue));
+          for (let i = 0; i < value[field].length; i++) {
+            const query = copyValue.slice(i + 1);
+            if(query.length !== 0) {
+              lotteryNumberQueries.push(where('lotteryNumber', '==', query));
+            }
+          }
+          constraints.push(where('lotteryNumber', '==', value[field]));
+        }else {
+          constraints.push(where(field, '==', value[field]));
+        }
       }
     }
     const q = query(betRef, ...constraints);
