@@ -323,34 +323,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   ): Promise<RegisterBetsDetail[]> {
     const betRef = collection(this.firestore, 'register-bets-detail');
     const zeroBasedPageIndex = pageIndex - 1;
-    const constraints: QueryConstraint[] = [];
-
-    if (queries && queries.length > 0) {
-      const fields = ["date", "lottery.id", "lotteryNumber"];
-      for (const field of fields) {
-        let value = queries.find(q => q[field])!;
-        if (field === "date") {
-          const date = new Date(`${value[field]}T00:00:00`);
-          constraints.push(where(field, '>=', Timestamp.fromDate(date)));
-        } else if (field === "lotteryNumber") {
-          const lotteryNumberQueries = []
-          let copyValue = value[field];
-          lotteryNumberQueries.push(where('lotteryNumber', '==', copyValue));
-          for (let i = 0; i < value[field].length; i++) {
-            const query = copyValue.slice(i + 1);
-            if(query.length !== 0) {
-              lotteryNumberQueries.push(where('lotteryNumber', '==', query));
-            }
-          }
-          constraints.push(where('lotteryNumber', '==', value[field]));
-        }else {
-          constraints.push(where(field, '==', value[field]));
-        }
-      }
-    }
-
+    const constraints: QueryConstraint[] = (queries && queries.length > 0) ? this.returnQueries(queries) : [];
     constraints.push(orderBy('date', 'desc'));
-
     if (zeroBasedPageIndex === 0) {
       // Primera página
       const q = query(
@@ -394,36 +368,58 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     queries?: { [key: string]: string }[],
   ): Promise<number> {
     const betRef = collection(this.firestore, 'register-bets-detail');
-    const constraints: QueryConstraint[] = [];
-    if (queries && queries.length > 0) {
-      const fields = ["date", "lottery.id", "lotteryNumber"];
-      for (const field of fields) {
-        let value = queries.find(q => q[field])!;
-        if (field === "date") {
-          const date = new Date(`${value[field]}T00:00:00`);
-          constraints.push(where(field, '>=', Timestamp.fromDate(date)));
-        } else if (field === "lotteryNumber") {
-          const lotteryNumberQueries = []
-          let copyValue = value[field];
-          lotteryNumberQueries.push(where('lotteryNumber', '==', copyValue));
-          for (let i = 0; i < value[field].length; i++) {
-            const query = copyValue.slice(i + 1);
-            if(query.length !== 0) {
-              lotteryNumberQueries.push(where('lotteryNumber', '==', query));
-            }
-          }
-          constraints.push(where('lotteryNumber', '==', value[field]));
-        }else {
-          constraints.push(where(field, '==', value[field]));
-        }
-      }
-    }
+    const constraints: QueryConstraint[] = (queries && queries.length > 0) ? this.returnQueries(queries) : [];
     const q = query(betRef, ...constraints);
     const countSnapshot = await getCountFromServer(q);
     return countSnapshot.data().count;
   }
 
-  returnOrQueries(lotteryNumber: string) {
-    
+  returnQueries(queries: { [key: string]: string }[]): QueryConstraint[] {
+    const constraints: QueryConstraint[] = [];
+    const fields = ["date", "lottery.id", "lotteryNumber"];
+    for (const field of fields) {
+      let value = queries.find(q => q[field])!;
+      if (field === "date") {
+        const date = new Date(`${value[field]}T00:00:00`);
+        constraints.push(where(field, '>=', Timestamp.fromDate(date)));
+      } else if (field === "lotteryNumber") {
+        const lotteryNumberQueries = []
+        let copyValue = value[field];
+        lotteryNumberQueries.push(copyValue);
+        for (let i = 0; i < value[field].length; i++) {
+          const query = copyValue.slice(i + 1);
+          if (query.length !== 0) {
+            lotteryNumberQueries.push(query);
+          }
+        }
+        if(value[field].length >= 3 && value[field].length <= 4) {
+          const combinations = this.permute(value[field]);
+          combinations.forEach(comb => {
+            lotteryNumberQueries.push(comb);
+          });
+        }
+        constraints.push(where('lotteryNumber', 'in', lotteryNumberQueries));
+      }else {
+        constraints.push(where(field, '==', value[field]));
+      }
+    }
+    return constraints
+  }
+
+  permute(str: string): string[] {
+    const results = new Set<string>();
+    function generate(arr: string[], l: number, r: number) {
+      if (l === r) {
+        results.add(arr.join(""));
+      } else {
+        for (let i = l; i <= r; i++) {
+          [arr[l], arr[i]] = [arr[i], arr[l]]; // swap
+          generate([...arr], l + 1, r);        // llamada recursiva con copia del array
+          // No es necesario deshacer el swap por usar copia [...arr]
+        }
+      }
+    }
+    generate(str.split(""), 0, str.length - 1);
+    return Array.from(results);
   }
 }
