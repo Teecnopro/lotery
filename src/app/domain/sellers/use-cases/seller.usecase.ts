@@ -37,9 +37,10 @@ export class SellerUseCase {
     }
     async getSellerByPagination(
         page: number,
-        pageSize: number
+        pageSize: number,
+        queries?: { [key: string]: string }[]
     ): Promise<ISeller[]> {
-        return this.sellerRepository.getSellerByPagination(page, pageSize);
+        return this.sellerRepository.getSellerByPagination(page, pageSize, queries);
     }
     async getTotalItems(): Promise<number> {
         const sellers = await this.sellerRepository.getAll();

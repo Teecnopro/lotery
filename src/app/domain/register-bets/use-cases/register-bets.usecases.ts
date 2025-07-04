@@ -38,4 +38,16 @@ export class RegisterBetsUseCase {
   async getTotalBets(query: FirebaseQuery): Promise<number> {
     return this.registerBets.getTotalBets(query);
   }
+
+  async getBetsByPagination(
+    pageIndex: number,
+    pageSize: number,
+    queries?: { [key: string]: string }[],
+  ): Promise<RegisterBetsDetail[]> {
+    return this.registerBets.getBetsByPagination(pageIndex, pageSize, queries);
+  }
+
+  async getTotalBetsByQueries(queries?: { [key: string]: string }[]): Promise<number> {
+    return this.registerBets.getTotalBetsQueries(queries);
+  }
 }

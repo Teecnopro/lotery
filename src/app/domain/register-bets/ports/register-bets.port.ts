@@ -21,4 +21,10 @@ export interface RegisterBetsServicePort {
   updateList$(data: ListBets): void;
   getDataToResume(query: FirebaseQuery): Promise<any>;
   getTotalBets(query: FirebaseQuery): Promise<number>;
+  getBetsByPagination(
+    pageIndex: number,
+    pageSize: number,
+    queries?: {[key: string]: string}[],
+  ): Promise<RegisterBetsDetail[]>;
+  getTotalBetsQueries(queries?: {[key: string]: string}[]): Promise<number>;
 }

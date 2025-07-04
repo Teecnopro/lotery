@@ -87,7 +87,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     // Aplicando filtros
     const constraints: QueryConstraint[] = [];
 
-    for (const [field, op, value] of whereConditions) {
+    for (const [field, op, value] of whereConditions!) {
       constraints.push(where(field, op, value));
     }
 
@@ -131,7 +131,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     // Aplicando filtros
     const constraints: QueryConstraint[] = [];
 
-    for (const [field, op, value] of whereConditions) {
+    for (const [field, op, value] of whereConditions!) {
       constraints.push(where(field, op, value));
     }
 
@@ -257,7 +257,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     // Aplicando filtros
     const constraints: QueryConstraint[] = [];
 
-    for (const [field, op, value] of whereConditions) {
+    for (const [field, op, value] of whereConditions!) {
       constraints.push(where(field, op, value));
     }
 
@@ -312,5 +312,76 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     if (!this.alertList || this.alertList.length === 0) return {isAlert: false, description: "No hay alertas disponibles"};
     const alert = this.alertList.find(alert => groupedValue >= alert.value! && alert.digits === lotteryNumber?.length);
     return {isAlert: !!alert, description: alert?.description} as { isAlert: boolean; description: string};
+  }
+
+  async getBetsByPagination(
+    pageIndex: number,
+    pageSize: number,
+    queries?: { [key: string]: string }[],
+  ): Promise<RegisterBetsDetail[]> {
+    const betRef = collection(this.firestore, 'register-bets-detail');
+    const zeroBasedPageIndex = pageIndex - 1;
+    const constraints: QueryConstraint[] = [];
+
+    if (queries) {
+      for (const [field, value] of Object.entries(queries)) {
+        constraints.push(where(field, '==', value));
+      }
+    }
+
+    constraints.push(orderBy('date', 'desc'));
+
+    if (zeroBasedPageIndex === 0) {
+      // Primera página
+      const q = query(
+        betRef,
+        ...constraints,
+        limit(pageSize)
+      );
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => ({
+        uid: doc.id,
+        ...doc.data()
+      } as RegisterBetsDetail));
+    } else {
+      // Para páginas posteriores, obtener el cursor correcto
+      const cursorQuery = query(
+        betRef,
+        ...constraints,
+        limit(zeroBasedPageIndex * pageSize)
+      );
+      const cursorSnapshot = await getDocs(cursorQuery);
+      const docs = cursorSnapshot.docs;
+      if (docs.length < zeroBasedPageIndex * pageSize) {
+        return [];
+      }
+      const lastDoc = docs[docs.length - 1];
+      const pageQuery = query(
+        betRef,
+        ...constraints,
+        startAfter(lastDoc),
+        limit(pageSize)
+      );
+      const pageSnapshot = await getDocs(pageQuery);
+      return pageSnapshot.docs.map(doc => ({
+        uid: doc.id,
+        ...doc.data()
+      } as RegisterBetsDetail));
+    }
+  }
+
+  async getTotalBetsQueries(
+    queries?: { [key: string]: string }[],
+  ): Promise<number> {
+    const betRef = collection(this.firestore, 'register-bets-detail');
+    const constraints: QueryConstraint[] = [];
+    if (queries) {
+      for (const [field, value] of Object.entries(queries)) {
+        constraints.push(where(field, '==', value));
+      }
+    }
+    const q = query(betRef, ...constraints);
+    const countSnapshot = await getCountFromServer(q);
+    return countSnapshot.data().count;
   }
 }

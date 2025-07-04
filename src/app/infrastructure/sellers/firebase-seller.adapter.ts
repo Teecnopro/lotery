@@ -2,26 +2,28 @@ import { Injectable } from '@angular/core';
 import { SellerRepositoryPort } from '../../domain/sellers/ports/seller-repository.port';
 
 import {
-    collection,
-    deleteDoc,
-    doc,
-    Firestore,
-    getDoc,
-    getDocs,
-    limit,
-    orderBy,
-    query,
-    setDoc,
-    startAfter,
-    startAt,
-    updateDoc,
-    where,
+  collection,
+  deleteDoc,
+  doc,
+  Firestore,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  QueryConstraint,
+  setDoc,
+  startAfter,
+  startAt,
+  updateDoc,
+  where,
 } from '@angular/fire/firestore';
 import { ISeller } from '../../domain/sellers/models/seller.model';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseSellerAdapter implements SellerRepositoryPort {
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore) { }
   async getAll(): Promise<ISeller[]> {
     const sellersRef = collection(this.firestore, 'sellers');
     const querySnapshot = await getDocs(sellersRef);
@@ -34,7 +36,7 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     if (!sellerSnap.exists()) return null;
     return { id: sellerSnap.id, ...sellerSnap.data() } as ISeller;
   }
-  
+
   async findAll() {
     const sellersRef = collection(this.firestore, 'sellers');
     const querySnapshot = await getDocs(sellersRef);
@@ -110,93 +112,71 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
   }
   async getSellerByPagination(
     pageIndex: number,
-    pageSize: number
+    pageSize: number,
+    queries?: { [key: string]: string }[],
   ): Promise<ISeller[]> {
-    // Validar parámetros de entrada
-    if (pageIndex < 1) {
-      throw new Error('pageIndex debe ser mayor o igual a 1');
-    }
-    
-    if (pageSize < 1) {
-      throw new Error('pageSize debe ser mayor a 0');
-    }
-    
-    const sellersRef = collection(this.firestore, 'sellers');
-    
-    // Convertir pageIndex de base 1 a base 0 para los cálculos
+    const sellerRef = collection(this.firestore, 'sellers');
     const zeroBasedPageIndex = pageIndex - 1;
-    
-    // Calcular cuántos documentos saltar
-    const documentsToSkip = zeroBasedPageIndex * pageSize;
-    
-    if (documentsToSkip === 0) {
-      // Primera página - no necesita offset
+    const constraints: QueryConstraint[] = [];
+
+    if (queries) {
+      for (const [field, value] of Object.entries(queries)) {
+        constraints.push(where(field, '==', value));
+      }
+    }
+
+    constraints.push(orderBy('createdAt', 'desc'));
+
+    if (zeroBasedPageIndex === 0) {
+      // Primera página
       const q = query(
-        sellersRef,
-        orderBy('createdAt', 'desc'),
+        sellerRef,
+        ...constraints,
         limit(pageSize)
       );
       const querySnapshot = await getDocs(q);
-      const results = querySnapshot.docs.map(doc => ({ 
-        uid: doc.id, 
-        ...doc.data() 
+      return querySnapshot.docs.map(doc => ({
+        uid: doc.id,
+        ...doc.data()
       } as ISeller));
-      
-      return results;
     } else {
-      // Para páginas posteriores, necesitamos obtener el documento de inicio
-      if (documentsToSkip > 0) {
-        const startQuery = query(
-          sellersRef,
-          orderBy('createdAt', 'desc'),
-          limit(documentsToSkip)
-        );
-        const startSnapshot = await getDocs(startQuery);
-        
-        if (startSnapshot.docs.length < documentsToSkip) {
-          return [];
-        }
-        
-        // Obtener el último documento como punto de inicio
-        const lastDoc = startSnapshot.docs[startSnapshot.docs.length - 1];
-        
-        // Consulta para la página actual
-        const q = query(
-          sellersRef,
-          orderBy('createdAt', 'desc'),
-          startAfter(lastDoc),
-          limit(pageSize)
-        );
-        
-        const querySnapshot = await getDocs(q);
-        const results = querySnapshot.docs.map(doc => ({ 
-          uid: doc.id, 
-          ...doc.data() 
-        } as ISeller));
-        
-        return results;
-      } else {
-        // Fallback a primera página
-        const q = query(
-          sellersRef,
-          orderBy('createdAt', 'desc'),
-          limit(pageSize)
-        );
-        const querySnapshot = await getDocs(q);
-        const results = querySnapshot.docs.map(doc => ({ 
-          uid: doc.id, 
-          ...doc.data() 
-        } as ISeller));
-        
-        return results;
+      // Para páginas posteriores, obtener el cursor correcto
+      const cursorQuery = query(
+        sellerRef,
+        ...constraints,
+        limit(zeroBasedPageIndex * pageSize)
+      );
+      const cursorSnapshot = await getDocs(cursorQuery);
+      const docs = cursorSnapshot.docs;
+      if (docs.length < zeroBasedPageIndex * pageSize) {
+        return [];
       }
+      const lastDoc = docs[docs.length - 1];
+      const pageQuery = query(
+        sellerRef,
+        ...constraints,
+        startAfter(lastDoc),
+        limit(pageSize)
+      );
+      const pageSnapshot = await getDocs(pageQuery);
+      return pageSnapshot.docs.map(doc => ({
+        uid: doc.id,
+        ...doc.data()
+      } as ISeller));
     }
   }
 
-  async getTotalItems(): Promise<number> {
+  async getTotalItems(queries?: { [key: string]: string }[]): Promise<number> {
     const sellersRef = collection(this.firestore, 'sellers');
-    const querySnapshot = await getDocs(sellersRef);
-    return querySnapshot.size;
+    const constraints: QueryConstraint[] = [];
+    if (queries) {
+      for (const [field, value] of Object.entries(queries)) {
+        constraints.push(where(field, '==', value));
+      }
+    }
+    const q = query(sellersRef, ...constraints);
+    const countSnapshot = await getCountFromServer(q);
+    return countSnapshot.data().count;
   }
 
   async getSellersActive(): Promise<ISeller[]> {

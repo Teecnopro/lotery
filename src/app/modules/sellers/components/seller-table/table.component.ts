@@ -48,7 +48,7 @@ export class SellerTableComponent {
   loading: boolean = false;
   dataSource: ISeller[] = [];
   codeOrNameFilter: string = '';
-  pageSize: number = 10; // Default page size
+  pageSize: number = 1; // Default page size
   totalItems: number = 0; // Total number of items for pagination
   pageIndex: number = 1; // Current page index (backend expects 1-based indexing)
 
@@ -147,9 +147,6 @@ export class SellerTableComponent {
         message: seller.state ? '¿Desea desactivar este vendedor?' : '¿Desea activar este vendedor?',
       },
     });
-    console.log(seller);
-    
-
     firstValueFrom(dialogRef.afterClosed()).then(async confirmed => {
       if (confirmed) {
         try {

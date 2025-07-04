@@ -1,15 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
-
-interface CheckResult {
-    numero: string;
-    vendedor: string;
-    combinado: string;
-    valor: number;
-    premio: number;
-}
+import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
+import { PaymentParameterization } from '../../../../domain/payment-parameterization/models/payment-parameterization.entity';
+import { FirebaseQuery } from '../../../../shared/models/query.entity';
+import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
 
 @Component({
     selector: 'app-check-hits-table',
@@ -23,80 +20,52 @@ interface CheckResult {
     ]
 })
 export class CheckHitsTableComponent {
-    private _dataSource: CheckResult[] = [];
-    private defaultData: CheckResult[] = [
-        {
-            numero: '1234',
-            vendedor: 'Juan Pérez',
-            combinado: 'Sí',
-            valor: 5000,
-            premio: 25000
-        },
-        {
-            numero: '5678',
-            vendedor: 'María García',
-            combinado: 'No',
-            valor: 2000,
-            premio: 0
-        },
-        {
-            numero: '9012',
-            vendedor: 'Carlos López',
-            combinado: 'Sí',
-            valor: 3000,
-            premio: 15000
-        },
-        {
-            numero: '3456',
-            vendedor: 'Ana Martínez',
-            combinado: 'No',
-            valor: 1000,
-            premio: 8000
-        },
-        {
-            numero: '7890',
-            vendedor: 'Luis Rodríguez',
-            combinado: 'Sí',
-            valor: 4000,
-            premio: 0
-        },
-        {
-            numero: '1111',
-            vendedor: 'Sofia González',
-            combinado: 'No',
-            valor: 1500,
-            premio: 12000
-        },
-        {
-            numero: '2222',
-            vendedor: 'Miguel Torres',
-            combinado: 'Sí',
-            valor: 6000,
-            premio: 30000
-        },
-        {
-            numero: '3333',
-            vendedor: 'Elena Vargas',
-            combinado: 'No',
-            valor: 2500,
-            premio: 0
-        }
-    ];
-
-    @Input()
-    set dataSource(value: CheckResult[]) {
-        this._dataSource = value && value.length > 0 ? value : this.defaultData;
-    }
-
-    get dataSource(): CheckResult[] {
-        return this._dataSource;
-    }
-
     @Input() loading = false;
-
+    private registerBetsUseCase = inject(RegisterBetsUseCase);
+    private notification = inject(NOTIFICATION_PORT);
+    dataSource: RegisterBetsDetail[] = [];
+    paymentDataSource: PaymentParameterization[] = [];
     displayedColumns: string[] = ['numero', 'vendedor', 'combinado', 'valor', 'premio'];
+    pageIndex: number = 1;
+    pageSize: number = 10;
+    totalItems: number = 0;
 
-    constructor() {
-        this._dataSource = this.defaultData;
+    constructor(private cdr: ChangeDetectorRef) { }
+
+    async ngOnInit() {
+        await this.getDataSource();
+        this.getPaymentParameterization();
+    }
+
+    ngOnDestroy() {
+    }
+
+    async getDataSource(queries?: { [key: string]: string }[]) {
+        this.loading = true;
+        try {
+            this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
+            this.totalItems = await this.registerBetsUseCase.getTotalBetsByQueries(queries);
+        } catch (error: any) {
+            this.notification.error('Error al cargar los vendedores: ' + error.message);
+        } finally {
+            this.loading = false;
+        }
+        this.cdr.detectChanges();
+    }
+
+    getPaymentParameterization() {
+        localStorage.getItem('paymentDataSource');
+        const paymentData = localStorage.getItem('paymentDataSource');
+        if (paymentData) {
+            this.paymentDataSource = JSON.parse(paymentData) as PaymentParameterization[];
+        } else {
+            this.paymentDataSource = [];
+        }
+    }
+
+    onPageChange(event: any) {
+        this.pageIndex = event.pageIndex === 0 ? 1 : event.pageIndex + 1;
+        this.pageSize = event.pageSize;
+        this.getDataSource();
     }
 }
