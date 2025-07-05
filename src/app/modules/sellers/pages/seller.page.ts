@@ -10,6 +10,9 @@ import { Subject } from "rxjs";
 import { Component, OnDestroy } from "@angular/core";
 import { SellerTableComponent } from "../components/seller-table/table.component";
 import { MaterialModule } from "../../../shared/material/material.module";
+import { LOG_BOOK_SERVICE } from "../../../domain/logBook/ports";
+import { LogBookAdapter } from "../../../infrastructure/logBook/logBook.adapter";
+import { LogBookUseCases } from "../../../domain/logBook/use-cases/logBook.usecases";
 
 @Component({
   selector: 'app-seller-page',
@@ -24,6 +27,11 @@ import { MaterialModule } from "../../../shared/material/material.module";
       provide: NOTIFICATION_PORT,
       useClass: MaterialNotificationAdapter,
     },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
     SellerUseCase,
   ],
   templateUrl: './seller.page.html',

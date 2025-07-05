@@ -3,6 +3,8 @@ export enum ACTIONS {
     UPDATE = 'update',
     DELETE = 'delete',
     READ = 'read',
+    ACTIVATE = 'activate',
+    DEACTIVATE = 'deactivate',
 };
 
 export const ACTIONS_LOGBOOK = {
@@ -10,4 +12,6 @@ export const ACTIONS_LOGBOOK = {
     [ACTIONS.UPDATE]: 'Actualización',
     [ACTIONS.DELETE]: 'Eliminación',
     [ACTIONS.READ]: 'Lectura',
+    [ACTIONS.ACTIVATE]: 'Activación',
+    [ACTIONS.DEACTIVATE]: 'Desactivación',
 };

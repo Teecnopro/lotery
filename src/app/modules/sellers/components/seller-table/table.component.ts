@@ -17,6 +17,9 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { AUTH_SESSION } from "../../../../domain/auth/ports";
 import { AuthUser } from "../../../../domain/auth/models/auth-user.entity";
 import { MatPaginatorModule } from "@angular/material/paginator";
+import { LOG_BOOK_SERVICE } from "../../../../domain/logBook/ports";
+import { MODULES } from "../../../../shared/const/modules";
+import { ACTIONS } from "../../../../shared/const/actions";
 
 @Component({
   selector: 'app-seller-table',
@@ -36,6 +39,7 @@ export class SellerTableComponent {
   @Input() updateTable: Subject<boolean> | null = null;
   @Input() showFormObservable: Subject<boolean> | null = null;
   private sellerUseCase = inject(SellerUseCase);
+  private logBook = inject(LOG_BOOK_SERVICE);
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
   private userSession = inject(AUTH_SESSION);
@@ -48,7 +52,7 @@ export class SellerTableComponent {
   loading: boolean = false;
   dataSource: ISeller[] = [];
   codeOrNameFilter: string = '';
-  pageSize: number = 1; // Default page size
+  pageSize: number = 10; // Default page size
   totalItems: number = 0; // Total number of items for pagination
   pageIndex: number = 1; // Current page index (backend expects 1-based indexing)
 
@@ -119,7 +123,15 @@ export class SellerTableComponent {
     const confirmed = await firstValueFrom(dialogRef.afterClosed());
     if (confirmed) {
       try {
-        await this.sellerUseCase.deleteSeller(seller.uid!);
+        await this.sellerUseCase.deleteSeller(seller.uid!).then(async () => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.DELETE,
+            user: this.userSession.getUser() as AuthUser,
+            date: Date.now().valueOf(),
+            module: MODULES.VENDOR,
+            description: `Se eliminó el vendedor con id ${seller.uid}`,
+          });
+        });
         this.notification.success('Vendedor eliminado exitosamente');
         this.getDataSource(); // Refresh the table
       } catch (error: any) {
@@ -150,7 +162,15 @@ export class SellerTableComponent {
     firstValueFrom(dialogRef.afterClosed()).then(async confirmed => {
       if (confirmed) {
         try {
-          await this.sellerUseCase.updateState(seller.uid!, !seller.state);
+          await this.sellerUseCase.updateState(seller.uid!, !seller.state).then(async () => {
+            await this.logBook.createLogBook({
+              action: !seller.state ? ACTIONS.ACTIVATE : ACTIONS.DEACTIVATE,
+              user: this.userSession.getUser() as AuthUser,
+              date: Date.now().valueOf(),
+              module: MODULES.VENDOR,
+              description: `Se ${!seller.state ? 'activó' : 'desactivó'} el vendedor con id ${seller.uid}`,
+            });
+          });
           this.notification.success(`Vendedor ${!seller.state ? 'activado' : 'desactivado'} exitosamente`);
           this.getDataSource();
         } catch (error: any) {
