@@ -1,4 +1,5 @@
 export enum ACTIONS {
+    AUTHENTICATE = 'authenticate',
     CREATE = 'create',
     UPDATE = 'update',
     DELETE = 'delete',
@@ -7,6 +8,7 @@ export enum ACTIONS {
 };
 
 export const ACTIONS_LOGBOOK = {
+    [ACTIONS.AUTHENTICATE]: 'Autenticación',
     [ACTIONS.CREATE]: 'Creación',
     [ACTIONS.UPDATE]: 'Actualización',
     [ACTIONS.DELETE]: 'Eliminación',
