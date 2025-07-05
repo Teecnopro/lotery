@@ -75,6 +75,14 @@ export const routesDashboard: Routes = [
           title: 'Reportes',
         },
       },
+      {
+        path: 'logbook',
+        loadChildren: () =>
+          import('../logbook/logbook.routes').then((m) => m.routesLogBook),
+        data: {
+          title: 'Bitacora',
+        },
+      },
     ],
   },
 ];
