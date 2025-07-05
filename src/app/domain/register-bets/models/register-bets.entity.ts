@@ -6,7 +6,7 @@ export interface RegisterBetsDetail {
   uid?: string;
   lotteryNumber?: string;
   lottery?: { id: string; name: string };
-  seller?: { id: string; name: string };
+  seller?: { id: string; name: string, code: string };
   value?: number;
   combined?: boolean;
   warning?: boolean;
@@ -15,6 +15,7 @@ export interface RegisterBetsDetail {
   creator?: AuthUser | null;
   updatedAt?: Timestamp;
   updater?: AuthUser | null;
+  alertDescription?: string | undefined | null
 }
 
 export interface RegisterBets {
@@ -24,7 +25,7 @@ export interface RegisterBets {
   groupedValue?: number;
   combined?: boolean;
   warning?: boolean;
-  alertDescription: string | undefined | null
+  alertDescription?: string | undefined | null
   date?: Timestamp;
   updatedAt?: Timestamp;
 }

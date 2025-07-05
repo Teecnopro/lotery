@@ -8,6 +8,7 @@ export interface FirebaseQuery {
   direction?: 'next' | 'prev' | 'reset',
   whereConditions?: WhereCondition[];
   pageSize?: number;
+  bd?: string;
 }
 
 export interface ResponseQuery<T> {

@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import { Timestamp } from '@angular/fire/firestore';
+import { RegisterBets } from '../../../../domain/register-bets/models/register-bets.entity';
 
 @Component({
   selector: 'app-register-bets-page',
@@ -24,6 +25,8 @@ import { Timestamp } from '@angular/fire/firestore';
   styleUrl: './register-bets-page.component.scss',
 })
 export class RegisterBetsPageComponent implements OnInit {
+  registerBet!: RegisterBets;
+
   isDetail = false;
 
   filteredOptions = [{
