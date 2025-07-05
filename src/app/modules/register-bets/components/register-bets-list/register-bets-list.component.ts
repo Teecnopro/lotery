@@ -33,7 +33,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './register-bets-list.component.scss',
 })
 export class RegisterBetsListComponent implements OnInit {
-  @Output() viewDetail = new EventEmitter<boolean>();
+  @Output() viewDetail = new EventEmitter<{detail: boolean, item: RegisterBets}>();
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
@@ -137,7 +137,7 @@ export class RegisterBetsListComponent implements OnInit {
     this.getData(direction);
   }
 
-  onViewDetail() {
-    this.viewDetail.emit(true);
+  onViewDetail(item: RegisterBets) {
+    this.viewDetail.emit({detail: true, item});
   }
 }

@@ -30,10 +30,11 @@
   <div class="table-section">
     <app-register-bets-list
       *ngIf="!isDetail"
-      (viewDetail)="isDetail = $event"
+      (viewDetail)="isDetail = $event.detail; registerBet = $event.item"
     ></app-register-bets-list>
     <app-register-bets-list-detail
       *ngIf="isDetail"
+      [grupedBet]="registerBet"
     ></app-register-bets-list-detail>
   </div>
 </div>

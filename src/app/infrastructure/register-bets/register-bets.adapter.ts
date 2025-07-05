@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, OnInit } from '@angular/core';
 
 import {
   addDoc,
@@ -46,10 +46,12 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   // Pagination
   history: QueryDocumentSnapshot<DocumentData>[] = [];
   currentIndex = -1;
-  alertList: AlertParameterization[] = []
+  alertList: AlertParameterization[] = [];
   private hasNext = false;
 
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore) {
+    this.getAlerts();
+  }
 
   listBets$(): Observable<ListBets | null> | null {
     return this.betsSubject.asObservable();
@@ -60,7 +62,12 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async create(data: RegisterBetsDetail): Promise<void> {
-    data.warning = (data.value as number) >= this.tope;
+    const warning = this.validateAlert(data.lotteryNumber!, data.value as number);
+    console.log("🚀 ~ FirebaseRegisterBetsAdapter ~ create ~ warning:", warning)
+
+    data.warning = warning.isAlert;
+    data.alertDescription = warning.description || "";
+
     const bets = collection(this.firestore, 'register-bets-detail');
     await addDoc(bets, {
       ...data,
@@ -127,8 +134,11 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     return { data, hasNext: this.hasNext, hasPrev: this.currentIndex > 0 };
   }
 
-  async getTotalBets({ whereConditions }: FirebaseQuery): Promise<number> {
-    const betRef = collection(this.firestore, 'register-bets');
+  async getTotalBets({
+    whereConditions,
+    bd = 'register-bets',
+  }: FirebaseQuery): Promise<number> {
+    const betRef = collection(this.firestore, bd);
 
     // Aplicando filtros
     const constraints: QueryConstraint[] = [];
@@ -145,36 +155,56 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async getByQueryDetail({
-    cursor,
     direction,
+    whereConditions,
+    pageSize,
   }: FirebaseQuery): Promise<ResponseQuery<RegisterBetsDetail>> {
     const betRef = collection(this.firestore, 'register-bets-detail');
+
+    if (direction === 'reset') {
+      this.currentIndex = -1;
+      this.history = [];
+    }
+
+    // Aplicando filtros
+    const constraints: QueryConstraint[] = [];
+
+    for (const [field, op, value] of whereConditions!) {
+      constraints.push(where(field, op, value));
+    }
+
+    constraints.push(orderBy('updatedAt', 'desc'));
+
+    const cursor = this.history[this.currentIndex] ?? undefined;
+
     let q;
 
-    if (cursor) {
-      q =
-        direction === 'next'
-          ? query(
-              betRef,
-              orderBy('fecha', 'desc'),
-              startAfter(cursor),
-              limit(this.pageSize)
-            )
-          : query(
-              betRef,
-              orderBy('fecha', 'desc'),
-              startAt(cursor),
-              limit(this.pageSize)
-            );
-    } else {
-      q = query(betRef, orderBy('fecha', 'desc'), limit(this.pageSize));
+    if (direction === 'next' && cursor) {
+      constraints.push(startAfter(cursor));
+    } else if (direction === 'prev' && this.currentIndex > 0) {
+      const prevCursor = this.history[this.currentIndex - 2]; // retrocede 2 posiciones para obtener la anterior
+      prevCursor ? constraints.push(startAfter(prevCursor)) : null;
+      this.currentIndex -= 2; // retrocede manualmente
     }
+
+    constraints.push(limit(pageSize || this.pageSize));
+
+    q = query(betRef, ...constraints);
 
     const snapshot = await getDocs(q);
     const data = snapshot.docs.map(
       (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBetsDetail)
     );
-    return { data, docs: snapshot.docs };
+
+    // Actualizar historial y cursor
+    if (snapshot.docs.length > 0) {
+      this.currentIndex++;
+      this.history[this.currentIndex] = snapshot.docs[snapshot.docs.length - 1];
+    }
+
+    this.hasNext = snapshot.docs.length === (pageSize || this.pageSize);
+
+    return { data, hasNext: this.hasNext, hasPrev: this.currentIndex > 0 };
   }
 
   async getByUid(uid: string): Promise<RegisterBets> {
@@ -204,7 +234,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     data: RegisterBetsDetail,
     total: number
   ): Promise<void> {
-    const warning = this.validateAlert(data.lotteryNumber!, total)
+    const warning = this.validateAlert(data.lotteryNumber!, total);
 
     const dataGroupedBets: RegisterBets = {
       lotteryNumber: data.lotteryNumber,
@@ -212,7 +242,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       groupedValue: total,
       combined: data.combined,
       warning: warning.isAlert,
-      alertDescription: warning.description,
+      alertDescription: warning.description || "",
       date: data.date,
       updatedAt: data.updatedAt,
     };
@@ -230,7 +260,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
         updatedAt: data.updatedAt,
         groupedValue: total,
-        warning,
+        warning: warning.isAlert,
+        alertDescription: warning.description,
       });
       return;
     }
@@ -305,38 +336,46 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     return { cont, totalData: data.length };
   }
 
-    async getAlerts(){
+  async getAlerts() {
     const alerts = localStorage.getItem('alertDataSource');
     this.alertList = alerts ? JSON.parse(alerts) : [];
   }
 
-  validateAlert(lotteryNumber: string, groupedValue: number){
-    if (!this.alertList || this.alertList.length === 0) return {isAlert: false, description: "No hay alertas disponibles"};
-    const alert = this.alertList.find(alert => groupedValue >= alert.value! && alert.digits === lotteryNumber?.length);
-    return {isAlert: !!alert, description: alert?.description} as { isAlert: boolean; description: string};
+  validateAlert(lotteryNumber: string, groupedValue: number) {
+    if (!this.alertList || this.alertList.length === 0)
+      return { isAlert: false, description: 'No hay alertas disponibles' };
+
+    const alert = this.alertList.find(
+      (alert) =>
+        groupedValue >= alert.value! && alert.digits === lotteryNumber?.length
+    );
+    return { isAlert: !!alert, description: alert?.description } as {
+      isAlert: boolean;
+      description: string;
+    };
   }
 
   async getBetsByPagination(
     pageIndex: number,
     pageSize: number,
-    queries?: { [key: string]: string }[],
+    queries?: { [key: string]: string }[]
   ): Promise<RegisterBetsDetail[]> {
     const betRef = collection(this.firestore, 'register-bets-detail');
     const zeroBasedPageIndex = pageIndex - 1;
-    const constraints: QueryConstraint[] = (queries && queries.length > 0) ? this.returnQueries(queries) : [];
+    const constraints: QueryConstraint[] =
+      queries && queries.length > 0 ? this.returnQueries(queries) : [];
     constraints.push(orderBy('date', 'desc'));
     if (zeroBasedPageIndex === 0) {
       // Primera página
-      const q = query(
-        betRef,
-        ...constraints,
-        limit(pageSize)
-      );
+      const q = query(betRef, ...constraints, limit(pageSize));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
-        uid: doc.id,
-        ...doc.data()
-      } as RegisterBetsDetail));
+      return querySnapshot.docs.map(
+        (doc) =>
+          ({
+            uid: doc.id,
+            ...doc.data(),
+          } as RegisterBetsDetail)
+      );
     } else {
       // Para páginas posteriores, obtener el cursor correcto
       const cursorQuery = query(
@@ -357,18 +396,22 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
         limit(pageSize)
       );
       const pageSnapshot = await getDocs(pageQuery);
-      return pageSnapshot.docs.map(doc => ({
-        uid: doc.id,
-        ...doc.data()
-      } as RegisterBetsDetail));
+      return pageSnapshot.docs.map(
+        (doc) =>
+          ({
+            uid: doc.id,
+            ...doc.data(),
+          } as RegisterBetsDetail)
+      );
     }
   }
 
   async getTotalBetsQueries(
-    queries?: { [key: string]: string }[],
+    queries?: { [key: string]: string }[]
   ): Promise<number> {
     const betRef = collection(this.firestore, 'register-bets-detail');
-    const constraints: QueryConstraint[] = (queries && queries.length > 0) ? this.returnQueries(queries) : [];
+    const constraints: QueryConstraint[] =
+      queries && queries.length > 0 ? this.returnQueries(queries) : [];
     const q = query(betRef, ...constraints);
     const countSnapshot = await getCountFromServer(q);
     return countSnapshot.data().count;
@@ -376,14 +419,14 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
   returnQueries(queries: { [key: string]: string }[]): QueryConstraint[] {
     const constraints: QueryConstraint[] = [];
-    const fields = ["date", "lottery.id", "lotteryNumber"];
+    const fields = ['date', 'lottery.id', 'lotteryNumber'];
     for (const field of fields) {
-      let value = queries.find(q => q[field])!;
-      if (field === "date") {
+      let value = queries.find((q) => q[field])!;
+      if (field === 'date') {
         const date = new Date(`${value[field]}T00:00:00`);
         constraints.push(where(field, '>=', Timestamp.fromDate(date)));
-      } else if (field === "lotteryNumber") {
-        const lotteryNumberQueries = []
+      } else if (field === 'lotteryNumber') {
+        const lotteryNumberQueries = [];
         let copyValue = value[field];
         lotteryNumberQueries.push(copyValue);
         for (let i = 0; i < value[field].length; i++) {
@@ -392,34 +435,34 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
             lotteryNumberQueries.push(query);
           }
         }
-        if(value[field].length >= 3 && value[field].length <= 4) {
+        if (value[field].length >= 3 && value[field].length <= 4) {
           const combinations = this.permute(value[field]);
-          combinations.forEach(comb => {
+          combinations.forEach((comb) => {
             lotteryNumberQueries.push(comb);
           });
         }
         constraints.push(where('lotteryNumber', 'in', lotteryNumberQueries));
-      }else {
+      } else {
         constraints.push(where(field, '==', value[field]));
       }
     }
-    return constraints
+    return constraints;
   }
 
   permute(str: string): string[] {
     const results = new Set<string>();
     function generate(arr: string[], l: number, r: number) {
       if (l === r) {
-        results.add(arr.join(""));
+        results.add(arr.join(''));
       } else {
         for (let i = l; i <= r; i++) {
           [arr[l], arr[i]] = [arr[i], arr[l]]; // swap
-          generate([...arr], l + 1, r);        // llamada recursiva con copia del array
+          generate([...arr], l + 1, r); // llamada recursiva con copia del array
           // No es necesario deshacer el swap por usar copia [...arr]
         }
       }
     }
-    generate(str.split(""), 0, str.length - 1);
+    generate(str.split(''), 0, str.length - 1);
     return Array.from(results);
   }
 }
