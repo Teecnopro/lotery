@@ -34,6 +34,8 @@ export class CheckHitsTableComponent {
     pageSize: number = 10;
     totalItems: number = 0;
     lotteryNumber: string = '';
+    arraySize: number[] = [10, 20, 50, 100];
+    totalPaymentWinner: number = 0;
 
     constructor(private cdr: ChangeDetectorRef) { }
 
@@ -43,6 +45,7 @@ export class CheckHitsTableComponent {
         this.queries.subscribe(async (queries) => {
             this.lotteryNumber = queries.find(query => query['lotteryNumber'])?.['lotteryNumber'] || '';
             await this.getDataSource(queries);
+            this.calculatePaymentWinner();
         });
     }
 
@@ -54,6 +57,13 @@ export class CheckHitsTableComponent {
         try {
             this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
             this.totalItems = await this.registerBetsUseCase.getTotalBetsByQueries(queries);
+            if (queries && queries.length > 0) {
+                this.pageSize = this.totalItems;
+                this.arraySize = [this.totalItems];
+            } else {
+                this.pageSize = 10;
+                this.arraySize = [10, 20, 50, 100];
+            }
         } catch (error: any) {
             console.log('Error al cargar los vendedores:', error);
             this.notification.error('Error al cargar los vendedores: ' + error.message);
@@ -102,5 +112,12 @@ export class CheckHitsTableComponent {
             isWinner = true;
         }
         return {isWinner, value: payment?.amount! * bet.value! || 0};
+    }
+
+    calculatePaymentWinner() {
+        this.totalPaymentWinner = this.dataSource.reduce((total, bet) => {
+            const prize = this.calculatePrize(bet);
+            return total + (prize.isWinner ? prize.value : 0);
+        }, 0);
     }
 }

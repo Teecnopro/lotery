@@ -364,6 +364,18 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     const zeroBasedPageIndex = pageIndex - 1;
     const constraints: QueryConstraint[] =
       queries && queries.length > 0 ? this.returnQueries(queries) : [];
+    if (queries && queries.length > 0) {
+      const q = query(betRef, ...constraints, orderBy('date', 'desc'));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(
+        (doc) =>
+        ({
+          uid: doc.id,
+          ...doc.data(),
+        } as RegisterBetsDetail)
+      );
+    }
+
     constraints.push(orderBy('date', 'desc'));
     if (zeroBasedPageIndex === 0) {
       // Primera página

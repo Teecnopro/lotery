@@ -68,6 +68,11 @@ mat-paginator {
   font-style: italic;
 }
 
+.totalValue {
+  font-weight: 600;
+  background-color: #FFFFFF;
+}
+
 // Responsive design
 @media (max-width: 768px) {
   .table-container {
