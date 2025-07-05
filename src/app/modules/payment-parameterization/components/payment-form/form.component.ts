@@ -11,6 +11,10 @@ import { Subject, Subscription } from 'rxjs';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { PaymentParameterizationUseCase } from '../../../../domain/payment-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { LOG_BOOK_SERVICE } from '../../../../domain/logBook/ports';
+import { ACTIONS } from '../../../../shared/const/actions';
+import { MODULES } from '../../../../shared/const/modules';
+import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
 
 @Component({
   selector: 'app-payment-form',
@@ -33,6 +37,7 @@ export class PaymentFormComponent {
   private subscription?: Subscription;
   private user = inject(AUTH_SESSION);
   private paymentUseCases = inject(PaymentParameterizationUseCase);
+  private logBook = inject(LOG_BOOK_SERVICE);
   private notification = inject(NOTIFICATION_PORT);
 
   constructor(private cdr: ChangeDetectorRef) { }
@@ -99,11 +104,27 @@ export class PaymentFormComponent {
         paymentData.uid = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         paymentData.createdBy = currentUser;
         paymentData.createdAt = Date.now();
-        await this.paymentUseCases.createPaymentParameterization(paymentData);
+        await this.paymentUseCases.createPaymentParameterization(paymentData).then(async (data) => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.CREATE,
+            user: this.user.getUser() as AuthUser,
+            date: Date.now().valueOf(),
+            module: MODULES.PAYMENT,
+            description: `Se creó una nueva parametrización de pago con dígitos ${data.digits} y valor ${data.amount}`,
+          });
+        });
       } else {
         paymentData.updatedBy = currentUser;
         paymentData.updatedAt = Date.now();
-        await this.paymentUseCases.updatePaymentParameterization(paymentData.uid!, paymentData);
+        await this.paymentUseCases.updatePaymentParameterization(paymentData.uid!, paymentData).then(async (data) => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.UPDATE,
+            user: this.user.getUser() as AuthUser,
+            date: Date.now().valueOf(),
+            module: MODULES.PAYMENT,
+            description: `Se actualizó la parametrización de pago con id ${data.uid} y digitos ${paymentData.digits} y valor de ${this.payment.amount} a ${data.amount}`,
+          });
+        });
       }
       this.notification.success(`Parametrización de pago ${this.isEditing ? 'actualizada' : 'creada'} exitosamente`);
       this.limpiarFormulario(form);

@@ -29,21 +29,23 @@ export class FirebasePaymentParameterizationAdapter
 
     async create(
         data: PaymentParameterization
-    ): Promise<void> {
-        if (!data.uid) {
-            throw new Error('UID is required to create a payment parameterization');
-        }
-        const payment = doc(this.firestore, 'payment-parameterization', data.uid);
-        await setDoc(payment, {
-            ...data
-        });
+    ): Promise<PaymentParameterization> {
+        const uid = data.uid || `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const docRef = doc(collection(this.firestore, 'payment-parameterization'), uid);
+        const dataWithId = { ...data, uid };
+        return setDoc(docRef, dataWithId).then(() => dataWithId);
     }
 
     async update(
         uid: string,
         data: Partial<PaymentParameterization>
-    ): Promise<void> {
-        await updateDoc(doc(this.firestore, 'payment-parameterization', uid), data);
+    ): Promise<PaymentParameterization> {
+        const docRef = doc(
+            collection(this.firestore, 'payment-parameterization'),
+            uid
+        );
+        const { uid: _, ...dataWithoutId } = data;
+        return updateDoc(docRef, dataWithoutId).then(() => data);
     }
 
     async deactivate(uid: string): Promise<void> {
