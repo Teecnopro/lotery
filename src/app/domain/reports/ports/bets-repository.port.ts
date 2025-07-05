@@ -5,4 +5,9 @@ export interface BetsRepositoryPort {
     year: number,
     month: number
   ): Promise<Map<string, IQueryBetsByVendor>>;
+  getBetsByLotteryGrouped(
+    year: number,
+    monthStart: number,
+    monthEnd: number
+  ): Promise<Map<string, IQueryBetsByVendor>>;
 }

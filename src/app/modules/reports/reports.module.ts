@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 
 import { BETS_REPOSITORY_SERVICE } from '../../domain/reports/ports';
 import { BetsFirestoreRepository } from '../../infrastructure/reports';
-import { CompareBetsUseCase } from '../../domain/reports/use-cases';
+import {
+  CompareBetsByLotery,
+  CompareBetsUseCase,
+} from '../../domain/reports/use-cases';
 
 @NgModule({
   imports: [CommonModule],
@@ -13,6 +16,7 @@ import { CompareBetsUseCase } from '../../domain/reports/use-cases';
       useClass: BetsFirestoreRepository,
     },
     CompareBetsUseCase,
+    CompareBetsByLotery,
   ],
 })
 export class ReportsModule {}

@@ -6,5 +6,8 @@ export interface IFormValues {
 
 export interface IQueryBetsByVendor {
   name: string;
+  lotteryId?: string;
+  nameLottery?: string;
   value: number;
+  countLottery?: number;
 }
