@@ -8,6 +8,7 @@ import { FirebaseQuery } from '../../../../shared/models/query.entity';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
 import { Subject } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-check-hits-table',
@@ -17,7 +18,8 @@ import { Subject } from 'rxjs';
     imports: [
         MatTableModule,
         MatPaginatorModule,
-        CommonModule
+        CommonModule,
+        MatIconModule
     ]
 })
 export class CheckHitsTableComponent {
@@ -31,6 +33,7 @@ export class CheckHitsTableComponent {
     pageIndex: number = 1;
     pageSize: number = 10;
     totalItems: number = 0;
+    lotteryNumber: string = '';
 
     constructor(private cdr: ChangeDetectorRef) { }
 
@@ -38,6 +41,7 @@ export class CheckHitsTableComponent {
         await this.getDataSource();
         this.getPaymentParameterization();
         this.queries.subscribe(async (queries) => {
+            this.lotteryNumber = queries.find(query => query['lotteryNumber'])?.['lotteryNumber'] || '';
             await this.getDataSource(queries);
         });
     }
@@ -75,8 +79,28 @@ export class CheckHitsTableComponent {
         this.getDataSource();
     }
 
-    calculatePrize(bet: RegisterBetsDetail): number {
-        const payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === bet.combined);
-        return bet.value! * payment?.amount! || bet.value!;
+    calculatePrize(bet: RegisterBetsDetail): { isWinner: boolean, value: number } {
+        let payment: PaymentParameterization | undefined;
+        let isWinner = false;
+        if (this.lotteryNumber !== bet.lotteryNumber && bet.combined === true) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            isWinner = true
+        } else if (this.lotteryNumber === bet.lotteryNumber && bet.combined === true) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            isWinner = true;
+        } else if (this.lotteryNumber === bet.lotteryNumber && bet.combined === false) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === false);
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            isWinner = true;
+        }
+        return {isWinner, value: payment?.amount! * bet.value! || 0};
     }
 }

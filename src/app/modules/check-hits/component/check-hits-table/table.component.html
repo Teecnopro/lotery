@@ -19,8 +19,23 @@
 
         <!-- Columna de Combinado -->
         <ng-container matColumnDef="combinado">
-            <th mat-header-cell *matHeaderCellDef> ¿Combinado? </th>
-            <td mat-cell *matCellDef="let element"> {{element.combined ? "Si" : "No"}} </td>
+            <th mat-header-cell *matHeaderCellDef> Combinado </th>
+            <td mat-cell *matCellDef="let element">
+                <span
+                    *ngIf="element.combined; else noPremio"
+                    matTooltip="Combinado"
+                    style="display: flex; align-items: center; gap: 4px;"
+                    class="combinado">
+                    <mat-icon>sync</mat-icon>
+                </span>
+                <ng-template #noPremio>
+                    <span
+                    class="no-combinado"
+                    matTooltip="No Combinado">
+                        <mat-icon>sync_disabled</mat-icon>
+                    </span>
+                </ng-template>
+            </td>
         </ng-container>
 
         <!-- Columna de Valor -->
@@ -32,9 +47,10 @@
         <!-- Columna de Premio -->
         <ng-container matColumnDef="premio">
             <th mat-header-cell *matHeaderCellDef> Premio </th>
-            <td mat-cell *matCellDef="let element"> 
-                <span *ngIf="element.value > 0; else noPremio">
-                    ${{calculatePrize(element)}}
+            <td mat-cell *matCellDef="let element" [class.premio-winner]="![undefined, null, ''].includes(lotteryNumber) ? this.calculatePrize(element).isWinner : false"> 
+                <span *ngIf="![undefined, null, ''].includes(lotteryNumber) ? this.calculatePrize(element).isWinner : false; else noPremio" style="display: flex; align-items: center; gap: 4px;">
+                    <mat-icon>notification_important</mat-icon>
+                    ${{calculatePrize(element).value}}
                 </span>
                 <ng-template #noPremio>
                     <span class="no-prize">Sin premio</span>
