@@ -23,7 +23,6 @@ import { MatCheckbox } from '@angular/material/checkbox';
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
-    DatePipe,
     CommonModule,
     MatIconModule,
     CurrencyPipe,

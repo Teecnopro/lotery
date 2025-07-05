@@ -23,7 +23,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
-    DatePipe,
     CommonModule,
     MatIconModule,
     CurrencyPipe,

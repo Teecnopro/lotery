@@ -381,6 +381,10 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     objParse['Advertencias'] = this.getTotalResume(
       data.filter((item) => item.warning)
     );
+    objParse["Comisiones (55%)"] = {
+      totalData: undefined,
+      cont: Math.round((objParse["Total"]?.cont - objParse["Advertencias"]?.cont) * 0.55)
+    };
 
     return objParse;
   }
