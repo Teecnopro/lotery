@@ -1,1 +1,50 @@
-<h1>Logbook Form</h1>
+<div class="form-container">
+    <mat-card class="form-card">
+        <mat-card-header>
+            <mat-card-title>Filtros</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <form #logBookFilter="ngForm" (ngSubmit)="onSubmit(logBookFilter)" class="logBookFilter-form">
+                <mat-form-field>
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate placeholder="Start date">
+                        <input matEndDate placeholder="End date">
+                    </mat-date-range-input>
+                    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Usuario</mat-label>
+                    <mat-select name="user" [(ngModel)]="selectedUser" required>
+                        <mat-option *ngFor="let user of users" [value]="user.uid">{{ user.name }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Tipo de Acción</mat-label>
+                    <mat-select name="actionType" [(ngModel)]="selectedActionType" required>
+                        <mat-option *ngFor="let action of actionTypes" [value]="action">{{ action }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Módulo</mat-label>
+                    <mat-select name="module" [(ngModel)]="selectedModule" required>
+                        <mat-option *ngFor="let module of modules" [value]="module">{{ module }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div class="button-group">
+                    <button mat-raised-button color="primary" type="submit" [disabled]="!logBookFilter.valid">
+                        {{textButton}}
+                    </button>
+                    <button mat-outlined-button type="button" (click)="limpiarFormulario(logBookFilter)">
+                        Limpiar
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>
