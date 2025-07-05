@@ -25,7 +25,6 @@ export class LogbookTableComponent implements OnInit {
     @Input() queries: Subject<{ [key: string]: string | number }> = new Subject<{ [key: string]: string | number }>();
     private logBookUseCase = inject(LogBookUseCases);
     private notification = inject(NOTIFICATION_PORT);
-    private dialog = inject(MatDialog);
     actions = ACTIONS_LOGBOOK as {[key: string]: string};
     modules = NAME_MODULES as {[key: string]: string};
     loading: boolean = false;
