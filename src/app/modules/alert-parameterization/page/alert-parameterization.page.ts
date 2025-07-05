@@ -11,6 +11,8 @@ import { NOTIFICATION_PORT } from '../../../shared/ports';
 import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
 import { MaterialModule } from '../../../shared/material/material.module';
 import { LogBookUseCases } from '../../../domain/logBook/use-cases/logBook.usecases';
+import { LOG_BOOK_SERVICE } from '../../../domain/logBook/ports';
+import { LogBookAdapter } from '../../../infrastructure/logBook/logBook.adapter';
 
 @Component({
   selector: 'app-alert-parameterization-page',
@@ -25,6 +27,11 @@ import { LogBookUseCases } from '../../../domain/logBook/use-cases/logBook.useca
       provide: NOTIFICATION_PORT,
       useClass: MaterialNotificationAdapter,
     },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
     AlertParameterizationUseCase,
     LogBookUseCases,
   ],
