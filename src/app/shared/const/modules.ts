@@ -5,8 +5,6 @@ export enum MODULES {
     ALERT_PARAMETERIZATION = 'alert-parameterization',
     REGISTER_BETS = 'register-bets',
     VENDOR = 'vendor',
-    CHECK_HITS = 'check-hits',
-    REPORTS = 'reports',
 }
 
 export const NAME_MODULES: { [key in MODULES]: string } = {
@@ -16,6 +14,4 @@ export const NAME_MODULES: { [key in MODULES]: string } = {
     [MODULES.ALERT_PARAMETERIZATION]: 'Parametrización de alertas',
     [MODULES.REGISTER_BETS]: 'Registrar apuestas',
     [MODULES.VENDOR]: 'Vendedores',
-    [MODULES.CHECK_HITS]: 'Verificación de aciertos',
-    [MODULES.REPORTS]: 'Reportes',
 }

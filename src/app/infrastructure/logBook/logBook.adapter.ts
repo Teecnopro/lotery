@@ -15,14 +15,21 @@ export class LogBookAdapter implements LogBookServicePort {
     async listLogBooksByPagination(
         pageSize: number,
         pageIndex: number,
-        queries?: { [key: string]: string }[]
+        queries?: { [key: string]: string | number }
     ): Promise<LogBook[]> {
         const sellerRef = collection(this.firestore, 'logbooks');
         const zeroBasedPageIndex = pageIndex - 1;
         const constraints: QueryConstraint[] = [];
-        if (queries) {
-            for (const [field, value] of Object.entries(queries)) {
-                constraints.push(where(field, '==', value));
+        if (queries && Object.keys(queries).length > 0) {
+            for (const key of Object.keys(queries)) {
+                const value = queries[key];
+                if (key === 'dateRangeStart') {
+                    constraints.push(where('date', '>=', value));
+                } else if (key === 'dateRangeEnd') {
+                    constraints.push(where('date', '<=', value));
+                } else {
+                    constraints.push(where(key, '==', value));
+                }
             }
         }
         constraints.push(orderBy('date', 'desc'));

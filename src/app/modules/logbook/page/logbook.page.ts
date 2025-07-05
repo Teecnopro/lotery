@@ -24,7 +24,7 @@ import { LogBookUseCases } from '../../../domain/logBook/use-cases/logBook.useca
 })
 export class LogBookPageComponent implements OnInit {
     
-    queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
+    queries: Subject<{ [key: string]: string | number }> = new Subject<{ [key: string]: string | number }>();
     showForm: boolean = false;
     isMobile: boolean = false;
 

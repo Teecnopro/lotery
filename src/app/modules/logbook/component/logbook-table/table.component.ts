@@ -21,7 +21,7 @@ import { NAME_MODULES } from '../../../../shared/const/modules';
     standalone: true
 })
 export class LogbookTableComponent implements OnInit {
-    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
+    @Input() queries: Subject<{ [key: string]: string | number }> = new Subject<{ [key: string]: string | number }>();
     private logBookUseCase = inject(LogBookUseCases);
     private notification = inject(NOTIFICATION_PORT);
     private dialog = inject(MatDialog);
@@ -45,18 +45,16 @@ export class LogbookTableComponent implements OnInit {
     ngOnInit() {
         this.getDataSource();
         this.queries.subscribe((queries) => {
-            console.log('Queries received:', queries);
-            
-            this.getDataSource();
+            this.getDataSource(queries);
         });
     }
 
-    async getDataSource(queries?: { [key: string]: string }[]) {
+    async getDataSource(queries?: { [key: string]: string | number }) {
         this.loading = true;
         try {
-            const dataSource = await this.logBookUseCase.listLogBooksByPagination(this.pageSize, this.pageIndex, queries);
-            console.log(this.actions);
+            console.log('Fetching log books with queries:', queries);
             
+            const dataSource = await this.logBookUseCase.listLogBooksByPagination(this.pageSize, this.pageIndex, queries);
             this.dataSource = dataSource.map((logBook: LogBook) => {
                 return {
                     ...logBook,

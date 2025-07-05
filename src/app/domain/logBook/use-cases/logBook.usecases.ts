@@ -9,7 +9,7 @@ export class LogBookUseCases implements LogBookServicePort {
         return this.logBook.createLogBook(data);
     }
 
-    async listLogBooksByPagination(pageSize: number, pageIndex: number, queries?: { [key: string]: string }[]): Promise<LogBook[]> {
+    async listLogBooksByPagination(pageSize: number, pageIndex: number, queries?: { [key: string]: string | number }): Promise<LogBook[]> {
         return this.logBook.listLogBooksByPagination(pageSize, pageIndex, queries);
     }
 }
