@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { AlertParameterizationServicePort } from '../../domain/alert-parameterization/ports/alert-parameterization.port';
 import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';

@@ -1,21 +1,23 @@
 import { addDoc, collection, Firestore, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where } from "@angular/fire/firestore";
 import { LogBook } from "../../domain/logBook/models/logBook.entity";
 import { LogBookServicePort } from "../../domain/logBook/ports";
+import { Injectable } from "@angular/core";
 
-export class LogBookUseCases implements LogBookServicePort {
+@Injectable({ providedIn: 'root' })
+export class LogBookAdapter implements LogBookServicePort {
     constructor(private firestore: Firestore) { }
 
     async createLogBook(data: LogBook): Promise<LogBook> {
-        const docRef = await addDoc(collection(this.firestore, "logBooks"), data);
+        const docRef = await addDoc(collection(this.firestore, "logbooks"), data);
         return { uid: docRef.id, ...data };
     }
 
     async listLogBooksByPagination(
         pageSize: number,
         pageIndex: number,
-        queries: { [key: string]: string }[]
+        queries?: { [key: string]: string }[]
     ): Promise<LogBook[]> {
-        const sellerRef = collection(this.firestore, 'logBooks');
+        const sellerRef = collection(this.firestore, 'logbooks');
         const zeroBasedPageIndex = pageIndex - 1;
         const constraints: QueryConstraint[] = [];
         if (queries) {

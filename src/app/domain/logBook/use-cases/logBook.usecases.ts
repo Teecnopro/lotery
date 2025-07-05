@@ -1,14 +1,15 @@
+import { inject } from "@angular/core";
 import { LogBook } from "../models/logBook.entity";
-import { LogBookServicePort } from "../ports";
+import { LOG_BOOK_SERVICE, LogBookServicePort } from "../ports";
 
 export class LogBookUseCases implements LogBookServicePort {
-    constructor(private logBookService: LogBookServicePort) { }
+    private logBook = inject(LOG_BOOK_SERVICE);
 
     async createLogBook(data: LogBook): Promise<LogBook> {
-        return this.logBookService.createLogBook(data);
+        return this.logBook.createLogBook(data);
     }
 
-    async listLogBooksByPagination(pageSize: number, pageIndex: number, queries: { [key: string]: string }[]): Promise<LogBook[]> {
-        return this.logBookService.listLogBooksByPagination(pageSize, pageIndex, queries);
+    async listLogBooksByPagination(pageSize: number, pageIndex: number, queries?: { [key: string]: string }[]): Promise<LogBook[]> {
+        return this.logBook.listLogBooksByPagination(pageSize, pageIndex, queries);
     }
 }

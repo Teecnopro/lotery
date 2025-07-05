@@ -10,6 +10,7 @@ import { AlertParameterizationUseCase } from '../../../domain/alert-parameteriza
 import { NOTIFICATION_PORT } from '../../../shared/ports';
 import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
 import { MaterialModule } from '../../../shared/material/material.module';
+import { LogBookUseCases } from '../../../domain/logBook/use-cases/logBook.usecases';
 
 @Component({
   selector: 'app-alert-parameterization-page',
@@ -25,6 +26,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
       useClass: MaterialNotificationAdapter,
     },
     AlertParameterizationUseCase,
+    LogBookUseCases,
   ],
   templateUrl: './alert-parameterization.page.html',
   styleUrls: ['./alert-parameterization.page.scss'],

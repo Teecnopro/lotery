@@ -24,7 +24,7 @@ export class AlertTableComponent implements OnInit {
   @Input() showFormObservable: Subject<boolean> | null = null;
   private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
   private notification = inject(NOTIFICATION_PORT);
-    private dialog = inject(MatDialog);
+  private dialog = inject(MatDialog);
 
   loading: boolean = false;
   dataSource: AlertParameterization[] = [];
