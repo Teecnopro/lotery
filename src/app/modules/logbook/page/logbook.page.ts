@@ -3,6 +3,7 @@ import { MaterialModule } from '../../../shared/material/material.module';
 import { CommonModule } from '@angular/common';
 import { LogbookFormComponent } from '../component/logbook-form/form.component';
 import { LogbookTableComponent } from '../component/logbook-table/table.component';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-page',
@@ -12,6 +13,8 @@ import { LogbookTableComponent } from '../component/logbook-table/table.componen
     imports: [LogbookTableComponent, LogbookFormComponent, CommonModule, MaterialModule]
 })
 export class LogBookPageComponent implements OnInit {
+    
+    queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
     showForm: boolean = false;
     isMobile: boolean = false;
 

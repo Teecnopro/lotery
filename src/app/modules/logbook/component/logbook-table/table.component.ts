@@ -1,9 +1,11 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
+import { Subject } from 'rxjs';
+import { query } from '@firebase/firestore';
 
 @Component({
     selector: 'app-logbook-table',
@@ -14,6 +16,7 @@ import { MatTableModule } from '@angular/material/table';
     standalone: true
 })
 export class LogbookTableComponent implements OnInit {
+    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
 
     loading: boolean = false;
     totalItems: number = 0;
@@ -44,6 +47,12 @@ export class LogbookTableComponent implements OnInit {
     ];
 
     ngOnInit() {
+        this.getDataSource();
+        this.queries.subscribe((queries) => {
+            console.log('Queries received:', queries);
+            
+            this.getDataSource();
+        });
     }
 
     async getDataSource() {

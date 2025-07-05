@@ -7,11 +7,11 @@
   <div class="layout" [class.column]="isMobile">
     <div class="form-section" *ngIf="showForm">
       <div class="form-section">
-        <app-logbook-form></app-logbook-form>
+        <app-logbook-form [queries]="queries"></app-logbook-form>
       </div>
     </div>
     <div class="table-section">
-      <app-logbook-table></app-logbook-table>
+      <app-logbook-table [queries]="queries"></app-logbook-table>
     </div>
   </div>
 </div>

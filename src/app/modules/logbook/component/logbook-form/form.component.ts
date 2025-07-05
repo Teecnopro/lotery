@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../../shared/material/material.module';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
+import { Subject, filter } from 'rxjs';
 
 @Component({
     selector: 'app-logbook-form',
@@ -27,18 +28,19 @@ import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
     standalone: true
 })
 export class LogbookFormComponent implements OnInit {
+    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
     textButton: string = 'Filtrar';
     logBookFilter = {};
     today: Date = new Date();
-    users: AuthUser[] = []
-    selectedUser: AuthUser | null = null;
+    users = [{ name: 'John Doe', uid: '123' }, { name: 'Jane Smith', uid: '456' }];
+    selectedUser: string | null = null;
     selectedActionType: string | null = null;
     selectedModule: string | null = null;
     actionTypes: string[] = ['Creación', 'Actualización', 'Eliminación'];
     modules: string[] = ['Usuarios', 'Alertas', 'Pagos', 'Apuestas', 'Vendedores', 'Reportes', 'Bitácora'];
     dateRange: { start: Date | null, end: Date | null } = { start: null, end: null };
-    dateRangeStart: Date | null = null;
-    dateRangeEnd: Date | null = null;
+    dateRangeStart: string | null = null;
+    dateRangeEnd: string | null = null;
 
     constructor() { }
 
@@ -47,7 +49,16 @@ export class LogbookFormComponent implements OnInit {
     }
 
     onSubmit(form: NgForm) {
-        // Lógica para manejar el envío del formulario
+        const filter = [
+            {
+                "userId": form.value.user ? form.value.user ?? '' : '',
+                "actionType": form.value.actionType ?? '',
+                "module": form.value.module ?? '',
+                "dateRangeStart": form.value.startDate ?? '',
+                "dateRangeEnd": form.value.endDate ?? ''
+            }
+        ];
+        this.queries.next(filter);
         console.log('Formulario enviado');
     }
 
