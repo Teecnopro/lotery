@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -13,7 +15,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Subject, takeUntil } from 'rxjs';
 
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 import { VendorComparison } from '../../../../../domain/reports/models/vendor-comparison.entity';
 import { MaterialModule } from '../../../../../shared/material/material.module';
@@ -34,6 +36,15 @@ export class ListCompareBetsComponent implements OnInit, OnChanges, OnDestroy {
     month2Label: string;
   };
   @Input() loading: boolean = false;
+  @Input() total: number = 0;
+  @Input() pageIndex: number = 0;
+  @Input() pageSize: number = 25;
+  @Input() overallTotal: number = 0;
+
+  @Output() changePage = new EventEmitter<{
+    pageIndex: number;
+    pageSize: number;
+  }>();
 
   private breakpointObserver = inject(BreakpointObserver);
   private destroy$ = new Subject<void>();
@@ -50,7 +61,6 @@ export class ListCompareBetsComponent implements OnInit, OnChanges, OnDestroy {
 
   dataSource = new MatTableDataSource<VendorComparison>([]);
   displayedColumns: string[] = [];
-  overallTotal: number = 0;
   nameMonth1: string = 'Mes 1';
   nameMonth2: string = 'Mes 2';
 
@@ -85,6 +95,12 @@ export class ListCompareBetsComponent implements OnInit, OnChanges, OnDestroy {
 
   private handleVendorComparisonChange(data: VendorComparison[]) {
     this.dataSource.data = data;
-    this.overallTotal = data?.reduce((acc, v) => acc + (v?.total || 0), 0);
+  }
+
+  onPageChange(event: PageEvent) {
+    this.changePage.emit({
+      pageIndex: event.pageIndex,
+      pageSize: event.pageSize,
+    });
   }
 }

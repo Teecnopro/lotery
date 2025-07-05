@@ -62,9 +62,11 @@
   </table>
 
   <mat-paginator
-    [length]="dataSource.data.length"
-    [pageSize]="5"
-    [pageSizeOptions]="[5, 10, 20]"
+    [length]="total"
+    [pageIndex]="pageIndex"
+    [pageSize]="25"
+    [pageSizeOptions]="[25]"
+    (page)="onPageChange($event)"
     showFirstLastButtons
   ></mat-paginator>
 
