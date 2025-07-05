@@ -10,6 +10,8 @@ import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.us
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { MatDialog } from '@angular/material/dialog';
 import { LogBook } from '../../../../domain/logBook/models/logBook.entity';
+import { ACTIONS_LOGBOOK } from '../../../../shared/const/actions';
+import { NAME_MODULES } from '../../../../shared/const/modules';
 
 @Component({
     selector: 'app-logbook-table',
@@ -23,6 +25,8 @@ export class LogbookTableComponent implements OnInit {
     private logBookUseCase = inject(LogBookUseCases);
     private notification = inject(NOTIFICATION_PORT);
     private dialog = inject(MatDialog);
+    actions = ACTIONS_LOGBOOK as {[key: string]: string};
+    modules = NAME_MODULES as {[key: string]: string};
     loading: boolean = false;
     totalItems: number = 0;
     pageSize: number = 10;
@@ -33,7 +37,7 @@ export class LogbookTableComponent implements OnInit {
     displayedColumns: string[] = [
         'date',
         'userName',
-        'actionType',
+        'action',
         'module',
         'description',
     ];
@@ -51,7 +55,16 @@ export class LogbookTableComponent implements OnInit {
         this.loading = true;
         try {
             const dataSource = await this.logBookUseCase.listLogBooksByPagination(this.pageSize, this.pageIndex, queries);
-            this.dataSource = dataSource;
+            console.log(this.actions);
+            
+            this.dataSource = dataSource.map((logBook: LogBook) => {
+                return {
+                    ...logBook,
+                    action: this.actions[logBook.action as any] || 'N/A',
+                    module: this.modules[logBook.module as any] || 'N/A',
+                    userName: logBook.user ? `${logBook.user.name}` : 'N/A',
+                };
+            });
         } catch (error: any) {
             console.error('Error fetching log books:', error);
             this.notification.error(error?.message || 'Error al cargar los libros de registro');
