@@ -1,4 +1,4 @@
-import { addDoc, collection, Firestore, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where } from "@angular/fire/firestore";
+import { addDoc, collection, Firestore, getCountFromServer, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where } from "@angular/fire/firestore";
 import { LogBook } from "../../domain/logBook/models/logBook.entity";
 import { LogBookServicePort } from "../../domain/logBook/ports";
 import { Injectable } from "@angular/core";
@@ -17,7 +17,7 @@ export class LogBookAdapter implements LogBookServicePort {
         pageIndex: number,
         queries?: { [key: string]: string | number }
     ): Promise<LogBook[]> {
-        const sellerRef = collection(this.firestore, 'logbooks');
+        const logBookRef = collection(this.firestore, 'logbooks');
         const zeroBasedPageIndex = pageIndex - 1;
         const constraints: QueryConstraint[] = [];
         if (queries && Object.keys(queries).length > 0) {
@@ -36,7 +36,7 @@ export class LogBookAdapter implements LogBookServicePort {
         if (zeroBasedPageIndex === 0) {
             // Primera página
             const q = query(
-                sellerRef,
+                logBookRef,
                 ...constraints,
                 limit(pageSize)
             );
@@ -48,7 +48,7 @@ export class LogBookAdapter implements LogBookServicePort {
         } else {
             // Para páginas posteriores, obtener el cursor correcto
             const cursorQuery = query(
-                sellerRef,
+                logBookRef,
                 ...constraints,
                 limit(zeroBasedPageIndex * pageSize)
             );
@@ -59,7 +59,7 @@ export class LogBookAdapter implements LogBookServicePort {
             }
             const lastDoc = docs[docs.length - 1];
             const pageQuery = query(
-                sellerRef,
+                logBookRef,
                 ...constraints,
                 startAfter(lastDoc),
                 limit(pageSize)
@@ -70,5 +70,26 @@ export class LogBookAdapter implements LogBookServicePort {
                 ...doc.data()
             } as LogBook));
         }
+    }
+
+    async getTotalLogBooks(queries?: { [key: string]: string | number }): Promise<number> {
+        const logBookRef = collection(this.firestore, 'logbooks');
+        const constraints: QueryConstraint[] = [];
+        if (queries && Object.keys(queries).length > 0) {
+            for (const key of Object.keys(queries)) {
+                const value = queries[key];
+                if (key === 'dateRangeStart') {
+                    constraints.push(where('date', '>=', value));
+                } else if (key === 'dateRangeEnd') {
+                    constraints.push(where('date', '<=', value));
+                } else {
+                    constraints.push(where(key, '==', value));
+                }
+            }
+        }
+        constraints.push(orderBy('date', 'desc'));
+        const q = query(logBookRef, ...constraints);
+        const countSnapshot = await getCountFromServer(q);
+        return countSnapshot.data().count;
     }
 }

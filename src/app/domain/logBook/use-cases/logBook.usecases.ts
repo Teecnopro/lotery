@@ -12,4 +12,8 @@ export class LogBookUseCases implements LogBookServicePort {
     async listLogBooksByPagination(pageSize: number, pageIndex: number, queries?: { [key: string]: string | number }): Promise<LogBook[]> {
         return this.logBook.listLogBooksByPagination(pageSize, pageIndex, queries);
     }
+
+    async getTotalLogBooks(queries?: { [key: string]: string | number }): Promise<number> {
+        return this.logBook.getTotalLogBooks(queries);
+    }
 }

@@ -12,12 +12,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { LogBook } from '../../../../domain/logBook/models/logBook.entity';
 import { ACTIONS_LOGBOOK } from '../../../../shared/const/actions';
 import { NAME_MODULES } from '../../../../shared/const/modules';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'app-logbook-table',
     templateUrl: './table.component.html',
     styleUrls: ['./table.component.scss'],
-    imports: [MatTableModule, MatPaginatorModule, MatButtonModule, CommonModule, MatIconModule],
+    imports: [MatTableModule, MatPaginatorModule, MatButtonModule, CommonModule, MatIconModule, MatTooltipModule],
     standalone: true
 })
 export class LogbookTableComponent implements OnInit {
@@ -52,9 +53,17 @@ export class LogbookTableComponent implements OnInit {
     async getDataSource(queries?: { [key: string]: string | number }) {
         this.loading = true;
         try {
-            console.log('Fetching log books with queries:', queries);
-            
             const dataSource = await this.logBookUseCase.listLogBooksByPagination(this.pageSize, this.pageIndex, queries);
+            this.totalItems = await this.logBookUseCase.getTotalLogBooks(queries);
+            if(queries && Object.keys(queries).length > 0) {
+                this.pageSize = this.totalItems;
+                this.pageIndex = 1; // Reset to first page if queries are applied
+                this.pageSizeOptions = [this.totalItems];
+            } else {
+                this.pageSizeOptions = [5, 10, 20];
+                this.pageSize = 10; // Default page size
+                this.pageIndex = 1; // Reset to first page
+            }
             this.dataSource = dataSource.map((logBook: LogBook) => {
                 return {
                     ...logBook,
