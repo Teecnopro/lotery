@@ -55,7 +55,6 @@ export class CheckHitsTableComponent {
     async getDataSource(queries?: { [key: string]: string }[]) {
         this.loading = true;
         try {
-            this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
             this.totalItems = await this.registerBetsUseCase.getTotalBetsByQueries(queries);
             if (queries && queries.length > 0) {
                 this.pageSize = this.totalItems;
@@ -64,6 +63,7 @@ export class CheckHitsTableComponent {
                 this.pageSize = 10;
                 this.arraySize = [10, 20, 50, 100];
             }
+            this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
         } catch (error: any) {
             console.log('Error al cargar los vendedores:', error);
             this.notification.error('Error al cargar los vendedores: ' + error.message);
