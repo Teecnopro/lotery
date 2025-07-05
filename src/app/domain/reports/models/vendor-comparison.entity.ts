@@ -6,3 +6,11 @@ export interface VendorComparison {
   total?: number;
   variation?: number;
 }
+
+export interface UserComparison extends VendorComparison {
+  userId?: string;
+  userName?: string;
+  lottery?: string;
+  countLottery?: number;
+  colorLottery?: string;
+}
