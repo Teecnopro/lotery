@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 
 import { FormBuilder, Validators } from '@angular/forms';
 import { Timestamp } from '@angular/fire/firestore';
@@ -45,6 +45,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
     name: ['', Validators.required],
     isAdmin: [false],
   });
+  hidePassword = signal(true);
 
   private configValidatePassword() {
     const passwordCtrl = this.form.get('password');

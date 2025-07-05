@@ -28,7 +28,23 @@
           *ngIf="!isEditMode"
         >
           <mat-label>Contraseña</mat-label>
-          <input matInput formControlName="password" type="password" />
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <mat-icon
+            matSuffix
+            class="clickable-icon"
+            (click)="hidePassword.set(!hidePassword())"
+            [attr.aria-label]="
+              hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'
+            "
+            tabindex="0"
+          >
+            {{ hidePassword() ? "visibility_off" : "visibility" }}
+          </mat-icon>
           <mat-error *ngIf="form.get('password')?.hasError('required')"
             >Requerido</mat-error
           >
@@ -56,7 +72,7 @@
           >
             {{ isEditMode ? "Actualizar Usuario" : "Crear Usuario" }}
           </button>
-          <button mat-outlined-button type="button" (click)="form.reset()">
+          <button mat-raised-button type="button" (click)="form.reset()">
             Limpiar
           </button>
         </div>

@@ -1,4 +1,11 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+} from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { MaterialModule } from '../../../../shared/material/material.module';
@@ -15,6 +22,8 @@ import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFire
   styleUrl: './login-form.component.scss',
 })
 export class LoginFormComponent {
+  @Input() disabled: boolean = false;
+
   private fb = inject(FormBuilder);
   private loginUseCase = inject(LoginUseCase);
   private notification = inject(NOTIFICATION_PORT);
@@ -28,6 +37,7 @@ export class LoginFormComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
+  hidePassword = signal(true);
 
   async login() {
     if (this.form.invalid) return;
@@ -39,7 +49,7 @@ export class LoginFormComponent {
       await this.loginUseCase.execute(email!, password!);
       this.notification.success('Inicio de sesión exitoso');
       this.loginSuccess.emit();
-    } catch (error) {     
+    } catch (error) {
       this.notification.error(getFirebaseAuthErrorMessage(error));
     } finally {
       this.loading = false;
@@ -48,5 +58,10 @@ export class LoginFormComponent {
 
   goToRecoverPassword() {
     this.recoverPassword.emit();
+  }
+
+  clickEvent(event: MouseEvent) {
+    this.hidePassword.set(!this.hidePassword());
+    event.stopPropagation();
   }
 }
