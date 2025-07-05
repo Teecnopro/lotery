@@ -32,7 +32,7 @@ import { FormCompareBetsComponent } from '../../../../shared/components/form-com
       <div class="form-section" [hidden]="!showForm">
         <app-form-compare-bets
           (valuesForm)="applyFilter($event)"
-           [loading]="isLoading"
+          [loading]="isLoading"
         ></app-form-compare-bets>
       </div>
 
@@ -40,6 +40,13 @@ import { FormCompareBetsComponent } from '../../../../shared/components/form-com
         <app-list-compare-bets
           [vendorComparisionData]="vendorComparisionData"
           [loading]="isLoading"
+          [total]="totalItems"
+          [pageIndex]="pageIndex"
+          [pageSize]="pageSize"
+          [overallTotal]="overallTotal"
+          (changePage)="
+            applyFilter(lastFormValues, $event.pageIndex, $event.pageSize)
+          "
         ></app-list-compare-bets>
       </div>
     </div>`,
@@ -53,6 +60,10 @@ export class CompareBetsComponent implements OnInit, OnDestroy {
 
   isMobile: boolean = false;
   isLoading: boolean = false;
+  pageIndex: number = 0;
+  pageSize: number = 25;
+  totalItems: number = 0;
+  overallTotal: number = 0;
 
   vendorComparisionData!: {
     vendorComparision: VendorComparison[];
@@ -60,6 +71,7 @@ export class CompareBetsComponent implements OnInit, OnDestroy {
     month2Label: string;
   };
   showForm: boolean = false;
+  lastFormValues!: IFormValues;
 
   ngOnInit(): void {
     this.breakpointObserver
@@ -75,11 +87,24 @@ export class CompareBetsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  async applyFilter(valueForms: IFormValues) {
+  async applyFilter(
+    valueForms: IFormValues,
+    pageIndex: number = 0,
+    pageSize: number = 25
+  ) {
     this.isLoading = true;
     try {
-      const report = await this.compareBetsUseCase.execute(valueForms);
-      const { month1, month2 } = valueForms;
+      const {
+        result: report,
+        total,
+        overallTotal,
+      } = await this.compareBetsUseCase.execute(
+        valueForms,
+        pageIndex,
+        pageSize
+      );
+
+      const { month1, month2 } = valueForms || {};
 
       const { month1Label, month2Label } = MONTHS.reduce(
         (acc, m) => {
@@ -95,6 +120,11 @@ export class CompareBetsComponent implements OnInit, OnDestroy {
         month1Label,
         month2Label,
       };
+      this.totalItems = total;
+      this.pageIndex = pageIndex;
+      this.pageSize = pageSize;
+      this.overallTotal = overallTotal;
+      this.lastFormValues = valueForms;
     } catch (error) {
       this.notification.error(getFirebaseAuthErrorMessage(error));
     } finally {

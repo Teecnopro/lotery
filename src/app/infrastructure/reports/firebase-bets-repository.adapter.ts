@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+
 import { collection, getDocs, query, where } from '@firebase/firestore';
+import { Firestore, Timestamp } from '@angular/fire/firestore';
 
 import { BetsRepositoryPort } from '../../domain/reports/ports';
-import { Firestore, Timestamp } from '@angular/fire/firestore';
 import { IQueryBetsByVendor } from '../../modules/reports/interface/IReports.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -23,9 +24,8 @@ export class BetsFirestoreRepository implements BetsRepositoryPort {
       where('date', '<', endDate)
     );
 
-    const betsByVendor = new Map<string, IQueryBetsByVendor>();
-
     const snapshot = await getDocs(queryBets);
+    const betsByVendor = new Map<string, IQueryBetsByVendor>();
 
     snapshot?.forEach((doc) => {
       const data = doc.data();
