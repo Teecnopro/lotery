@@ -18,6 +18,9 @@ import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { LOG_BOOK_SERVICE } from '../../../../domain/logBook/ports';
+import { MODULES } from '../../../../shared/const/modules';
+import { ACTIONS } from '../../../../shared/const/actions';
 
 @Component({
   selector: 'app-alert-form',
@@ -40,6 +43,7 @@ export class AlertFormComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
   private user = inject(AUTH_SESSION);
   private alertUseCases = inject(AlertParameterizationUseCase);
+  private logBook = inject(LOG_BOOK_SERVICE);
   private notification = inject(NOTIFICATION_PORT);
 
   constructor(private cdr: ChangeDetectorRef) { }
@@ -81,6 +85,7 @@ export class AlertFormComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     const formData = { ...form.value };
+    const copyAlert = { ...this.alert };
     const alertData = { ...this.alert, value: formData.value, description: formData.description.trim(), digits: formData.digits };
     try {
       const existingAlert = await this.alertUseCases.getAlertParameterizationsByValue(
@@ -96,11 +101,27 @@ export class AlertFormComponent implements OnInit, OnDestroy {
         alertData.uid = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         alertData.createdBy = currentUser;
         alertData.createdAt = Date.now();
-        await this.alertUseCases.createAlertParameterization(alertData);
+        await this.alertUseCases.createAlertParameterization(alertData).then( async (data) => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.CREATE,
+            user: currentUser,
+            date: Date.now().valueOf(),
+            module: MODULES.ALERT_PARAMETERIZATION,
+            description: `Se creó una nueva parametrización de alerta con valor ${data.value} y dígitos ${data.digits}`,
+          });
+        });
       } else {
         alertData.updatedBy = currentUser;
         alertData.updatedAt = Date.now();
-        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData);
+        await this.alertUseCases.updateAlertParameterization(alertData.uid!, alertData).then(async (data) => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.UPDATE,
+            user: currentUser,
+            date: Date.now().valueOf(),
+            module: MODULES.ALERT_PARAMETERIZATION,
+            description: `Se actualizó la parametrización de alerta con id ${data.uid} de valor ${copyAlert.value} a ${data.value} y dígitos de ${copyAlert.digits} a ${data.digits}`,
+          });
+        });
       }
       this.notification.success(`Parametrización de alerta ${this.isEditing ? 'actualizada' : 'creada'} exitosamente`)
       this.limpiarFormulario(form);

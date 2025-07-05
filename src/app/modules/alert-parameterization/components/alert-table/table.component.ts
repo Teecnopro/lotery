@@ -10,6 +10,11 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
+import { LOG_BOOK_SERVICE } from '../../../../domain/logBook/ports';
+import { ACTIONS } from '../../../../shared/const/actions';
+import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
+import { AUTH_SESSION } from '../../../../domain/auth/ports';
+import { MODULES } from '../../../../shared/const/modules';
 
 @Component({
   selector: 'app-alert-table',
@@ -23,8 +28,10 @@ export class AlertTableComponent implements OnInit {
   @Input() updateTable: Subject<boolean> | null = null;
   @Input() showFormObservable: Subject<boolean> | null = null;
   private alertParameterizationUseCase = inject(AlertParameterizationUseCase);
+  private logBook = inject(LOG_BOOK_SERVICE);
   private notification = inject(NOTIFICATION_PORT);
-    private dialog = inject(MatDialog);
+  private dialog = inject(MatDialog);
+  user = inject(AUTH_SESSION);
 
   loading: boolean = false;
   dataSource: AlertParameterization[] = [];
@@ -77,7 +84,15 @@ export class AlertTableComponent implements OnInit {
     const confirmed = await firstValueFrom(dialogRef.afterClosed());
     if (confirmed) {
       try {
-        await this.alertParameterizationUseCase.deleteAlertParameterization(element.uid!);
+        await this.alertParameterizationUseCase.deleteAlertParameterization(element.uid!).then(async () => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.DELETE,
+            user: this.user.getUser() as AuthUser,
+            date: Date.now().valueOf(),
+            module: MODULES.ALERT_PARAMETERIZATION,
+            description: `Se eliminó la parametrización de alerta con id ${element.uid}`,
+          });
+        });
         this.notification.success('Parametrización de alerta eliminada exitosamente');
         this.getDataSource(); // Refresh the table
       } catch (error: any) {
