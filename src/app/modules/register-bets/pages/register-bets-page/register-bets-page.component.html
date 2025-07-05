@@ -2,11 +2,16 @@
   <button
     mat-raised-button
     type="button"
-    color="warn"
+    color="primary"
     *ngIf="isDetail"
     (click)="isDetail = false"
   >
+  <mat-icon>arrow_back</mat-icon>
     Volver
+  </button>
+  <button mat-flat-button color="warn" *ngIf="selectedBets?.selected && isDetail" (click)="deleteBetsDetail()">
+    <mat-icon>delete</mat-icon>
+    Eliminar
   </button>
   <span
     *ngFor="let item of filteredOptions"
@@ -35,6 +40,8 @@
     <app-register-bets-list-detail
       *ngIf="isDetail"
       [grupedBet]="registerBet"
+      (isSelectToDeleted)="selectedBets = $event"
+      (emitDetail)="isDetail = $event"
     ></app-register-bets-list-detail>
   </div>
 </div>

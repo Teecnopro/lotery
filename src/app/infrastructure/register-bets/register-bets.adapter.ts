@@ -24,6 +24,7 @@ import {
   Timestamp,
   updateDoc,
   where,
+  writeBatch,
 } from '@angular/fire/firestore';
 import { RegisterBetsServicePort } from '../../domain/register-bets/ports';
 import {
@@ -32,7 +33,7 @@ import {
   RegisterBetsDetail,
 } from '../../domain/register-bets/models/register-bets.entity';
 import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
-import { BehaviorSubject, concatMapTo, Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
 
 @Injectable({ providedIn: 'root' })
@@ -62,11 +63,14 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async create(data: RegisterBetsDetail): Promise<void> {
-    const warning = this.validateAlert(data.lotteryNumber!, data.value as number);
-    console.log("🚀 ~ FirebaseRegisterBetsAdapter ~ create ~ warning:", warning)
+    this.getAlerts();
+    const warning = this.validateAlert(
+      data.lotteryNumber!,
+      data.value as number
+    );
 
     data.warning = warning.isAlert;
-    data.alertDescription = warning.description || "";
+    data.alertDescription = warning.description || '';
 
     const bets = collection(this.firestore, 'register-bets-detail');
     await addDoc(bets, {
@@ -77,8 +81,62 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     await this.createGroupedBets(data, total);
   }
 
-  async delete(uid: string): Promise<void> {
-    await deleteDoc(doc(this.firestore, 'register-bets', uid));
+  async delete(data: RegisterBetsDetail[]): Promise<void> {
+    let totalSumary = this.totalToDelete(data);
+
+    const batch = writeBatch(this.firestore);
+
+    const ids = data.map((item) => item.uid);
+
+    ids.forEach((id) => {
+      const ref = doc(this.firestore, `register-bets-detail/${id}`);
+      batch.delete(ref);
+    });
+
+    await batch.commit();
+
+    await this.deleteOrUpdateGroupedBets(data[0], totalSumary)
+  }
+
+  totalToDelete(data: RegisterBetsDetail[]) {
+    let sumary = 0;
+
+    data.forEach((item) => {
+      sumary += item.value as number;
+    });
+
+    return sumary;
+  }
+
+  async deleteOrUpdateGroupedBets(data: RegisterBets, total: number) {
+    const betsRef = collection(this.firestore, 'register-bets');
+
+    const q = this.queryBase(data, betsRef);
+
+    const bet = (await getDocs(q)).docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data() as RegisterBets,
+    }));
+
+    if (bet.length === 0) {
+      throw new Error('No existen apuestas agrupadas');
+    }
+
+    const totalDiff = bet[0].groupedValue as number - total;
+
+    const warning = this.validateAlert(data.lotteryNumber!, totalDiff);
+
+    if (totalDiff > 0) {
+      await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
+        updatedAt: data.updatedAt,
+        groupedValue: totalDiff,
+        warning: warning.isAlert,
+        alertDescription: warning.description || '',
+      });
+      return;
+    }
+
+    await deleteDoc(doc(this.firestore, 'register-bets', bet[0].id));
   }
 
   async getByQuery({
@@ -242,7 +300,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       groupedValue: total,
       combined: data.combined,
       warning: warning.isAlert,
-      alertDescription: warning.description || "",
+      alertDescription: warning.description || '',
       date: data.date,
       updatedAt: data.updatedAt,
     };
@@ -261,7 +319,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
         updatedAt: data.updatedAt,
         groupedValue: total,
         warning: warning.isAlert,
-        alertDescription: warning.description,
+        alertDescription: warning.description || '',
       });
       return;
     }
@@ -369,10 +427,10 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(
         (doc) =>
-        ({
-          uid: doc.id,
-          ...doc.data(),
-        } as RegisterBetsDetail)
+          ({
+            uid: doc.id,
+            ...doc.data(),
+          } as RegisterBetsDetail)
       );
     }
 

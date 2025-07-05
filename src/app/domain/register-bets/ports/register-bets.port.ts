@@ -11,7 +11,7 @@ import {
 
 export interface RegisterBetsServicePort {
   create(data: RegisterBetsDetail): Promise<void>;
-  delete(uid: string): Promise<void>;
+  delete(data: RegisterBetsDetail[]): Promise<void>;
   getByQuery(query: FirebaseQuery): Promise<ResponseQuery<RegisterBets>>;
   getByQueryDetail(
     query: FirebaseQuery

@@ -10,8 +10,8 @@ export class RegisterBetsUseCase {
   createRegisterBets(data: RegisterBetsDetail): Promise<void> {
     return this.registerBets.create(data);
   }
-  deleteRegisterBets(uid: string): Promise<void> {
-    return this.registerBets.delete(uid);
+  deleteRegisterBets(data: RegisterBetsDetail[]): Promise<void> {
+    return this.registerBets.delete(data);
   }
   getRegisterBetsByQuery(query: FirebaseQuery): Promise<ResponseQuery<RegisterBets>> {
     return this.registerBets.getByQuery(query);

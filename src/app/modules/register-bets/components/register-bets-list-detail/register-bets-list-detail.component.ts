@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -13,6 +13,8 @@ import {
   RegisterBets,
   RegisterBetsDetail,
 } from '../../../../domain/register-bets/models/register-bets.entity';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-register-bets-list-detail',
@@ -26,15 +28,20 @@ import {
     MatIconModule,
     CurrencyPipe,
     MatTooltipModule,
+    MatCheckbox
   ],
   templateUrl: './register-bets-list-detail.component.html',
   styleUrl: './register-bets-list-detail.component.scss',
 })
 export class RegisterBetsListDetailComponent implements OnInit {
   @Input('grupedBet') groupedBet!: RegisterBets;
+  @Output() isSelectToDeleted = new EventEmitter<{selected: boolean, items: RegisterBetsDetail[]}>();
+  @Output() emitDetail = new EventEmitter<boolean>();
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
+
+  selection = new SelectionModel<RegisterBets>(true, []);
 
   hasNext = false;
   hasPrev = false;
@@ -50,13 +57,13 @@ export class RegisterBetsListDetailComponent implements OnInit {
   listBets: RegisterBetsDetail[] = [];
 
   displayedColumns: string[] = [
+    "select",
     "consecutive",
     "seller",
     'lottery',
     'lotteryNumber',
     'combined',
-    'value',
-    'options',
+    'value'
   ];
 
   async ngOnInit() {
@@ -98,6 +105,12 @@ export class RegisterBetsListDetailComponent implements OnInit {
       this.listBets = data;
       this.hasNext = hasNext as boolean;
       this.hasPrev = hasPrev as boolean;
+
+      this.selection.clear();
+
+      if (this.listBets.length === 0) {
+        this.emitDetail.emit(false);
+      }
     } catch (error: any) {
       console.error('Error fetching register bets:', error);
       this.notification.error(
@@ -124,5 +137,43 @@ export class RegisterBetsListDetailComponent implements OnInit {
     this.currentPageIndex = newPage;
 
     this.getData(direction);
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.listBets.length;
+    return numSelected === numRows;
+  }
+
+  isPartialSelected() {
+    const numSelected = this.selection.selected.length;
+    return numSelected > 0 && !this.isAllSelected();
+  }
+
+  toggleAllRows(event: any) {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.selection.select(...this.listBets);
+    }
+
+    this.validateAndEmit()
+  }
+
+  toggleRow(row: RegisterBets) {
+    this.selection.toggle(row);
+    this.validateAndEmit();
+  }
+
+  validateAndEmit() {
+    const selectedBets = this.selection.selected;
+    // console.log("🚀 ~ RegisterBetsListDetailComponent ~ validateAndEmit ~ selectedBets:", selectedBets)
+
+    if (selectedBets.length > 0) {
+      this.isSelectToDeleted.emit({selected: true, items: selectedBets});
+      return;
+    }
+
+    this.isSelectToDeleted.emit({selected: false, items: selectedBets});
   }
 }
