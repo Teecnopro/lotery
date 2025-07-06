@@ -15,6 +15,11 @@ import { MaterialModule } from '../../../shared/material/material.module';
 import { MENU_ITEMS } from '../const/menuItems';
 import { LogoutUseCase } from '../../../domain/auth/use-cases';
 import { AUTH_SESSION } from '../../../domain/auth/ports';
+import { LOG_BOOK_SERVICE } from '../../../domain/logBook/ports';
+import { LogBookAdapter } from '../../../infrastructure/logBook/logBook.adapter';
+import { LogBookUseCases } from '../../../domain/logBook/use-cases/logBook.usecases';
+import { ACTIONS } from '../../../shared/const/actions';
+import { MODULES } from '../../../shared/const/modules';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -22,6 +27,13 @@ import { AUTH_SESSION } from '../../../domain/auth/ports';
   imports: [CommonModule, RouterModule, MaterialModule],
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.scss'],
+  providers: [
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases
+  ]
 })
 export class DashboardLayoutComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -32,6 +44,7 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private authSession = inject(AUTH_SESSION);
   private logoutUseCase = inject(LogoutUseCase);
+  private LogBookUseCases = inject(LogBookUseCases);
 
   title: string = '';
   menuItems = MENU_ITEMS;
@@ -84,7 +97,16 @@ export class DashboardLayoutComponent implements OnInit, OnDestroy {
   }
 
   async logout() {
-    await this.logoutUseCase.execute();
+    const userSession = this.authSession.getUser();
+    await this.logoutUseCase.execute().then(() => {
+      this.LogBookUseCases.createLogBook({
+        date: new Date().valueOf(),
+        action: ACTIONS.LOGOUT,
+        user: userSession!,
+        module: MODULES.AUTH,
+        description: `Usuario ${userSession?.name} cerró sesión`,
+      });
+    });
     this.router.navigate(['/auth/login']);
   }
 }

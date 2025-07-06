@@ -18,6 +18,9 @@ import { PaymentParameterizationUseCase } from '../../domain/payment-parameteriz
 import { ALERT_PARAMETERIZATION_SERVICE } from '../../domain/alert-parameterization/ports';
 import { FirebaseAlertParameterizationAdapter } from '../../infrastructure/alert-parameterization/alert-parameterization.adapter';
 import { AlertParameterizationUseCase } from '../../domain/alert-parameterization/use-cases';
+import { LOG_BOOK_SERVICE } from '../../domain/logBook/ports';
+import { LogBookAdapter } from '../../infrastructure/logBook/logBook.adapter';
+import { LogBookUseCases } from '../../domain/logBook/use-cases/logBook.usecases';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule],
@@ -39,6 +42,11 @@ import { AlertParameterizationUseCase } from '../../domain/alert-parameterizatio
       provide: ALERT_PARAMETERIZATION_SERVICE,
       useClass: FirebaseAlertParameterizationAdapter,
     },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
     AlertParameterizationUseCase,
     LoginUseCase,
     LogoutUseCase,
