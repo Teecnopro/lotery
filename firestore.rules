@@ -8,6 +8,8 @@ service cloud.firestore {
       allow read: if request.auth != null && isAdmin();
       // Allow admins to create/update users
       allow create, update: if request.auth != null && isAdmin();
+      // Allow admins to delete users
+      allow delete: if request.auth != null && isAdmin();
     }
 
     // Payment parameterization rules
