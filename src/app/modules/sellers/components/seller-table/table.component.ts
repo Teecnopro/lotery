@@ -55,6 +55,7 @@ export class SellerTableComponent {
   pageSize: number = 10; // Default page size
   totalItems: number = 0; // Total number of items for pagination
   pageIndex: number = 1; // Current page index (backend expects 1-based indexing)
+  pageSizeOptions: number[] = [5, 10, 20]; // Options for page size selection
 
   displayedColumns: string[] = [
     'code',

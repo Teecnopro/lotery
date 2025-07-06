@@ -61,7 +61,6 @@ export class LogbookTableComponent implements OnInit {
             } else {
                 this.pageSizeOptions = [5, 10, 20];
                 this.pageSize = 10; // Default page size
-                this.pageIndex = 1; // Reset to first page
             }
             this.dataSource = dataSource.map((logBook: LogBook) => {
                 return {

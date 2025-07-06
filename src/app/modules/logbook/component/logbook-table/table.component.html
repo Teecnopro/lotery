@@ -36,7 +36,8 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
     <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex > 0 ? pageIndex - 1 : 0"
-        [pageSizeOptions]="[1,10, 20]" showFirstLastButtons aria-label="Seleccionar página de vendedores"
+        [pageSizeOptions]="pageSizeOptions" showFirstLastButtons aria-label="Seleccionar página de bitacora"
         *ngIf="!loading" (page)="onPageChange($event)">
     </mat-paginator>
+    
 </div>
