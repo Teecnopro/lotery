@@ -17,6 +17,10 @@ import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.usecases';
+import { ACTIONS } from '../../../../shared/const/actions';
+import { MODULES } from '../../../../shared/const/modules';
+import { AUTH_SESSION } from '../../../../domain/auth/ports';
 
 @Component({
   selector: 'app-register-bets-page',
@@ -35,6 +39,8 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 })
 export class RegisterBetsPageComponent implements OnInit {
   registerBet!: RegisterBets;
+  private logBookUseCases = inject(LogBookUseCases);
+  private user = inject(AUTH_SESSION);
 
   selectedBets!: { selected: boolean; items: RegisterBetsDetail[] };
 
@@ -98,7 +104,15 @@ export class RegisterBetsPageComponent implements OnInit {
       try {
         await this.registerBetsUseCase.deleteRegisterBets(
           this.selectedBets.items
-        );
+        ).then(() => {
+          this.logBookUseCases.createLogBook({
+            action: ACTIONS.DELETE,
+            date: new Date().valueOf(),
+            user: this.user.getUser()!,
+            module: MODULES.REGISTER_BETS,
+            description: `Registros de apuestas eliminados por ${this.user.getUser()?.name}`,
+          });
+        });
 
         this.notification.success(
           'Registros eliminados exitosamente'

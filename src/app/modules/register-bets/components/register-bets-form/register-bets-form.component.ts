@@ -34,10 +34,13 @@ import {
 } from '@angular/fire/firestore';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
-import { WhereCondition } from '../../../../shared/models/query.entity';
-import { FirebaseSellerAdapter } from '../../../../infrastructure/sellers/firebase-seller.adapter';
 import { ISeller } from '../../../../domain/sellers/models/seller.model';
 import { lotteries } from '../../../../shared/const';
+import { LogoutUseCase } from '../../../../domain/auth/use-cases';
+import { SellerUseCase } from '../../../../domain/sellers/use-cases';
+import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.usecases';
+import { ACTIONS } from '../../../../shared/const/actions';
+import { MODULES } from '../../../../shared/const/modules';
 
 @Component({
   selector: 'app-register-bets-form',
@@ -63,7 +66,8 @@ export class RegisterBetsFormComponent implements OnInit {
   @ViewChild('lotterySelect') lotterySelect!: MatSelect;
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
-  private sellersUseCase = inject(FirebaseSellerAdapter);
+  private sellersUseCase = inject(SellerUseCase);
+  private logBookUseCases = inject(LogBookUseCases);
 
   private formBuilder = inject(FormBuilder);
 
@@ -112,8 +116,16 @@ export class RegisterBetsFormComponent implements OnInit {
   }
   async sendData() {
     const betDetail = this.buildObj();
-
-    await this.registerBetsUseCase.createRegisterBets(betDetail);
+    const currentUser = this.user.getUser();
+    await this.registerBetsUseCase.createRegisterBets(betDetail).then(() => {
+      this.logBookUseCases.createLogBook({
+        action: ACTIONS.CREATE,
+        date: new Date().valueOf(),
+        user: currentUser!,
+        module: MODULES.REGISTER_BETS,
+        description: `Apuesta registrada por ${betDetail.seller?.name} para la lotería ${betDetail.lottery?.name} con número ${betDetail.lotteryNumber} y valor ${betDetail.value}`,
+      });
+    });
 
     this.updateList();
   }
