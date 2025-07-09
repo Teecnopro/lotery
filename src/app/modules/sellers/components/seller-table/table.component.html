@@ -75,7 +75,7 @@
         [length]="totalItems"
         [pageSize]="pageSize"
         [pageIndex]="pageIndex > 0 ? pageIndex - 1 : 0"
-        [pageSizeOptions]="[1,10, 20]" 
+        [pageSizeOptions]="pageSizeOptions" 
         showFirstLastButtons 
         aria-label="Seleccionar página de vendedores" 
         *ngIf="!loading"

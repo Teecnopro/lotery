@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 
 import { FormBuilder, Validators } from '@angular/forms';
 import { Timestamp } from '@angular/fire/firestore';
@@ -16,6 +16,9 @@ import { UserData } from '../../../../domain/users/models/users.entity';
 import { getFirebaseAuthErrorMessage } from '../../../../shared/function/getFirebaseLoginErrorMessage.function';
 import { UserStateService } from '../../service/user-state.service';
 import { Subject, takeUntil } from 'rxjs';
+import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.usecases';
+import { ACTIONS } from '../../../../shared/const/actions';
+import { MODULES } from '../../../../shared/const/modules';
 
 @Component({
   selector: 'app-user-form',
@@ -28,6 +31,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private createUseCase = inject(CreateUserUseCase);
   private updateUseCase = inject(UpdateUserUseCase);
+  private logBookUseCases = inject(LogBookUseCases);
   private notification = inject(NOTIFICATION_PORT);
   private userSession = inject(AUTH_SESSION);
   private breakpointObserver = inject(BreakpointObserver);
@@ -45,6 +49,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
     name: ['', Validators.required],
     isAdmin: [false],
   });
+  hidePassword = signal(true);
 
   private configValidatePassword() {
     const passwordCtrl = this.form.get('password');
@@ -131,7 +136,15 @@ export class UserFormComponent implements OnInit, OnDestroy {
     };
 
     try {
-      await this.createUseCase.execute(userToSend, password!);
+      await this.createUseCase.execute(userToSend, password!).then(async () => {
+        await this.logBookUseCases.createLogBook({
+          date: new Date().valueOf(),
+          action: ACTIONS.CREATE,
+          user: currentUser!,
+          module: MODULES.USER,
+          description: `Usuario ${userToSend.name} creado`,
+        });
+      });
       this.userState.triggerRefreshList(true);
       this.notification.success('Usuario creado exitosamente');
       this.form.reset();
@@ -164,7 +177,15 @@ export class UserFormComponent implements OnInit, OnDestroy {
     };
 
     try {
-      await this.updateUseCase.execute(this.userId, userToUpdate);
+      await this.updateUseCase.execute(this.userId, userToUpdate).then(async () => {
+        await this.logBookUseCases.createLogBook({
+          date: new Date().valueOf(),
+          action: ACTIONS.UPDATE,
+          user: currentUser!,
+          module: MODULES.USER,
+          description: `Usuario ${userToUpdate.uid} actualizado`,
+        });
+      });
       this.userState.triggerRefreshList(true);
       this.notification.success('Usuario actualizado exitosamente');
       this.form.reset();

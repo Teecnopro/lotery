@@ -28,10 +28,21 @@
         <mat-icon matPrefix>lock</mat-icon>
         <input
           matInput
+          [type]="hidePassword() ? 'password' : 'text'"
           formControlName="password"
-          type="password"
           autocomplete="current-password"
         />
+        <mat-icon
+          matSuffix
+          class="clickable-icon"
+          (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="
+            hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'
+          "
+          tabindex="0"
+        >
+          {{ hidePassword() ? "visibility_off" : "visibility" }}
+        </mat-icon>
         <mat-error *ngIf="form.get('password')?.hasError('required')"
           >Requerido</mat-error
         >
@@ -43,7 +54,7 @@
           color="primary"
           type="submit"
           class="btn-loading"
-          [disabled]="loading"
+          [disabled]="loading || disabled"
         >
           <ng-container *ngIf="!loading">Entrar</ng-container>
           <mat-progress-spinner

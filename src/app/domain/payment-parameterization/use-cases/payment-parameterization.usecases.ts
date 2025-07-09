@@ -5,10 +5,10 @@ import { PaymentParameterization } from '../models/payment-parameterization.enti
 
 export class PaymentParameterizationUseCase {
   private paymentParameterization = inject(PAYMENT_PARAMETERIZATION_SERVICE);
-  createPaymentParameterization(data: PaymentParameterization): Promise<void> {
+  createPaymentParameterization(data: PaymentParameterization): Promise<PaymentParameterization> {
     return this.paymentParameterization.create(data);
   }
-  updatePaymentParameterization(id: string, data: PaymentParameterization): Promise<void> {
+  updatePaymentParameterization(id: string, data: PaymentParameterization): Promise<PaymentParameterization> {
     return this.paymentParameterization.update(id, data);
   }
   deletePaymentParameterization(id: string): Promise<void> {

@@ -11,6 +11,9 @@ import { ISeller } from "../../../../domain/sellers/models/seller.model";
 import { AUTH_SESSION } from "../../../../domain/auth/ports";
 import { NOTIFICATION_PORT } from "../../../../shared/ports";
 import { SellerUseCase } from '../../../../domain/sellers/use-cases/seller.usecase';
+import { LOG_BOOK_SERVICE } from "../../../../domain/logBook/ports";
+import { MODULES } from "../../../../shared/const/modules";
+import { ACTIONS } from "../../../../shared/const/actions";
 
 @Component({
     selector: 'app-seller-form',
@@ -33,6 +36,7 @@ export class SellerFormComponent {
     private subscription?: Subscription;
     private user = inject(AUTH_SESSION);
     private SellerUseCase = inject(SellerUseCase);
+    private logBook = inject(LOG_BOOK_SERVICE);
     private notification = inject(NOTIFICATION_PORT);
     seller: ISeller = {
         state: true, // Default state is active
@@ -88,11 +92,27 @@ export class SellerFormComponent {
                 sellerData.uid = `seller_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                 sellerData.createdBy = currentUser;
                 sellerData.createdAt = Date.now();
-                await this.SellerUseCase.createSeller(sellerData);
+                await this.SellerUseCase.createSeller(sellerData).then(async () => {
+                    await this.logBook.createLogBook({
+                        action: ACTIONS.CREATE,
+                        user: currentUser,
+                        date: Date.now().valueOf(),
+                        module: MODULES.VENDOR,
+                        description: `Se creó el vendedor con id ${sellerData.uid}`,
+                    });
+                });
             } else {
                 sellerData.updatedBy = currentUser;
                 sellerData.updatedAt = Date.now();
-                await this.SellerUseCase.updateSeller(sellerData.uid!, sellerData);
+                await this.SellerUseCase.updateSeller(sellerData.uid!, sellerData).then(async () => {
+                    await this.logBook.createLogBook({
+                        action: ACTIONS.UPDATE,
+                        user: currentUser,
+                        date: Date.now().valueOf(),
+                        module: MODULES.VENDOR,
+                        description: `Se actualizó el vendedor con id ${sellerData.uid}`,
+                    });
+                });
             }
             this.updateTable?.next(true);
             this.notification.success(this.isEditing ? 'Vendedor actualizado exitosamente' : 'Vendedor creado exitosamente');

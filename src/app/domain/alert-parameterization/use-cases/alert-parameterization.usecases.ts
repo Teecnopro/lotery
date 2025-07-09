@@ -1,7 +1,5 @@
 import { inject } from '@angular/core';
 
-import { Observable, from } from 'rxjs';
-
 import { ALERT_PARAMETERIZATION_SERVICE } from '../ports';
 import { AlertParameterization } from '../models/alert-parameterization.entity';
 

@@ -10,6 +10,9 @@ import { ALERT_PARAMETERIZATION_SERVICE } from '../../domain/alert-parameterizat
 import { FirebaseAlertParameterizationAdapter } from '../../infrastructure/alert-parameterization/alert-parameterization.adapter';
 import { SellerUseCase } from '../../domain/sellers/use-cases';
 import { AlertParameterizationUseCase } from '../../domain/alert-parameterization/use-cases';
+import { LOG_BOOK_SERVICE } from '../../domain/logBook/ports';
+import { LogBookAdapter } from '../../infrastructure/logBook/logBook.adapter';
+import { LogBookUseCases } from '../../domain/logBook/use-cases/logBook.usecases';
 
 
 
@@ -32,6 +35,11 @@ import { AlertParameterizationUseCase } from '../../domain/alert-parameterizatio
       provide: ALERT_PARAMETERIZATION_SERVICE,
       useClass: FirebaseAlertParameterizationAdapter // Assuming FirebaseSellerAdapter implements ALERT_PARAMETERIZATION_SERVICE
     },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
     RegisterBetsUseCase,
     SellerUseCase,
     AlertParameterizationUseCase

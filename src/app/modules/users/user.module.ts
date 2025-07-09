@@ -10,6 +10,9 @@ import {
   GetUsersUseCase,
   UpdateUserUseCase,
 } from '../../domain/users/use-cases';
+import { LOG_BOOK_SERVICE } from '../../domain/logBook/ports';
+import { LogBookUseCases } from '../../domain/logBook/use-cases/logBook.usecases';
+import { LogBookAdapter } from '../../infrastructure/logBook/logBook.adapter';
 
 @NgModule({
   imports: [CommonModule],
@@ -18,6 +21,11 @@ import {
       provide: USER_SERVICE,
       useClass: FirebaseUserAdapter,
     },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
     GetUsersUseCase,
     CreateUserUseCase,
     UpdateUserUseCase,

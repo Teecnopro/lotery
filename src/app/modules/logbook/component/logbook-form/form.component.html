@@ -24,15 +24,15 @@
 
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Tipo de Acción</mat-label>
-                    <mat-select name="actionType" [(ngModel)]="selectedActionType" required>
-                        <mat-option *ngFor="let action of actionTypes" [value]="action">{{ action }}</mat-option>
+                    <mat-select name="action" [(ngModel)]="selectedaction" required>
+                        <mat-option *ngFor="let action of actions" [value]="action.value">{{ action.label }}</mat-option>
                     </mat-select>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Módulo</mat-label>
                     <mat-select name="module" [(ngModel)]="selectedModule" required>
-                        <mat-option *ngFor="let module of modules" [value]="module">{{ module }}</mat-option>
+                        <mat-option *ngFor="let module of modules" [value]="module.value">{{ module.label }}</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <div class="button-group">

@@ -10,6 +10,9 @@ import { PaymentParameterizationUseCase } from '../../../domain/payment-paramete
 import { NOTIFICATION_PORT } from '../../../shared/ports';
 import { MaterialNotificationAdapter } from '../../../shared/infrastructure/matsnackbar-notification.adapter';
 import { MaterialModule } from '../../../shared/material/material.module';
+import { LOG_BOOK_SERVICE } from '../../../domain/logBook/ports';
+import { LogBookAdapter } from '../../../infrastructure/logBook/logBook.adapter';
+import { LogBookUseCases } from '../../../domain/logBook/use-cases/logBook.usecases';
 
 @Component({
   selector: 'app-payment-parameterization-page',
@@ -24,6 +27,11 @@ import { MaterialModule } from '../../../shared/material/material.module';
       provide: NOTIFICATION_PORT,
       useClass: MaterialNotificationAdapter,
     },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
     PaymentParameterizationUseCase,
   ],
   templateUrl: './payment-parameterization.page.html',

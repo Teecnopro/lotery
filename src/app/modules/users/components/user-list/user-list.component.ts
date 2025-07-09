@@ -20,6 +20,10 @@ import { UserStateService } from '../../service/user-state.service';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
+import { LOG_BOOK_SERVICE } from '../../../../domain/logBook/ports';
+import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.usecases';
+import { ACTIONS } from '../../../../shared/const/actions';
+import { MODULES } from '../../../../shared/const/modules';
 
 @Component({
   selector: 'app-user-list',
@@ -33,6 +37,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   private getUseCase = inject(GetUsersUseCase);
   private changeStatus = inject(DeactivateUserUseCase);
   private deleteUseCase = inject(DeleteUserUseCase);
+  private logBookUseCases = inject(LogBookUseCases);
   private notification = inject(NOTIFICATION_PORT);
   private breakpointObserver = inject(BreakpointObserver);
   private destroy$ = new Subject<void>();
@@ -63,6 +68,8 @@ export class UserListComponent implements OnInit, OnDestroy {
       const rawsUsers: UserData[] = await this.getUseCase.execute();
       this.dataSource.data = rawsUsers;
     } catch (error) {
+      console.log('Error fetching users:', error);
+      
       this.notification.error(getFirebaseAuthErrorMessage(error));
     }
   }
@@ -133,8 +140,17 @@ export class UserListComponent implements OnInit, OnDestroy {
         !userData?.state,
         Timestamp.now(),
         updater
-      );
-
+      ).then(async () => {
+        this.logBookUseCases.createLogBook({
+          date: new Date().valueOf(),
+          action: userData?.state ? ACTIONS.DEACTIVATE : ACTIONS.ACTIVATE,
+          user: this.currentUser,
+          module: MODULES.USER,
+          description: `Usuario ${userData?.name} ${
+            userData?.state ? 'desactivado' : 'activado'
+          }`,
+        });
+      });
       this.notification.success(
         `Usuario ${userData?.state ? 'desactivado' : 'activado'} exitosamente`
       );
@@ -161,7 +177,15 @@ export class UserListComponent implements OnInit, OnDestroy {
     this.loadingIcon = true;
 
     try {
-      await this.deleteUseCase.execute(userData?.uid!);
+      await this.deleteUseCase.execute(userData?.uid!).then(async () => {
+        await this.logBookUseCases.createLogBook({
+          date: new Date().valueOf(),
+          action: ACTIONS.DELETE,
+          user: this.currentUser,
+          module: MODULES.USER,
+          description: `Usuario ${userData?.uid} ${userData?.name} eliminado`,
+        });
+      });
       this.notification.success(`Usuario eliminado exitosamente`);
       await this.getUsers();
     } catch (error) {

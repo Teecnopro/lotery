@@ -19,6 +19,7 @@ import {
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { NOTIFICATION_PORT } from '../ports';
 import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
@@ -42,6 +43,7 @@ import { getSpanishPaginatorIntl } from '../function/mat-paginator-intl-es';
     MatDialogModule,
     MatChipsModule,
     MatSelectModule,
+    MatProgressBarModule,
   ],
   providers: [
     {

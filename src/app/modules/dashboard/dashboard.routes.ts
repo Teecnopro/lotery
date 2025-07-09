@@ -12,6 +12,14 @@ export const routesDashboard: Routes = [
       ),
     children: [
       {
+        path: '',
+        loadComponent: () =>
+          import('./components/dashboard-home.component').then(
+            (m) => m.DashboardHomeComponent
+          ),
+        data: { title: 'Inicio' },
+      },
+      {
         path: 'users',
         loadChildren: () =>
           import('../users/users.routes').then((m) => m.routesUsers),

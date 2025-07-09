@@ -10,6 +10,12 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
+import { LOG_BOOK_SERVICE } from '../../../../domain/logBook/ports';
+import { ACTIONS_LOGBOOK, ACTIONS } from '../../../../shared/const/actions';
+import { NAME_MODULES } from '../../../const/namesModule';
+import { MODULES } from '../../../../shared/const/modules';
+import { AUTH_SESSION } from '../../../../domain/auth/ports';
+import { AuthUser } from '../../../../domain/auth/models/auth-user.entity';
 
 @Component({
   selector: 'app-payment-table',
@@ -23,6 +29,8 @@ export class PaymentTableComponent implements OnInit {
   @Input() updateTable: Subject<boolean> | null = null;
   @Input() showFormObservable: Subject<boolean> | null = null;
   private paymentParameterizationUseCase = inject(PaymentParameterizationUseCase);
+  private user = inject(AUTH_SESSION);
+  private logBook = inject(LOG_BOOK_SERVICE);
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
   private updateSubscription?: Subscription;
@@ -41,7 +49,7 @@ export class PaymentTableComponent implements OnInit {
     'actions',
   ];
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.getDataSource();
@@ -88,7 +96,7 @@ export class PaymentTableComponent implements OnInit {
     if (document.activeElement && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    
+
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: 'Eliminar parametrización de pago',
@@ -98,7 +106,15 @@ export class PaymentTableComponent implements OnInit {
     const confirmed = await firstValueFrom(dialogRef.afterClosed());
     if (confirmed) {
       try {
-        await this.paymentParameterizationUseCase.deletePaymentParameterization(element.uid!);
+        await this.paymentParameterizationUseCase.deletePaymentParameterization(element.uid!).then(async () => {
+          await this.logBook.createLogBook({
+            action: ACTIONS.DELETE,
+            user: this.user.getUser() as AuthUser,
+            date: Date.now().valueOf(),
+            module: MODULES.PAYMENT,
+            description: `Se eliminó la parametrización de alerta con id ${element.uid}`,
+          });
+        });
         this.notification.success('Parametrización de pago eliminada exitosamente');
         await this.getDataSource(); // Refresh the table
       } catch (error: any) {

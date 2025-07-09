@@ -65,7 +65,6 @@ export class CheckHitsTableComponent {
             }
             this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
         } catch (error: any) {
-            console.log('Error al cargar los vendedores:', error);
             this.notification.error('Error al cargar los vendedores: ' + error.message);
         } finally {
             this.loading = false;
