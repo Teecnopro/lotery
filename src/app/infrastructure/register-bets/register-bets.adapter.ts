@@ -343,7 +343,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async getDataToResume({ whereConditions }: FirebaseQuery): Promise<any> {
-    const betRef = collection(this.firestore, 'register-bets-detail');
+    const betRefDetail = collection(this.firestore, 'register-bets-detail');
+    const betRef = collection(this.firestore, 'register-bets');
 
     // Aplicando filtros
     const constraints: QueryConstraint[] = [];
@@ -352,17 +353,24 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       constraints.push(where(field, op, value));
     }
 
-    const q = query(betRef, ...constraints);
+    const qDetail = query(betRefDetail, ...constraints);
+    const q = query(betRef, ...constraints, where("warning","==",true));
 
+
+    const snapshotDetail = await getDocs(qDetail);
     const snapshot = await getDocs(q);
-    const data = snapshot.docs.map(
+
+    const dataDetail = snapshotDetail.docs.map(
       (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBetsDetail)
     );
+    const dataGrouped = snapshot.docs.map(
+      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBets)
+    );
 
-    return this.parseDataToResume(data);
+    return this.parseDataToResume(dataDetail, dataGrouped);
   }
 
-  parseDataToResume(data: RegisterBetsDetail[]) {
+  parseDataToResume(data: RegisterBetsDetail[], dataGrouped: RegisterBets[]) {
     let objParse: any = {};
 
     for (let item of data) {
@@ -378,8 +386,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
 
     objParse['Total'] = this.getTotalResume(data);
-    objParse['Advertencias'] = this.getTotalResume(
-      data.filter((item) => item.warning)
+    objParse['Advertencias'] = this.getTotalResumeWarning(
+      dataGrouped
     );
     objParse["Comisiones (55%)"] = {
       totalData: undefined,
@@ -393,6 +401,15 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     let cont = 0;
     for (let item of data) {
       cont += item.value as number;
+    }
+
+    return { cont, totalData: data.length };
+  }
+
+  getTotalResumeWarning(data: RegisterBets[]) {
+    let cont = 0;
+    for (let item of data) {
+      cont += item.groupedValue as number;
     }
 
     return { cont, totalData: data.length };
