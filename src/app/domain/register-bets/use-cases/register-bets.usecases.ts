@@ -4,6 +4,7 @@ import { ListBets, RegisterBets, RegisterBetsDetail } from '../models/register-b
 import { REGISTER_BETS_SERVICE } from '../ports';
 import { FirebaseQuery, ResponseQuery } from '../../../shared/models/query.entity';
 import { Observable } from 'rxjs';
+import { IQueryBetsByVendor } from '../../../modules/reports/interface/IReports.interface';
 
 export class RegisterBetsUseCase {
   private registerBets = inject(REGISTER_BETS_SERVICE);
@@ -49,5 +50,9 @@ export class RegisterBetsUseCase {
 
   async getTotalBetsByQueries(queries?: { [key: string]: string }[]): Promise<number> {
     return this.registerBets.getTotalBetsQueries(queries);
+  }
+
+  async getBetsToListResume(query: FirebaseQuery): Promise<Map<string, IQueryBetsByVendor>> {
+    return this.registerBets.getBetsToListResume(query);
   }
 }

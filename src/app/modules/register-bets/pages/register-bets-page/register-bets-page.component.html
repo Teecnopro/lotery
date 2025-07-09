@@ -34,7 +34,7 @@
 
   <div class="table-section">
     <app-register-bets-list
-      *ngIf="!isDetail"
+      *ngIf="!isDetail && !isResume"
       (viewDetail)="isDetail = $event.detail; registerBet = $event.item"
     ></app-register-bets-list>
     <app-register-bets-list-detail
@@ -43,5 +43,6 @@
       (isSelectToDeleted)="selectedBets = $event"
       (emitDetail)="isDetail = $event"
     ></app-register-bets-list-detail>
+    <app-register-bets-list-resume *ngIf="!isDetail && isResume"></app-register-bets-list-resume>
   </div>
 </div>

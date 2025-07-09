@@ -8,6 +8,7 @@ import {
   RegisterBets,
   RegisterBetsDetail,
 } from '../models/register-bets.entity';
+import { IQueryBetsByVendor } from '../../../modules/reports/interface/IReports.interface';
 
 export interface RegisterBetsServicePort {
   create(data: RegisterBetsDetail): Promise<void>;
@@ -27,4 +28,5 @@ export interface RegisterBetsServicePort {
     queries?: {[key: string]: string}[],
   ): Promise<RegisterBetsDetail[]>;
   getTotalBetsQueries(queries?: {[key: string]: string}[]): Promise<number>;
+  getBetsToListResume(query: FirebaseQuery): Promise<Map<string, IQueryBetsByVendor>>
 }

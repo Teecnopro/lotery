@@ -10,4 +10,5 @@ export interface IQueryBetsByVendor {
   nameLottery?: string;
   value: number;
   countLottery?: number;
+  code?: string;
 }

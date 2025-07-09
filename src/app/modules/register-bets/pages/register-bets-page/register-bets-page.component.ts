@@ -21,6 +21,7 @@ import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.us
 import { ACTIONS } from '../../../../shared/const/actions';
 import { MODULES } from '../../../../shared/const/modules';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
+import { RegisterBetsListResumeComponent } from "../../components/register-bets-list-resume/register-bets-list-resume.component";
 
 @Component({
   selector: 'app-register-bets-page',
@@ -33,7 +34,8 @@ import { AUTH_SESSION } from '../../../../domain/auth/ports';
     CommonModule,
     MatButtonModule,
     MatIconModule,
-  ],
+    RegisterBetsListResumeComponent
+],
   templateUrl: './register-bets-page.component.html',
   styleUrl: './register-bets-page.component.scss',
 })
@@ -45,13 +47,22 @@ export class RegisterBetsPageComponent implements OnInit {
   selectedBets!: { selected: boolean; items: RegisterBetsDetail[] };
 
   isDetail = false;
+  isResume = false;
 
   filteredOptions = [
     {
       nameSelected: 'Advertencias',
-      nameNoSelected: 'Ver resumen',
+      nameNoSelected: 'Advertencias',
       conditionActive: ['warning', '==', true] as WhereCondition,
       selected: false,
+      resume: false
+    },
+    {
+      nameSelected: 'Ver resumen',
+      nameNoSelected: 'Ver detalle',
+      conditionActive: null,
+      selected: false,
+      resume: true
     },
   ];
 
@@ -67,16 +78,26 @@ export class RegisterBetsPageComponent implements OnInit {
       if (!value) return;
       this.defaultDate = value.date;
       this.lottery = value.lottery;
+      this.isResume = value.resume || false;
     });
   }
 
   onFilter(item: any) {
+    this.filteredOptions = this.filteredOptions.map(option => {
+      if (item.nameSelected !== option.nameSelected) {
+        option.selected = false;
+      }
+
+      return option;
+    })
+
     item.selected = true;
 
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
       whereConditions: item.conditionActive,
+      resume: item?.resume || false
     });
   }
 

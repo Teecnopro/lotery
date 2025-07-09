@@ -35,4 +35,5 @@ export interface ListBets {
   lottery: any;
   whereConditions?: WhereCondition;
   resetFilter?: boolean;
+  resume?: boolean;
 }

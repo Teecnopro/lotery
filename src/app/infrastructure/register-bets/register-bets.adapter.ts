@@ -35,6 +35,7 @@ import {
 import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
+import { IQueryBetsByVendor } from '../../modules/reports/interface/IReports.interface';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
@@ -95,7 +96,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
     await batch.commit();
 
-    await this.deleteOrUpdateGroupedBets(data[0], totalSumary)
+    await this.deleteOrUpdateGroupedBets(data[0], totalSumary);
   }
 
   totalToDelete(data: RegisterBetsDetail[]) {
@@ -115,14 +116,14 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
     const bet = (await getDocs(q)).docs.map((doc) => ({
       id: doc.id,
-      ...doc.data() as RegisterBets,
+      ...(doc.data() as RegisterBets),
     }));
 
     if (bet.length === 0) {
       throw new Error('No existen apuestas agrupadas');
     }
 
-    const totalDiff = bet[0].groupedValue as number - total;
+    const totalDiff = (bet[0].groupedValue as number) - total;
 
     const warning = this.validateAlert(data.lotteryNumber!, totalDiff);
 
@@ -354,8 +355,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
 
     const qDetail = query(betRefDetail, ...constraints);
-    const q = query(betRef, ...constraints, where("warning","==",true));
-
+    const q = query(betRef, ...constraints, where('warning', '==', true));
 
     const snapshotDetail = await getDocs(qDetail);
     const snapshot = await getDocs(q);
@@ -386,12 +386,12 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
 
     objParse['Total'] = this.getTotalResume(data);
-    objParse['Advertencias'] = this.getTotalResumeWarning(
-      dataGrouped
-    );
-    objParse["Comisiones (55%)"] = {
+    objParse['Advertencias'] = this.getTotalResumeWarning(dataGrouped);
+    objParse['Comisiones (55%)'] = {
       totalData: undefined,
-      cont: Math.round((objParse["Total"]?.cont - objParse["Advertencias"]?.cont) * 0.55)
+      cont: Math.round(
+        (objParse['Total']?.cont - objParse['Advertencias']?.cont) * 0.55
+      ),
     };
 
     return objParse;
@@ -555,5 +555,45 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
     generate(str.split(''), 0, str.length - 1);
     return Array.from(results);
+  }
+
+  async getBetsToListResume({
+    whereConditions,
+  }: FirebaseQuery): Promise<Map<string, IQueryBetsByVendor>> {
+    const refBd = collection(this.firestore, 'register-bets-detail');
+
+    // Aplicando filtros
+    const constraints: QueryConstraint[] = [];
+
+    for (const [field, op, value] of whereConditions!) {
+      constraints.push(where(field, op, value));
+    }
+
+    const queryBets = query(refBd, ...constraints);
+
+    const snapshot = await getDocs(queryBets);
+    const betsByVendor = new Map<string, IQueryBetsByVendor>();
+
+    snapshot?.forEach((doc) => {
+      const data = doc.data();
+      const seller = data?.['seller'];
+
+      const value = data?.['value'] ?? 0;
+      const sellerId = seller?.['id'];
+
+      if (!sellerId) return;
+
+      if (!betsByVendor.has(sellerId)) {
+        betsByVendor.set(sellerId, {
+          name: seller?.['name'],
+          code: seller?.['code'],
+          value: 0,
+        });
+      }
+
+      betsByVendor.get(sellerId)!.value += value;
+    });
+
+    return betsByVendor;
   }
 }
