@@ -47,7 +47,7 @@ export class ListByUsersBetsComponent implements OnInit, OnChanges, OnDestroy {
     'countLottery',
     'total',
   ];
-  private mobileColumns: string[] = ['creatorName', 'total'];
+  private mobileColumns: string[] = ['creatorName', 'lotteryName', 'total'];
 
   dataSource = new MatTableDataSource<UserComparison>([]);
   displayedColumns: string[] = [];

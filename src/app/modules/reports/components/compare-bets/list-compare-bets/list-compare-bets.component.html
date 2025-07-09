@@ -1,65 +1,76 @@
 <div class="table-container" *ngIf="!loading; else loadingTpl">
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="dataSource.data?.length">
-    <ng-container matColumnDef="vendorName">
-      <th mat-header-cell *matHeaderCellDef>Vendedor</th>
-      <td mat-cell *matCellDef="let row">{{ row?.vendorName }}</td>
-      <td mat-footer-cell *matFooterCellDef><strong>Total general:</strong></td>
-    </ng-container>
+  <div class="table-scroll-wrapper">
+    <table
+      mat-table
+      [dataSource]="dataSource"
+      class="mat-elevation-z8"
+      *ngIf="dataSource.data?.length"
+    >
+      <ng-container matColumnDef="vendorName">
+        <th mat-header-cell *matHeaderCellDef>Vendedor</th>
+        <td mat-cell *matCellDef="let row">{{ row?.vendorName }}</td>
+        <td mat-footer-cell *matFooterCellDef>
+          <strong>Total general:</strong>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="valueMonth1">
-      <th mat-header-cell *matHeaderCellDef>{{ nameMonth1 }}</th>
-      <td mat-cell *matCellDef="let row">
-        {{ row?.valueMonth1 | currency : "COP" : "symbol" }}
-      </td>
-      <td mat-footer-cell *matFooterCellDef></td>
-    </ng-container>
+      <ng-container matColumnDef="valueMonth1">
+        <th mat-header-cell *matHeaderCellDef>{{ nameMonth1 }}</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row?.valueMonth1 | currency : "COP" : "symbol" }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-    <ng-container matColumnDef="valueMonth2">
-      <th mat-header-cell *matHeaderCellDef>{{ nameMonth2 }}</th>
-      <td mat-cell *matCellDef="let row">
-        {{ row?.valueMonth2 | currency : "COP" : "symbol" }}
-      </td>
-      <td mat-footer-cell *matFooterCellDef></td>
-    </ng-container>
+      <ng-container matColumnDef="valueMonth2">
+        <th mat-header-cell *matHeaderCellDef>{{ nameMonth2 }}</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row?.valueMonth2 | currency : "COP" : "symbol" }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-    <ng-container matColumnDef="total">
-      <th mat-header-cell *matHeaderCellDef>Total</th>
-      <td mat-cell *matCellDef="let row">
-        {{ row?.total | currency : "COP" : "symbol" }}
-      </td>
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row?.total | currency : "COP" : "symbol" }}
+        </td>
 
-      <td mat-footer-cell *matFooterCellDef>
-        <strong>{{ overallTotal | currency : "COP" : "symbol" }}</strong>
-      </td>
-    </ng-container>
+        <td mat-footer-cell *matFooterCellDef>
+          <strong>{{ overallTotal | currency : "COP" : "symbol" }}</strong>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="variation">
-      <th mat-header-cell *matHeaderCellDef>Variación</th>
-      <td mat-cell *matCellDef="let row">
-        <span
-          [ngClass]="{
-            'text-success': row?.variation > 0,
-            'text-danger': row?.variation < 0,
-            'text-muted': row?.variation === 0
-          }"
-        >
-          <mat-icon inline *ngIf="row?.variation > 0">arrow_upward</mat-icon>
-          <mat-icon inline *ngIf="row?.variation < 0">arrow_downward</mat-icon>
-          <mat-icon inline *ngIf="row?.variation === 0">remove</mat-icon>
-          {{ row?.variation | currency : "COP" : "symbol" }}
-        </span>
-      </td>
-      <td mat-footer-cell *matFooterCellDef></td>
-    </ng-container>
+      <ng-container matColumnDef="variation">
+        <th mat-header-cell *matHeaderCellDef>Variación</th>
+        <td mat-cell *matCellDef="let row">
+          <span
+            [ngClass]="{
+              'text-success': row?.variation > 0,
+              'text-danger': row?.variation < 0,
+              'text-muted': row?.variation === 0
+            }"
+          >
+            <mat-icon inline *ngIf="row?.variation > 0">arrow_upward</mat-icon>
+            <mat-icon inline *ngIf="row?.variation < 0"
+              >arrow_downward</mat-icon
+            >
+            <mat-icon inline *ngIf="row?.variation === 0">remove</mat-icon>
+            {{ row?.variation | currency : "COP" : "symbol" }}
+          </span>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      class="table-row"
-    ></tr>
-    <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
-  </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="table-row"
+      ></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
+    </table>
+  </div>
 
   <mat-paginator
     [length]="total"

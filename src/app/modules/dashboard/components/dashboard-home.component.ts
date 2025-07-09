@@ -21,7 +21,6 @@ import { Component } from '@angular/core';
         justify-content: center;
         height: 100%;
         min-height: calc(100vh - 64px);
-        background-color: #f9f9f9;
       }
 
       .content {

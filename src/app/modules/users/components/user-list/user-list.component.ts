@@ -56,7 +56,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     'actions',
   ];
 
-  private mobileColumns = ['name', 'email', 'actions'];
+  private mobileColumns = ['name', 'actions'];
 
   currentUser!: AuthUser;
   dataSource = new MatTableDataSource<UserData>([]);
