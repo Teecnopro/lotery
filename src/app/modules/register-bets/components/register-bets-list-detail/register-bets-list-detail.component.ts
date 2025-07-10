@@ -1,5 +1,12 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -27,14 +34,22 @@ import { MatCheckbox } from '@angular/material/checkbox';
     MatIconModule,
     CurrencyPipe,
     MatTooltipModule,
-    MatCheckbox
+    MatCheckbox,
   ],
   templateUrl: './register-bets-list-detail.component.html',
   styleUrl: './register-bets-list-detail.component.scss',
 })
 export class RegisterBetsListDetailComponent implements OnInit {
   @Input('grupedBet') groupedBet!: RegisterBets;
-  @Output() isSelectToDeleted = new EventEmitter<{selected: boolean, items: RegisterBetsDetail[]}>();
+  @Input('isSeller') isSeller: boolean = false;
+  @Input('sellerId') sellerId!: string;
+  @Input('defaultDate') defaultDate!: Timestamp;
+  @Input('lottery') lottery!: any;
+
+  @Output() isSelectToDeleted = new EventEmitter<{
+    selected: boolean;
+    items: RegisterBetsDetail[];
+  }>();
   @Output() emitDetail = new EventEmitter<boolean>();
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
@@ -53,22 +68,29 @@ export class RegisterBetsListDetailComponent implements OnInit {
 
   private defaultConditions: WhereCondition[] = [];
 
+  view = "list-detail";
+
   listBets: RegisterBetsDetail[] = [];
 
   displayedColumns: string[] = [
-    "select",
-    "consecutive",
-    "seller",
+    'select',
+    'consecutive',
+    'seller',
     'lottery',
     'lotteryNumber',
     'combined',
-    'value'
+    'value',
   ];
 
   async ngOnInit() {
     this.registerBetsUseCase.listBets$()?.subscribe((value) => {
+
       this.getData('reset');
     });
+
+    if (this.isSeller) {
+      this.displayedColumns.filter((item) => item !== 'select');
+    }
   }
 
   async getData(
@@ -78,11 +100,18 @@ export class RegisterBetsListDetailComponent implements OnInit {
     this.loading = true;
 
     this.defaultConditions = [
-      ['lottery.id', '==', this.groupedBet.lottery?.id],
-      ['date', '==', this.groupedBet.date],
-      ['combined', '==', this.groupedBet.combined],
-      ['lotteryNumber', '==', this.groupedBet.lotteryNumber],
+      ['lottery.id', '==', this.lottery?._id],
+      ['date', '==', this.defaultDate],
     ];
+
+    if (!this.isSeller) {
+      this.defaultConditions.push(
+        ['combined', '==', this.groupedBet.combined],
+        ['lotteryNumber', '==', this.groupedBet.lotteryNumber]
+      );
+    } else {
+      this.defaultConditions.push(['seller.id', '==', this.sellerId]);
+    }
 
     if (filter) {
       this.defaultConditions.push(filter);
@@ -156,7 +185,7 @@ export class RegisterBetsListDetailComponent implements OnInit {
       this.selection.select(...this.listBets);
     }
 
-    this.validateAndEmit()
+    this.validateAndEmit();
   }
 
   toggleRow(row: RegisterBets) {
@@ -169,10 +198,10 @@ export class RegisterBetsListDetailComponent implements OnInit {
     // console.log("🚀 ~ RegisterBetsListDetailComponent ~ validateAndEmit ~ selectedBets:", selectedBets)
 
     if (selectedBets.length > 0) {
-      this.isSelectToDeleted.emit({selected: true, items: selectedBets});
+      this.isSelectToDeleted.emit({ selected: true, items: selectedBets });
       return;
     }
 
-    this.isSelectToDeleted.emit({selected: false, items: selectedBets});
+    this.isSelectToDeleted.emit({ selected: false, items: selectedBets });
   }
 }

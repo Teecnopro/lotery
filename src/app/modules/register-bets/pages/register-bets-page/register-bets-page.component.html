@@ -3,13 +3,13 @@
     mat-raised-button
     type="button"
     color="primary"
-    *ngIf="isDetail"
-    (click)="isDetail = false"
+    *ngIf="viewDetail?.detail"
+    (click)="actionBack()"
   >
   <mat-icon>arrow_back</mat-icon>
     Volver
   </button>
-  <button mat-flat-button color="warn" *ngIf="selectedBets?.selected && isDetail" (click)="deleteBetsDetail()">
+  <button mat-flat-button color="warn" *ngIf="selectedBets?.selected && viewDetail?.detail" (click)="deleteBetsDetail()">
     <mat-icon>delete</mat-icon>
     Eliminar
   </button>
@@ -34,15 +34,19 @@
 
   <div class="table-section">
     <app-register-bets-list
-      *ngIf="!isDetail && !isResume"
-      (viewDetail)="isDetail = $event.detail; registerBet = $event.item"
+      *ngIf="!viewDetail?.detail && !isResume"
+      (viewDetail)="viewDetail = $event"
     ></app-register-bets-list>
     <app-register-bets-list-detail
-      *ngIf="isDetail"
-      [grupedBet]="registerBet"
+      *ngIf="viewDetail?.detail && !isResume"
+      [grupedBet]="viewDetail.item!"
       (isSelectToDeleted)="selectedBets = $event"
-      (emitDetail)="isDetail = $event"
+      (emitDetail)="viewDetail.detail = $event"
+      [isSeller]="viewDetail.isSeller || false"
+      [sellerId]="viewDetail.sellerId || ''"
+      [defaultDate]="defaultDate"
+      [lottery]="lottery"
     ></app-register-bets-list-detail>
-    <app-register-bets-list-resume *ngIf="!isDetail && isResume"></app-register-bets-list-resume>
+    <app-register-bets-list-resume *ngIf="!viewDetail?.detail && isResume" (viewDetail)="viewDetail = $event"></app-register-bets-list-resume>
   </div>
 </div>

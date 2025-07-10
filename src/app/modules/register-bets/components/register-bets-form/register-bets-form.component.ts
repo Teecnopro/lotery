@@ -103,7 +103,9 @@ export class RegisterBetsFormComponent implements OnInit {
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.registerBetForm.get('lottery')?.value,
+      view: ['list']
     });
+
     this.getSellers();
   }
 
@@ -162,6 +164,7 @@ export class RegisterBetsFormComponent implements OnInit {
     this.registerBetsUseCase.updateList$({
       date: Timestamp.fromDate(date),
       lottery: form.lottery,
+      view: ['list']
     });
   }
 

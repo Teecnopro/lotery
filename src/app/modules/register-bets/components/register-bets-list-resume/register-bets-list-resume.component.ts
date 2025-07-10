@@ -1,15 +1,16 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RegisterBets } from '../../../../domain/register-bets/models/register-bets.entity';
+import { RegisterBets, ViewDetail } from '../../../../domain/register-bets/models/register-bets.entity';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import { Timestamp } from '@angular/fire/firestore';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-register-bets-list-resume',
@@ -26,14 +27,13 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
   templateUrl: './register-bets-list-resume.component.html',
   styleUrl: './register-bets-list-resume.component.scss',
 })
-export class RegisterBetsListResumeComponent {
-  @Output() viewDetail = new EventEmitter<{
-    detail: boolean;
-    item: RegisterBets;
-  }>();
+export class RegisterBetsListResumeComponent implements OnInit {
+  @Output() viewDetail = new EventEmitter<ViewDetail>();
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
+
+  private destroy$ = new Subject<void>();
 
   hasNext = false;
   hasPrev = false;
@@ -56,6 +56,8 @@ export class RegisterBetsListResumeComponent {
 
   displayedColumns: string[] = ['seller', 'value', 'detail'];
 
+  subscriptions!: Subscription | undefined;
+
   ngOnInit(): void {
     this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
@@ -63,9 +65,9 @@ export class RegisterBetsListResumeComponent {
       this.lottery = value.lottery;
 
       this.isResume = value.resume || false;
-
-      this.getData();
     });
+
+    this.getData();
   }
 
   async getData() {
@@ -102,7 +104,14 @@ export class RegisterBetsListResumeComponent {
     }
   }
 
-  onViewDetail(item: RegisterBets) {
-    this.viewDetail.emit({ detail: true, item });
+  onViewDetail(sellerId: string) {
+    this.viewDetail.emit({ detail: true, sellerId, isSeller: true });
+
+    // Actualizando metodo del listado
+    this.registerBetsUseCase.updateList$({
+      date: this.defaultDate,
+      lottery: this.lottery,
+      view: ['list-detail']
+    });
   }
 }

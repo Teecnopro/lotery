@@ -4,6 +4,7 @@ import { WhereCondition } from '../../../../shared/models/query.entity';
 import {
   ListBets,
   RegisterBets,
+  ViewDetail,
 } from '../../../../domain/register-bets/models/register-bets.entity';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Subject, Subscription, take, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-register-bets-list',
@@ -32,7 +34,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './register-bets-list.component.scss',
 })
 export class RegisterBetsListComponent implements OnInit {
-  @Output() viewDetail = new EventEmitter<{detail: boolean, item: RegisterBets}>();
+  @Output() viewDetail = new EventEmitter<ViewDetail>();
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
@@ -40,6 +42,8 @@ export class RegisterBetsListComponent implements OnInit {
   hasNext = false;
   hasPrev = false;
   loading = false;
+
+  private destroy$ = new Subject<void>();
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
@@ -60,9 +64,14 @@ export class RegisterBetsListComponent implements OnInit {
     'detail',
   ];
 
+  view = "list";
+
+  subscriptions!: Subscription | undefined;
+
   ngOnInit(): void {
-    this.registerBetsUseCase.listBets$()?.subscribe((value) => {
+    this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
+
       this.defaultDate = value.date;
       this.lottery = value.lottery;
 
@@ -75,6 +84,8 @@ export class RegisterBetsListComponent implements OnInit {
       if (value.resetFilter) {
         filter = undefined;
       }
+
+      console.log(value);
 
       this.getData('reset', filter);
     });
@@ -138,5 +149,12 @@ export class RegisterBetsListComponent implements OnInit {
 
   onViewDetail(item: RegisterBets) {
     this.viewDetail.emit({detail: true, item});
+
+    // Actualizando metodo del listado
+    this.registerBetsUseCase.updateList$({
+      date: this.defaultDate,
+      lottery: this.lottery,
+      view: ['list-detail']
+    });
   }
 }

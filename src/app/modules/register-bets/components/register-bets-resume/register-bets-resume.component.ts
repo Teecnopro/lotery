@@ -11,6 +11,7 @@ import { Timestamp } from '@angular/fire/firestore';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-register-bets-resume',
@@ -41,13 +42,15 @@ export class RegisterBetsResumeComponent implements OnInit {
     'total',
   ];
 
+  subscriptions!: Subscription | undefined;
+
   async ngOnInit() {
-    this.registerBetsUseCase.listBets$()?.subscribe((value) => {
+    this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
       this.defaultDate = value.date;
-
-      this.getDataToResume();
     });
+
+    this.getDataToResume();
   }
 
   async getDataToResume() {

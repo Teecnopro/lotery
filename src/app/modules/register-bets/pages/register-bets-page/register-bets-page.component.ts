@@ -11,6 +11,7 @@ import { Timestamp } from '@angular/fire/firestore';
 import {
   RegisterBets,
   RegisterBetsDetail,
+  ViewDetail,
 } from '../../../../domain/register-bets/models/register-bets.entity';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
@@ -46,6 +47,8 @@ export class RegisterBetsPageComponent implements OnInit {
 
   selectedBets!: { selected: boolean; items: RegisterBetsDetail[] };
 
+  viewDetail!: ViewDetail;
+
   isDetail = false;
   isResume = false;
 
@@ -55,14 +58,18 @@ export class RegisterBetsPageComponent implements OnInit {
       nameNoSelected: 'Advertencias',
       conditionActive: ['warning', '==', true] as WhereCondition,
       selected: false,
-      resume: false
+      resume: false,
+      filterViewActive: ["list"],
+      filterViewDeactive: ["list"]
     },
     {
       nameSelected: 'Ver resumen',
       nameNoSelected: 'Ver detalle',
       conditionActive: null,
       selected: false,
-      resume: true
+      resume: true,
+      filterViewActive: [],
+      filterViewDeactive: ["list"]
     },
   ];
 
@@ -70,8 +77,8 @@ export class RegisterBetsPageComponent implements OnInit {
   private dialog = inject(MatDialog);
   private notification = inject(NOTIFICATION_PORT);
 
-  private defaultDate!: Timestamp;
-  private lottery!: any;
+  defaultDate!: Timestamp;
+  lottery!: any;
 
   async ngOnInit() {
     this.registerBetsUseCase.listBets$()?.subscribe((value) => {
@@ -79,6 +86,7 @@ export class RegisterBetsPageComponent implements OnInit {
       this.defaultDate = value.date;
       this.lottery = value.lottery;
       this.isResume = value.resume || false;
+      console.log("🚀 ~ RegisterBetsPageComponent ~ this.registerBetsUseCase.listBets$ ~ this.isResume :", this.isResume )
     });
   }
 
@@ -93,21 +101,27 @@ export class RegisterBetsPageComponent implements OnInit {
 
     item.selected = true;
 
+    this.viewDetail.detail = false;
+
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
       whereConditions: item.conditionActive,
-      resume: item?.resume || false
+      resume: item?.resume || false,
+      view: item?.filterViewActive
     });
   }
 
   onReset(item: any) {
     item.selected = false;
 
+    this.viewDetail.detail = false;
+
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
       resetFilter: true,
+      view: item?.filterViewDeactive
     });
   }
 
@@ -142,6 +156,7 @@ export class RegisterBetsPageComponent implements OnInit {
         this.registerBetsUseCase.updateList$({
           date: this.defaultDate,
           lottery: this.lottery,
+          view: ['list', 'list-detail']
         });
       } catch (error: any) {
         console.error('Error deleting register bets:', error);
@@ -153,5 +168,17 @@ export class RegisterBetsPageComponent implements OnInit {
 
     try {
     } catch (error) {}
+  }
+
+  actionBack() {
+    this.viewDetail.detail = false
+
+    // Actualizando metodo del listado
+    this.registerBetsUseCase.updateList$({
+      date: this.defaultDate,
+      lottery: this.lottery,
+      view: ['list'],
+      resume: this.isResume
+    });
   }
 }
