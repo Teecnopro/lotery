@@ -153,7 +153,7 @@ export class RegisterBetsPageComponent implements OnInit {
               date: new Date().valueOf(),
               user: this.user.getUser()!,
               module: MODULES.REGISTER_BETS,
-              description: `Registros de apuestas eliminados por ${
+              description: `${this.selectedBets.items.length} registros de apuestas eliminados por ${
                 this.user.getUser()?.name
               }`,
             });
