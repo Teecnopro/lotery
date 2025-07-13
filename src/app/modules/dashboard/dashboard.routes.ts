@@ -91,6 +91,14 @@ export const routesDashboard: Routes = [
           title: 'Bitacora',
         },
       },
+      {
+        path: 'delete-bets',
+        loadChildren: () =>
+          import('../delete-bets/delete-bets.routes').then((m) => m.routesDeleteBets),
+        data: {
+          title: 'Eliminar apuestas',
+        },
+      },
     ],
   },
 ];

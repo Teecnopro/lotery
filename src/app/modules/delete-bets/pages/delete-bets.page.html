@@ -1,0 +1,17 @@
+<div class="alert-layout">
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="toggleForm()">
+      {{ showForm ? 'Ocultar formulario' : 'Filtros' }}
+    </button>
+  </div>
+  <div class="layout" [class.column]="isMobile">
+    <div class="form-section" *ngIf="showForm">
+      <div class="form-section">
+        <app-delete-bets-form></app-delete-bets-form>
+      </div>
+    </div>
+    <div class="table-section">
+      <app-delete-bets-list></app-delete-bets-list>
+    </div>
+  </div>
+</div>

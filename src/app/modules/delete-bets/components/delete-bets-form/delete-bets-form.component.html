@@ -1,0 +1,26 @@
+<div class="form-container">
+    <mat-card class="form-card">
+        <mat-card-header>
+            <mat-card-title>Filtros</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <form [formGroup]="deleteBetForm" class="deleteBets-form">
+                <mat-form-field>
+                    <mat-label>Escoge una fecha</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                        <input matStartDate placeholder="Fecha inicio" formControlName="startDate" name="startDate" required>
+                        <input matEndDate placeholder="Fecha Fin" formControlName="startDate"name="endDate" required>
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+                <div class="button-group">
+                    <button mat-raised-button color="primary" type="button" [disabled]="!deleteBetForm.valid">
+                        Consultar apuestas a eliminar
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>
