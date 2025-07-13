@@ -89,7 +89,7 @@ export class RegisterBetsListDetailComponent implements OnInit {
     });
 
     if (this.isSeller) {
-      this.displayedColumns.filter((item) => item !== 'select');
+      this.displayedColumns = this.displayedColumns.filter((item) => item !== 'select');
     }
   }
 
