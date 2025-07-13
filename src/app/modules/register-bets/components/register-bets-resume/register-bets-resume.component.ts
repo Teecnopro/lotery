@@ -48,12 +48,13 @@ export class RegisterBetsResumeComponent implements OnInit {
     this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
       this.defaultDate = value.date;
+      this.getDataToResume();
     });
-
-    this.getDataToResume();
   }
 
   async getDataToResume() {
+    console.log("resume");
+
     const filter: WhereCondition[] = [
       ["date", "==", this.defaultDate]
     ]

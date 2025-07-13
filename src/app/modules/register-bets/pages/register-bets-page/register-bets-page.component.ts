@@ -47,7 +47,7 @@ export class RegisterBetsPageComponent implements OnInit {
 
   selectedBets!: { selected: boolean; items: RegisterBetsDetail[] };
 
-  viewDetail!: ViewDetail;
+  viewDetail: ViewDetail | any = {};
 
   isDetail = false;
   isResume = false;
@@ -81,12 +81,16 @@ export class RegisterBetsPageComponent implements OnInit {
   lottery!: any;
 
   async ngOnInit() {
+
     this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
+      this.selectedBets = {
+        items: [],
+        selected: false
+      }
       this.defaultDate = value.date;
       this.lottery = value.lottery;
       this.isResume = value.resume || false;
-      console.log("🚀 ~ RegisterBetsPageComponent ~ this.registerBetsUseCase.listBets$ ~ this.isResume :", this.isResume )
     });
   }
 
@@ -101,7 +105,7 @@ export class RegisterBetsPageComponent implements OnInit {
 
     item.selected = true;
 
-    this.viewDetail.detail = false;
+    this.viewDetail["detail"] = false;
 
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
@@ -115,7 +119,7 @@ export class RegisterBetsPageComponent implements OnInit {
   onReset(item: any) {
     item.selected = false;
 
-    this.viewDetail.detail = false;
+    this.viewDetail["detail"] = false;
 
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
