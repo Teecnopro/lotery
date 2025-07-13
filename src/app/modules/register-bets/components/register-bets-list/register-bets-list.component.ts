@@ -28,7 +28,7 @@ import { Subject, Subscription, take, takeUntil } from 'rxjs';
     CommonModule,
     MatIconModule,
     CurrencyPipe,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './register-bets-list.component.html',
   styleUrl: './register-bets-list.component.scss',
@@ -64,32 +64,37 @@ export class RegisterBetsListComponent implements OnInit {
     'detail',
   ];
 
-  view = "list";
+  view = 'list';
 
   subscriptions!: Subscription | undefined;
 
   ngOnInit(): void {
-    this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
-      if (!value) return;
+    this.subscriptions = this.registerBetsUseCase
+      .listBets$()
+      ?.subscribe((value) => {
+        if (!value) return;
 
-      this.defaultDate = value.date;
-      this.lottery = value.lottery;
+        this.defaultDate = value.date;
+        this.lottery = value.lottery;
 
-      let filter;
+        let filter;
 
-      if (value.whereConditions) {
-        filter = value.whereConditions;
-      }
+        if (value.whereConditions) {
+          filter = value.whereConditions;
+        }
 
-      if (value.resetFilter) {
-        filter = undefined;
-      }
+        if (value.resetFilter) {
+          filter = undefined;
+        }
 
-      this.getData('reset', filter);
-    });
+        this.getData('reset', filter);
+      });
   }
 
-  async getData(direction: 'next' | 'prev' | 'reset' = 'next', filter?: WhereCondition) {
+  async getData(
+    direction: 'next' | 'prev' | 'reset' = 'next',
+    filter?: WhereCondition
+  ) {
     this.loading = true;
 
     this.defaultConditions = [
@@ -98,9 +103,8 @@ export class RegisterBetsListComponent implements OnInit {
     ];
 
     if (filter) {
-      this.defaultConditions.push(filter)
+      this.defaultConditions.push(filter);
     }
-
 
     try {
       this.total = await this.registerBetsUseCase.getTotalBets({
@@ -128,32 +132,41 @@ export class RegisterBetsListComponent implements OnInit {
   }
 
   onPageChange(event: PageEvent) {
-    const newPage = event.pageIndex;
+    const pageSizeChanged = event.pageSize !== this.pageSize;
 
-    let direction: 'next' | 'prev' | 'reset' = 'next';
+    // Actualizar el nuevo pageSize
+    this.pageSize = event.pageSize;
 
-    if (newPage === 0 && this.currentPageIndex !== 0) {
+    let direction: 'next' | 'prev' | 'reset';
+
+    if (pageSizeChanged) {
+      // Si cambió el tamaño de página, reiniciar desde la primera página
+      this.currentPageIndex = 0;
       direction = 'reset';
-    } else if (newPage > this.currentPageIndex) {
-      direction = 'next';
-    } else if (newPage < this.currentPageIndex) {
-      direction = 'prev';
+    } else {
+      const newPage = event.pageIndex;
+      if (newPage === 0 && this.currentPageIndex !== 0) {
+        direction = 'reset';
+      } else if (newPage > this.currentPageIndex) {
+        direction = 'next';
+      } else {
+        direction = 'prev';
+      }
+      this.currentPageIndex = newPage;
     }
-
-    this.currentPageIndex = newPage;
 
     this.getData(direction);
   }
 
   onViewDetail(item: RegisterBets) {
-    this.viewDetail.emit({detail: true, item});
+    this.viewDetail.emit({ detail: true, item });
 
     // Actualizando metodo del listado
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
       view: ['list-detail'],
-      returnView: 'detail'
+      returnView: 'detail',
     });
   }
 }

@@ -150,19 +150,28 @@ export class RegisterBetsListDetailComponent implements OnInit {
   }
 
   onPageChange(event: PageEvent) {
-    const newPage = event.pageIndex;
+    const pageSizeChanged = event.pageSize !== this.pageSize;
 
-    let direction: 'next' | 'prev' | 'reset' = 'next';
+    // Actualizar el nuevo pageSize
+    this.pageSize = event.pageSize;
 
-    if (newPage === 0 && this.currentPageIndex !== 0) {
+    let direction: 'next' | 'prev' | 'reset';
+
+    if (pageSizeChanged) {
+      // Si cambió el tamaño de página, reiniciar desde la primera página
+      this.currentPageIndex = 0;
       direction = 'reset';
-    } else if (newPage > this.currentPageIndex) {
-      direction = 'next';
-    } else if (newPage < this.currentPageIndex) {
-      direction = 'prev';
+    } else {
+      const newPage = event.pageIndex;
+      if (newPage === 0 && this.currentPageIndex !== 0) {
+        direction = 'reset';
+      } else if (newPage > this.currentPageIndex) {
+        direction = 'next';
+      } else {
+        direction = 'prev';
+      }
+      this.currentPageIndex = newPage;
     }
-
-    this.currentPageIndex = newPage;
 
     this.getData(direction);
   }
