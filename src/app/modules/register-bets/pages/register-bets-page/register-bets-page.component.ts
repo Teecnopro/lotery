@@ -22,7 +22,7 @@ import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.us
 import { ACTIONS } from '../../../../shared/const/actions';
 import { MODULES } from '../../../../shared/const/modules';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
-import { RegisterBetsListResumeComponent } from "../../components/register-bets-list-resume/register-bets-list-resume.component";
+import { RegisterBetsListResumeComponent } from '../../components/register-bets-list-resume/register-bets-list-resume.component';
 
 @Component({
   selector: 'app-register-bets-page',
@@ -35,8 +35,8 @@ import { RegisterBetsListResumeComponent } from "../../components/register-bets-
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    RegisterBetsListResumeComponent
-],
+    RegisterBetsListResumeComponent,
+  ],
   templateUrl: './register-bets-page.component.html',
   styleUrl: './register-bets-page.component.scss',
 })
@@ -59,8 +59,8 @@ export class RegisterBetsPageComponent implements OnInit {
       conditionActive: ['warning', '==', true] as WhereCondition,
       selected: false,
       resume: false,
-      filterViewActive: ["list"],
-      filterViewDeactive: ["list"]
+      filterViewActive: ['list'],
+      filterViewDeactive: ['list'],
     },
     {
       nameSelected: 'Ver resumen',
@@ -69,7 +69,7 @@ export class RegisterBetsPageComponent implements OnInit {
       selected: false,
       resume: true,
       filterViewActive: [],
-      filterViewDeactive: ["list"]
+      filterViewDeactive: ['list'],
     },
   ];
 
@@ -80,52 +80,56 @@ export class RegisterBetsPageComponent implements OnInit {
   defaultDate!: Timestamp;
   lottery!: any;
 
-  async ngOnInit() {
+  returnView: 'resume' | 'detail' = 'detail';
 
+  async ngOnInit() {
     this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
       this.selectedBets = {
         items: [],
-        selected: false
-      }
+        selected: false,
+      };
       this.defaultDate = value.date;
       this.lottery = value.lottery;
       this.isResume = value.resume || false;
+
+      if (!value.returnView) return;
+      this.returnView = value.returnView;
     });
   }
 
   onFilter(item: any) {
-    this.filteredOptions = this.filteredOptions.map(option => {
+    this.filteredOptions = this.filteredOptions.map((option) => {
       if (item.nameSelected !== option.nameSelected) {
         option.selected = false;
       }
 
       return option;
-    })
+    });
 
     item.selected = true;
 
-    this.viewDetail["detail"] = false;
+    this.viewDetail['detail'] = false;
 
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
       whereConditions: item.conditionActive,
       resume: item?.resume || false,
-      view: item?.filterViewActive
+      view: item?.filterViewActive,
     });
   }
 
   onReset(item: any) {
     item.selected = false;
 
-    this.viewDetail["detail"] = false;
+    this.viewDetail['detail'] = false;
 
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
       resetFilter: true,
-      view: item?.filterViewDeactive
+      view: item?.filterViewDeactive,
     });
   }
 
@@ -141,26 +145,26 @@ export class RegisterBetsPageComponent implements OnInit {
 
     if (confirmed) {
       try {
-        await this.registerBetsUseCase.deleteRegisterBets(
-          this.selectedBets.items
-        ).then(() => {
-          this.logBookUseCases.createLogBook({
-            action: ACTIONS.DELETE,
-            date: new Date().valueOf(),
-            user: this.user.getUser()!,
-            module: MODULES.REGISTER_BETS,
-            description: `Registros de apuestas eliminados por ${this.user.getUser()?.name}`,
+        await this.registerBetsUseCase
+          .deleteRegisterBets(this.selectedBets.items)
+          .then(() => {
+            this.logBookUseCases.createLogBook({
+              action: ACTIONS.DELETE,
+              date: new Date().valueOf(),
+              user: this.user.getUser()!,
+              module: MODULES.REGISTER_BETS,
+              description: `Registros de apuestas eliminados por ${
+                this.user.getUser()?.name
+              }`,
+            });
           });
-        });
 
-        this.notification.success(
-          'Registros eliminados exitosamente'
-        );
+        this.notification.success('Registros eliminados exitosamente');
 
         this.registerBetsUseCase.updateList$({
           date: this.defaultDate,
           lottery: this.lottery,
-          view: ['list', 'list-detail']
+          view: ['list', 'list-detail'],
         });
       } catch (error: any) {
         console.error('Error deleting register bets:', error);
@@ -175,14 +179,23 @@ export class RegisterBetsPageComponent implements OnInit {
   }
 
   actionBack() {
-    this.viewDetail.detail = false
+    this.isResume = this.returnView === 'resume';
+    this.viewDetail.detail = false;
 
-    // Actualizando metodo del listado
-    this.registerBetsUseCase.updateList$({
-      date: this.defaultDate,
-      lottery: this.lottery,
-      view: ['list'],
-      resume: this.isResume
-    });
+    const selected = this.filteredOptions.find((item) => item.selected);
+
+    if (!selected) {
+      // Actualizando metodo del listado
+      this.registerBetsUseCase.updateList$({
+        date: this.defaultDate,
+        lottery: this.lottery,
+        view: ['list'],
+        resume: this.isResume,
+      });
+
+      return;
+    }
+
+    this.onFilter(selected);
   }
 }

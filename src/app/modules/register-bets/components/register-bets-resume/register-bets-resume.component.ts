@@ -53,8 +53,6 @@ export class RegisterBetsResumeComponent implements OnInit {
   }
 
   async getDataToResume() {
-    console.log("resume");
-
     const filter: WhereCondition[] = [
       ["date", "==", this.defaultDate]
     ]

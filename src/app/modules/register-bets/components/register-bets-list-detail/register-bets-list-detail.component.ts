@@ -195,7 +195,6 @@ export class RegisterBetsListDetailComponent implements OnInit {
 
   validateAndEmit() {
     const selectedBets = this.selection.selected;
-    // console.log("🚀 ~ RegisterBetsListDetailComponent ~ validateAndEmit ~ selectedBets:", selectedBets)
 
     if (selectedBets.length > 0) {
       this.isSelectToDeleted.emit({ selected: true, items: selectedBets });

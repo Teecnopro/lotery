@@ -85,8 +85,6 @@ export class RegisterBetsListComponent implements OnInit {
         filter = undefined;
       }
 
-      console.log(value);
-
       this.getData('reset', filter);
     });
   }
@@ -154,7 +152,8 @@ export class RegisterBetsListComponent implements OnInit {
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
-      view: ['list-detail']
+      view: ['list-detail'],
+      returnView: 'detail'
     });
   }
 }

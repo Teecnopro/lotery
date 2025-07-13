@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -64,6 +71,7 @@ import { MODULES } from '../../../../shared/const/modules';
 })
 export class RegisterBetsFormComponent implements OnInit {
   @ViewChild('lotterySelect') lotterySelect!: MatSelect;
+  @ViewChild('myInputNumber') myInputNumber!: ElementRef<HTMLInputElement>;
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private sellersUseCase = inject(SellerUseCase);
@@ -78,13 +86,18 @@ export class RegisterBetsFormComponent implements OnInit {
   registerBetForm: FormGroup = this.formBuilder.group({
     date: [new Date(), [Validators.required]],
     lottery: [{ value: '', disabled: true }, [Validators.required]],
-    seller: [{ value: '' }, [Validators.required]],
+    seller: ['', [Validators.required]],
     lotteryNumber: [
       '',
-      [Validators.required, Validators.minLength(1), Validators.maxLength(5)],
+      [
+        Validators.required,
+        Validators.minLength(1),
+        Validators.maxLength(5),
+        Validators.pattern(/^[0-9]+$/),
+      ],
     ],
     combined: [false, [Validators.required]],
-    value: [0, [Validators.required, Validators.min(1)]],
+    value: [null, [Validators.required, Validators.min(1)]],
   });
 
   arrayLotteries = lotteries;
@@ -103,10 +116,17 @@ export class RegisterBetsFormComponent implements OnInit {
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.registerBetForm.get('lottery')?.value,
-      view: ['list']
+      view: ['list'],
     });
 
     this.getSellers();
+  }
+
+  onSellerSelected() {
+    setTimeout(() => {
+      this.myInputNumber.nativeElement.focus();
+      this.myInputNumber.nativeElement.select();
+    }, 100); // Esperar a que se cierre el panel
   }
 
   activeDeactiveSelect(action: 'active' | 'deactive'): void {
@@ -144,7 +164,11 @@ export class RegisterBetsFormComponent implements OnInit {
       lottery: { id: form.lottery._id, name: form.lottery.name },
       date: Timestamp.fromDate(date),
       lotteryNumber: form.lotteryNumber,
-      seller: { id: form.seller.uid, name: form.seller.name, code: form.seller.code  },
+      seller: {
+        id: form.seller.uid,
+        name: form.seller.name,
+        code: form.seller.code,
+      },
       combined: form.combined,
       value: form.value,
       createdAt: Timestamp.now(),
@@ -152,6 +176,12 @@ export class RegisterBetsFormComponent implements OnInit {
       creator: { uid, name },
       updater: { uid, name },
     };
+  }
+
+  @HostListener('keydown.enter', ['$event'])
+  handleEnter(event: KeyboardEvent) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   updateList() {
@@ -164,7 +194,7 @@ export class RegisterBetsFormComponent implements OnInit {
     this.registerBetsUseCase.updateList$({
       date: Timestamp.fromDate(date),
       lottery: form.lottery,
-      view: ['list']
+      view: ['list'],
     });
   }
 

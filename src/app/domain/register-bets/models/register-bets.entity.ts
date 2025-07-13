@@ -36,7 +36,8 @@ export interface ListBets {
   whereConditions?: WhereCondition;
   resetFilter?: boolean;
   resume?: boolean;
-  view: string[]
+  view: string[];
+  returnView?: 'resume' | 'detail';
 }
 
 export interface ViewDetail {

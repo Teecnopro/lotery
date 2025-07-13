@@ -111,7 +111,8 @@ export class RegisterBetsListResumeComponent implements OnInit {
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.lottery,
-      view: ['list-detail']
+      view: ['list-detail'],
+      returnView: 'resume'
     });
   }
 }
