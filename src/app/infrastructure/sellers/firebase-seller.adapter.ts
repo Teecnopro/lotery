@@ -20,6 +20,8 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { ISeller } from '../../domain/sellers/models/seller.model';
+import { last } from 'rxjs';
+import { AuthUser } from '../../domain/auth/models/auth-user.entity';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseSellerAdapter implements SellerRepositoryPort {
@@ -101,9 +103,9 @@ export class FirebaseSellerAdapter implements SellerRepositoryPort {
     nameSnapshot.docs.forEach(doc => sellersMap.set(doc.id, { id: doc.id, ...doc.data() } as ISeller));
     return Array.from(sellersMap.values());
   }
-  async updateState(id: string, state: boolean): Promise<ISeller> {
+  async updateState(id: string, state: boolean, updatedBy: AuthUser): Promise<ISeller> {
     const sellerRef = doc(this.firestore, 'sellers', id);
-    await updateDoc(sellerRef, { state });
+    await updateDoc(sellerRef, { state, updatedAt: new Date().valueOf(), updatedBy });
     const updatedSnap = await getDoc(sellerRef);
     if (!updatedSnap.exists()) {
       throw new Error('Seller not found');

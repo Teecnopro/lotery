@@ -22,13 +22,13 @@
             <th mat-header-cell *matHeaderCellDef style="text-align: right;"> Combinado </th>
             <td mat-cell *matCellDef="let element" style="text-align: right;">
                 <span
-                    *ngIf="element.combined; else noPremio"
+                    *ngIf="element.combined; else noCombinado"
                     matTooltip="Combinado"
                     style="display: flex; align-items: center; gap: 4px; justify-content: flex-end;"
                     class="combinado">
                     <mat-icon>sync</mat-icon>
                 </span>
-                <ng-template #noPremio>
+                <ng-template #noCombinado>
                     <span
                     class="no-combinado"
                     matTooltip="No Combinado"
@@ -42,16 +42,16 @@
         <!-- Columna de Valor -->
         <ng-container matColumnDef="valor">
             <th mat-header-cell *matHeaderCellDef style="text-align: right;"> Valor </th>
-            <td mat-cell *matCellDef="let element" style="text-align: right;"> ${{element.value}} </td>
+            <td mat-cell *matCellDef="let element" style="text-align: right;"> {{element.value | currency : "COP" : "symbol"}} </td>
         </ng-container>
 
         <!-- Columna de Premio -->
         <ng-container matColumnDef="premio">
             <th mat-header-cell *matHeaderCellDef style="text-align: right;"> Premio </th>
-            <td mat-cell *matCellDef="let element" [class.premio-winner]="![undefined, null, ''].includes(lotteryNumber) ? this.calculatePrize(element).isWinner : false" style="text-align: right;"> 
-                <span *ngIf="![undefined, null, ''].includes(lotteryNumber) ? this.calculatePrize(element).isWinner : false; else noPremio" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end;">
+            <td mat-cell *matCellDef="let element" [class.premio-winner]="![undefined, null, ''].includes(lotteryNumber) ? calculatePrize(element).isWinner : false" style="text-align: right;"> 
+                <span *ngIf="![undefined, null, ''].includes(lotteryNumber) ? calculatePrize(element).isWinner : false; else noPremio" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end;">
                     <mat-icon>notification_important</mat-icon>
-                    ${{calculatePrize(element).value}}
+                    {{calculatePrize(element).value | currency : "COP" : "symbol"}}
                 </span>
                 <ng-template #noPremio>
                     <span class="no-prize" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end;">Sin premio</span>
@@ -65,7 +65,7 @@
     </table>
     <div class="totalValue" *ngIf="![undefined, null, ''].includes(lotteryNumber) && !loading"
         style="text-align: right; color: red; padding-right: 10px; font-weight: 600; background-color: #FFFFFF;">
-        {{ 'Total Premios: ' + (totalPaymentWinner | currency:'USD':'symbol':'1.0-0') }}
+        {{ 'Total Premios: ' + (totalPaymentWinner | currency : "COP" : "symbol") }}
     </div>
 
     <mat-paginator 

@@ -517,8 +517,9 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
         const date = new Date(`${value[field]}T00:00:00`);
         constraints.push(where(field, '>=', Timestamp.fromDate(date)));
       } else if (field === 'lotteryNumber') {
-        const lotteryNumberQueries = [];
+        let lotteryNumberQueries = [];
         let copyValue = value[field];
+        let copyValueDuplicate = value[field];
         lotteryNumberQueries.push(copyValue);
         for (let i = 0; i < value[field].length; i++) {
           const query = copyValue.slice(i + 1);
@@ -526,12 +527,18 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
             lotteryNumberQueries.push(query);
           }
         }
+        for (let i = copyValueDuplicate.length - 1; i > 0; i--) {
+          const trimmed = copyValueDuplicate.substring(0, i);
+          lotteryNumberQueries.push(trimmed);
+        }
         if (value[field].length >= 3 && value[field].length <= 4) {
           const combinations = this.permute(value[field]);
           combinations.forEach((comb) => {
             lotteryNumberQueries.push(comb);
           });
         }
+        // Eliminar números duplicados de lotteryNumberQueries
+        lotteryNumberQueries = Array.from(new Set(lotteryNumberQueries));
         constraints.push(where('lotteryNumber', 'in', lotteryNumberQueries));
       } else {
         constraints.push(where(field, '==', value[field]));

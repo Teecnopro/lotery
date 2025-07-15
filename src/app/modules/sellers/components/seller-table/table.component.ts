@@ -163,7 +163,7 @@ export class SellerTableComponent {
     firstValueFrom(dialogRef.afterClosed()).then(async confirmed => {
       if (confirmed) {
         try {
-          await this.sellerUseCase.updateState(seller.uid!, !seller.state).then(async () => {
+          await this.sellerUseCase.updateState(seller.uid!, !seller.state, this.userSession.getUser() as AuthUser).then(async () => {
             await this.logBook.createLogBook({
               action: !seller.state ? ACTIONS.ACTIVATE : ACTIONS.DEACTIVATE,
               user: this.userSession.getUser() as AuthUser,
