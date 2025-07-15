@@ -91,12 +91,18 @@ export class CheckHitsTableComponent {
     calculatePrize(bet: RegisterBetsDetail): { isWinner: boolean, value: number } {
         let payment: PaymentParameterization | undefined;
         let isWinner = false;
-        if (this.lotteryNumber !== bet.lotteryNumber) {
+        if (this.lotteryNumber !== bet.lotteryNumber && this.lotteryNumber.length !== bet.lotteryNumber?.length) {
             payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length);
             if (!payment) {
                 return { isWinner: false, value: 0 };
             }
             isWinner = true
+        } else if (this.lotteryNumber !== bet.lotteryNumber && this.lotteryNumber.length === bet.lotteryNumber?.length && bet.combined === true) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            isWinner = true;
         } else if (this.lotteryNumber === bet.lotteryNumber && bet.combined === true) {
             payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);
             if (!payment) {
