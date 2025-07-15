@@ -29,21 +29,32 @@ import {
 import { RegisterBetsDetail } from '../../domain/register-bets/models/register-bets.entity';
 import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { DeleteBetsServicePort } from '../../domain/delete-bets/ports';
-import { ResponseQueryDelete } from '../../domain/delete-bets/models/delete-bets.entity';
-import { BehaviorSubject } from 'rxjs';
+import {
+  ListDeleteBets,
+  ResponseQueryDelete,
+} from '../../domain/delete-bets/models/delete-bets.entity';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
-  deleteProgress$ = new BehaviorSubject<number>(0);
+  private betsSubject: BehaviorSubject<ListDeleteBets | null> =
+    new BehaviorSubject<ListDeleteBets | null>(null);
+  deleteProgress = new BehaviorSubject<number>(0);
   private batchSize = 25;
 
-  // Pagination
-  history: QueryDocumentSnapshot<DocumentData>[] = [];
-  currentIndex = -1;
-  alertList: AlertParameterization[] = [];
-  private hasNext = false;
-
   constructor(private firestore: Firestore) {}
+
+  listBets$(): Observable<ListDeleteBets | null> | null {
+    return this.betsSubject.asObservable();
+  }
+
+  deleteProgress$(): Observable<number> {
+    return this.deleteProgress.asObservable();
+  }
+
+  updateList$(data: ListDeleteBets) {
+    return this.betsSubject.next(data);
+  }
 
   totalToDelete(data: RegisterBetsDetail[]) {
     let sumary = 0;
@@ -58,7 +69,7 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
   async bulkDelete(startDate: Date, endDate: Date) {
     const startTs = Timestamp.fromDate(startDate);
     const endTs = Timestamp.fromDate(endDate);
-    const colRef = collection(this.firestore, 'register-bets');
+    const colRef = collection(this.firestore, 'register-bets-detail');
 
     const q = query(
       colRef,
@@ -69,8 +80,10 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
     const snapshot = await getDocs(q);
     const total = snapshot.docs.length;
 
+    await this.deleteBetsGrouped(startDate, endDate);
+
     if (total === 0) {
-      this.deleteProgress$.next(100); // nada por borrar
+      this.deleteProgress.next(100); // nada por borrar
       return;
     }
 
@@ -93,7 +106,28 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
       await batch.commit();
       deleted += chunk.length;
       const progress = Math.round((deleted / total) * 100);
-      this.deleteProgress$.next(progress);
+      this.deleteProgress.next(progress);
+    }
+  }
+
+  async deleteBetsGrouped(startDate: Date, endDate: Date) {
+    const colRef = collection(this.firestore, 'register-bets');
+
+    const q = query(
+      colRef,
+      where('date', '>=', startDate),
+      where('date', '<=', endDate)
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      console.log('❗No hay documentos que coincidan con los filtros.');
+      return;
+    }
+
+    for (const docSnap of snapshot.docs) {
+      await deleteDoc(docSnap.ref);
     }
   }
 
@@ -103,19 +137,20 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
   ): Promise<ResponseQueryDelete<RegisterBetsDetail>> {
     const startTs = Timestamp.fromDate(startDate);
     const endTs = Timestamp.fromDate(endDate);
-    const colRef = collection(this.firestore, 'register-bets');
+    const colRef = collection(this.firestore, 'register-bets-detail');
 
     const constraints: QueryConstraint[] = [
       where('date', '>=', startTs),
       where('date', '<=', endTs),
     ];
 
-    const q = query(colRef, ...constraints);
+    const qGrouped = query(colRef, ...constraints);
 
-    const snapshotTotal = await getCountFromServer(q);
+    const snapshotTotal = await getCountFromServer(qGrouped);
 
     constraints.push(limit(10));
 
+    const q = query(colRef, ...constraints);
     const snapshot = await getDocs(q);
 
     const data = snapshot.docs.map(

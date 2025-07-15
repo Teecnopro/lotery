@@ -1,7 +1,22 @@
-<div class="alert-layout">
+<div class="fullscreen-loader" *ngIf="(deleteProgress$ | async)! < 100 && loading">
+  <div class="loader-content">
+    <mat-progress-bar
+      color="primary"
+      mode="determinate"
+      [value]="deleteProgress$ | async"
+    ></mat-progress-bar>
+    <p>Eliminando... {{ deleteProgress$ | async }}%</p>
+  </div>
+</div>
+
+<div class="alert-layout" *ngIf="!loading">
   <div class="toolbar">
     <button mat-raised-button color="primary" (click)="toggleForm()">
       {{ showForm ? 'Ocultar formulario' : 'Filtros' }}
+    </button>
+
+    <button mat-raised-button color="warn" *ngIf="startDate && endDate" (click)="deleteData()">
+      Eliminar
     </button>
   </div>
   <div class="layout" [class.column]="isMobile">

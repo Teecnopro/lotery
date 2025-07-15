@@ -10,13 +10,13 @@
                     <mat-label>Escoge una fecha</mat-label>
                     <mat-date-range-input [rangePicker]="picker">
                         <input matStartDate placeholder="Fecha inicio" formControlName="startDate" name="startDate" required>
-                        <input matEndDate placeholder="Fecha Fin" formControlName="startDate"name="endDate" required>
+                        <input matEndDate placeholder="Fecha Fin" formControlName="endDate" name="endDate" required>
                     </mat-date-range-input>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-date-range-picker #picker></mat-date-range-picker>
                 </mat-form-field>
                 <div class="button-group">
-                    <button mat-raised-button color="primary" type="button" [disabled]="!deleteBetForm.valid">
+                    <button mat-raised-button color="primary" type="button" [disabled]="!deleteBetForm.valid" (click)="updateList()">
                         Consultar apuestas a eliminar
                     </button>
                 </div>
