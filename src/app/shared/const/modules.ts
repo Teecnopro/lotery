@@ -5,6 +5,7 @@ export enum MODULES {
     ALERT_PARAMETERIZATION = 'alert-parameterization',
     REGISTER_BETS = 'register-bets',
     VENDOR = 'vendor',
+    DELETE_BETS = 'delete-bets',
 }
 
 export const NAME_MODULES: { [key in MODULES]: string } = {
@@ -14,4 +15,5 @@ export const NAME_MODULES: { [key in MODULES]: string } = {
     [MODULES.ALERT_PARAMETERIZATION]: 'Parametrización de alertas',
     [MODULES.REGISTER_BETS]: 'Registrar apuestas',
     [MODULES.VENDOR]: 'Vendedores',
+    [MODULES.DELETE_BETS]: 'Eliminar apuestas'
 }

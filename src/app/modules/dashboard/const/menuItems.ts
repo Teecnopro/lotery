@@ -19,6 +19,7 @@ export const MENU_ITEMS = [
     route: 'register-bets',
     onlyAdmin: false,
   },
+  { label: 'Eliminar Apuestas', icon: 'delete', route: 'delete-bets', onlyAdmin: true },
   { label: 'Vendedores', icon: 'store', route: 'vendors', onlyAdmin: true },
   { label: 'Consultar aciertos', icon: 'check_circle', route: 'check-hits', onlyAdmin: false },
   { label: 'Reportes', icon: 'dashboard_2', route: 'reports', onlyAdmin: true },
