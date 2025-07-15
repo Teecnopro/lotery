@@ -2,6 +2,7 @@ import { inject } from "@angular/core";
 import { ISeller } from "../models/seller.model";
 import { SELLER_REPOSITORY } from "../ports";
 import { SellerRepositoryPort } from "../ports/seller-repository.port";
+import { AuthUser } from "../../auth/models/auth-user.entity";
 
 export class SellerUseCase {
     private sellerRepository = inject(SELLER_REPOSITORY)
@@ -32,8 +33,8 @@ export class SellerUseCase {
     async getSellersByCodeOrName(codeOrName: string): Promise<ISeller[]> {
         return this.sellerRepository.getSellersByCodeOrName(codeOrName);
     }
-    async updateState(uid: string, state: boolean): Promise<ISeller> {
-        return this.sellerRepository.updateState(uid, state);
+    async updateState(uid: string, state: boolean, updatedBy: AuthUser): Promise<ISeller> {
+        return this.sellerRepository.updateState(uid, state, updatedBy);
     }
     async getSellerByPagination(
         page: number,

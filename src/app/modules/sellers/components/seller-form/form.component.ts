@@ -83,7 +83,7 @@ export class SellerFormComponent {
         const sellerData = { ...this.seller, code: formData.code.toLowerCase().trim(), name: formData.name.toLowerCase().trim(), state: formData.state };
         try {
             const existingSeller = await this.SellerUseCase.getSellerByCode(sellerData.code);
-            if (existingSeller && !this.isEditing) {
+            if ((existingSeller && !this.isEditing) || (existingSeller && this.isEditing && existingSeller.uid !== sellerData.uid)) {
                 this.notification.error('Ya existe un vendedor con este código.');
                 this.loading = false;
                 return;

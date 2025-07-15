@@ -91,8 +91,8 @@ export class CheckHitsTableComponent {
     calculatePrize(bet: RegisterBetsDetail): { isWinner: boolean, value: number } {
         let payment: PaymentParameterization | undefined;
         let isWinner = false;
-        if (this.lotteryNumber !== bet.lotteryNumber && bet.combined === true) {
-            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);
+        if (this.lotteryNumber !== bet.lotteryNumber) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length);
             if (!payment) {
                 return { isWinner: false, value: 0 };
             }
