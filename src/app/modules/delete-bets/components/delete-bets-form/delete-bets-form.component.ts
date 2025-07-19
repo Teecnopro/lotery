@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -31,6 +31,9 @@ import { DeleteBetsUseCase } from '../../../../domain/delete-bets/use-cases';
   styleUrl: './delete-bets-form.component.scss',
 })
 export class DeleteBetsFormComponent {
+  @Output('emitLoading') emitLoading = new EventEmitter<boolean>();
+  @Input() loading = false;
+
   private formBuilder = inject(FormBuilder);
   private deleteBetsUseCase = inject(DeleteBetsUseCase);
 
@@ -40,6 +43,8 @@ export class DeleteBetsFormComponent {
   });
 
   updateList() {
+    this.emitLoading.emit(true);
+    this.loading = true;
     const { startDate, endDate } = this.deleteBetForm.getRawValue() || {};
     const setStartDate = new Date(startDate);
     setStartDate.setHours(0, 0, 0, 0);
@@ -47,5 +52,6 @@ export class DeleteBetsFormComponent {
     setEndDate.setHours(0, 0, 0, 0);
 
     this.deleteBetsUseCase.updateList$({ startDate: setStartDate, endDate: setEndDate })
+    this.deleteBetForm.reset();
   }
 }

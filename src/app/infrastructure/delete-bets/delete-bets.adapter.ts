@@ -40,7 +40,7 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
   private betsSubject: BehaviorSubject<ListDeleteBets | null> =
     new BehaviorSubject<ListDeleteBets | null>(null);
   deleteProgress = new BehaviorSubject<number>(0);
-  private batchSize = 25;
+  private batchSize = 1;
 
   constructor(private firestore: Firestore) {}
 

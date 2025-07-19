@@ -21,7 +21,7 @@ export class DeleteBetsUseCase {
   listBets$(): Observable<ListDeleteBets | null> | null {
     return this.deleteBets.listBets$();
   }
-  updateList$(data: ListDeleteBets) {
+  updateList$(data: ListDeleteBets | null) {
     return this.deleteBets.updateList$(data);
   }
   deleteProgress$(): Observable<number> {

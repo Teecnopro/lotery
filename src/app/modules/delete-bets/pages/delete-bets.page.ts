@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { DeleteBetsFormComponent } from '../components/delete-bets-form/delete-bets-form.component';
 import { DeleteBetsListComponent } from '../components/delete-bets-list/delete-bets-list.component';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,8 @@ import { MatButton } from '@angular/material/button';
 import { DeleteBetsUseCase } from '../../../domain/delete-bets/use-cases';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NOTIFICATION_PORT } from '../../../shared/ports';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-delete-bets',
@@ -24,12 +26,15 @@ import { NOTIFICATION_PORT } from '../../../shared/ports';
 export class DeleteBetsPage {
   private deleteBetsUseCase = inject(DeleteBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
+  private dialog = inject(MatDialog);
   deleteProgress$ = this.deleteBetsUseCase.deleteProgress$();
 
   showForm: boolean = false;
   isMobile: boolean = false;
 
   loading = false;
+  loadingForm = false;
+  hasData = false;
 
   startDate!: Date;
   endDate!: Date;
@@ -47,6 +52,21 @@ export class DeleteBetsPage {
 
   toggleForm() {
     this.showForm = !this.showForm;
+  }
+
+  async deleteValidate() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Eliminar masivamente registros de apuestas',
+        message: '¿Está seguro que desea eliminar esto(s) registros?',
+      },
+    });
+
+    const confirmed = await firstValueFrom(dialogRef.afterClosed());
+
+    if (confirmed) {
+      this.deleteData();
+    }
   }
 
   async deleteData() {

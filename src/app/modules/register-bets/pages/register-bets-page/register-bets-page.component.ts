@@ -173,9 +173,6 @@ export class RegisterBetsPageComponent implements OnInit {
         );
       }
     }
-
-    try {
-    } catch (error) {}
   }
 
   actionBack() {

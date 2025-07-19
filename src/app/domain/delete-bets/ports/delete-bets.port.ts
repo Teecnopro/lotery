@@ -12,6 +12,6 @@ export interface DeleteBetsServicePort {
   ): Promise<ResponseQueryDelete<RegisterBetsDetail>>;
   bulkDelete(startDate: Date, endDate: Date): void;
   listBets$(): Observable<ListDeleteBets | null> | null;
-  updateList$(data: ListDeleteBets): void;
+  updateList$(data: ListDeleteBets | null): void;
   deleteProgress$(): Observable<number>;
 }

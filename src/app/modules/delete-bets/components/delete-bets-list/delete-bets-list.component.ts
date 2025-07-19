@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { DeleteBetsUseCase } from '../../../../domain/delete-bets/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
@@ -25,6 +25,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './delete-bets-list.component.scss',
 })
 export class DeleteBetsListComponent {
+  @Output('emitLoading') emitLoading = new EventEmitter<boolean>();
+  @Output('emitData') emitData = new EventEmitter<boolean>();
+
   private deleteBetsUseCase = inject(DeleteBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
 
@@ -50,6 +53,12 @@ export class DeleteBetsListComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.deleteBetsUseCase.updateList$(null);
+  }
+
   async getData(startDate: Date, endDate: Date) {
     this.loading = true;
     try {
@@ -60,6 +69,8 @@ export class DeleteBetsListComponent {
 
       this.listBets = data;
       this.totalMissing = total - data.length;
+      this.emitLoading.emit(false);
+      this.emitData.emit(this.listBets.length > 0)
     } catch (error: any) {
       console.error('Error fetching register bets:', error);
       this.notification.error(

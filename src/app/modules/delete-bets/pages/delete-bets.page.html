@@ -1,11 +1,7 @@
-<div class="fullscreen-loader" *ngIf="(deleteProgress$ | async)! < 100 && loading">
-  <div class="loader-content">
-    <mat-progress-bar
-      color="primary"
-      mode="determinate"
-      [value]="deleteProgress$ | async"
-    ></mat-progress-bar>
-    <p>Eliminando... {{ deleteProgress$ | async }}%</p>
+<div class="loader-screen" *ngIf="(deleteProgress$ | async)! < 100 && loading">
+  <div class="loader-text">Eliminando... {{ deleteProgress$ | async }}%</div>
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="deleteProgress$ | async"></div>
   </div>
 </div>
 
@@ -15,18 +11,27 @@
       {{ showForm ? 'Ocultar formulario' : 'Filtros' }}
     </button>
 
-    <button mat-raised-button color="warn" *ngIf="startDate && endDate" (click)="deleteData()">
+    <button
+      mat-raised-button
+      color="warn"
+      *ngIf="hasData"
+      (click)="deleteValidate()"
+    >
       Eliminar
     </button>
   </div>
-  <div class="layout" [class.column]="isMobile">
+  <div class="layout">
     <div class="form-section" *ngIf="showForm">
-      <div class="form-section">
-        <app-delete-bets-form></app-delete-bets-form>
-      </div>
+      <app-delete-bets-form
+        [loading]="loadingForm"
+        (emitLoading)="loadingForm = $event"
+      ></app-delete-bets-form>
     </div>
     <div class="table-section">
-      <app-delete-bets-list></app-delete-bets-list>
+      <app-delete-bets-list
+        (emitLoading)="loadingForm = $event"
+        (emitData)="hasData = $event"
+      ></app-delete-bets-list>
     </div>
   </div>
 </div>
