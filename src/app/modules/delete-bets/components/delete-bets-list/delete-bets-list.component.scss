@@ -1,0 +1,17 @@
+.table-wrapper {
+  max-height: 400px; // Ajusta según tu diseño
+  overflow: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+
+  // Para scroll horizontal cuando las columnas exceden el ancho
+  table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  // Estilo opcional para mantener filas legibles
+  .mat-header-row, .mat-row {
+    white-space: nowrap;
+  }
+}
