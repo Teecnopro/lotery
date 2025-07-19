@@ -1,3 +1,4 @@
+import { LoadUserProfileUseCase } from './load-user-profile.use-case';
 import { GetUsersUseCase } from './get-users.use-case';
 import { DeleteUserUseCase } from './delete-user.use-case';
 import { DeactivateUserUseCase } from './deactivate-user.use-case';
@@ -10,4 +11,5 @@ export {
   DeactivateUserUseCase,
   DeleteUserUseCase,
   GetUsersUseCase,
+  LoadUserProfileUseCase,
 };

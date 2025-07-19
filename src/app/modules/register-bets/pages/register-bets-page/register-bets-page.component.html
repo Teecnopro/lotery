@@ -1,0 +1,78 @@
+<div class="layout">
+  <div class="form-section">
+    <div class="form-section-column">
+      <app-register-bets-form></app-register-bets-form>
+    </div>
+    <div class="form-section-column resume-desktop">
+      <app-register-bets-resume></app-register-bets-resume>
+    </div>
+
+    <!-- Botón responsive -->
+    <button
+      mat-button
+      color="primary"
+      class="resume-toggle-button"
+      (click)="showResumeResponsive = !showResumeResponsive"
+    >
+      {{ showResumeResponsive ? "Ocultar resumen" : "Mostrar resumen" }}
+    </button>
+
+    <!-- Resumen visible solo en responsive si se activa -->
+    <div
+      class="form-section-column resume-responsive"
+      *ngIf="showResumeResponsive"
+    >
+      <app-register-bets-resume></app-register-bets-resume>
+    </div>
+  </div>
+
+  <div class="options">
+    <button
+      mat-raised-button
+      type="button"
+      color="primary"
+      *ngIf="viewDetail?.detail"
+      (click)="actionBack()"
+    >
+      <mat-icon>arrow_back</mat-icon>
+      Volver
+    </button>
+    <button
+      mat-flat-button
+      color="warn"
+      *ngIf="selectedBets?.selected && viewDetail?.detail"
+      (click)="deleteBetsDetail()"
+    >
+      <mat-icon>delete</mat-icon>
+      Eliminar
+    </button>
+    <span
+      *ngFor="let item of filteredOptions"
+      class="item-filter"
+      [ngClass]="{ 'color-selected': item.selected }"
+      (click)="!item.selected ? onFilter(item) : onReset(item)"
+      >{{ !item.selected ? item.nameSelected : item.nameNoSelected }}</span
+    >
+  </div>
+
+  <div class="table-section">
+    <app-register-bets-list
+      *ngIf="!viewDetail?.detail && !isResume"
+      (viewDetail)="viewDetail = $event"
+    ></app-register-bets-list>
+    <app-register-bets-list-detail
+      *ngIf="viewDetail?.detail && !isResume"
+      [grupedBet]="viewDetail.item!"
+      (isSelectToDeleted)="selectedBets = $event"
+      (emitDetail)="viewDetail.detail = $event"
+      [isSeller]="viewDetail.isSeller || false"
+      [sellerId]="viewDetail.sellerId || ''"
+      [defaultDate]="defaultDate"
+      [lottery]="lottery"
+    ></app-register-bets-list-detail>
+    <app-register-bets-list-resume
+      *ngIf="!viewDetail?.detail && isResume"
+      (viewDetail)="viewDetail = $event"
+    ></app-register-bets-list-resume>
+  </div>
+</div>

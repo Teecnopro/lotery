@@ -1,0 +1,14 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+.toolbar button {
+  min-width: 160px;
+  white-space: nowrap;
+  text-align: center;
+}

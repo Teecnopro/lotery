@@ -11,11 +11,93 @@ export const routesDashboard: Routes = [
         (m) => m.DashboardLayoutComponent
       ),
     children: [
-      /* Agregar los faltantes aca */
+      {
+        path: '',
+        loadComponent: () =>
+          import('./components/dashboard-home.component').then(
+            (m) => m.DashboardHomeComponent
+          ),
+        data: { title: 'Inicio' },
+      },
       {
         path: 'users',
         loadChildren: () =>
           import('../users/users.routes').then((m) => m.routesUsers),
+        data: {
+          title: 'Usuarios',
+        },
+      },
+      {
+        path: 'alert-parameterization',
+        loadChildren: () =>
+          import(
+            '../alert-parameterization/alert-parameterization.routes'
+          ).then((m) => m.routesAlertParameterization),
+        data: {
+          title: 'Parametrización de alertas',
+        },
+      },
+      {
+        path: 'payment-parameterization',
+        loadChildren: () =>
+          import(
+            '../payment-parameterization/payment-parameterization.routes'
+          ).then((m) => m.routesPaymentParameterization),
+        data: {
+          title: 'Parametrización de pagos',
+        },
+      },
+      {
+        path: 'register-bets',
+        loadChildren: () =>
+          import('../register-bets/register-bets.routes').then(
+            (m) => m.routesRegisterBets
+          ),
+        data: {
+          title: 'Registrar apuestas',
+        },
+      },
+      {
+        path: 'vendors',
+        loadChildren: () =>
+          import('../sellers/seller.routes').then((m) => m.routesSeller),
+        data: {
+          title: 'Vendedores',
+        },
+      },
+      {
+        path: 'check-hits',
+        loadChildren: () =>
+          import('../check-hits/check-hits.routes').then(
+            (m) => m.routesCheckHits
+          ),
+        data: {
+          title: 'Consultar aciertos',
+        },
+      },
+      {
+        path: 'reports',
+        loadChildren: () =>
+          import('../reports/reports.routes').then((m) => m.routesReports),
+        data: {
+          title: 'Reportes',
+        },
+      },
+      {
+        path: 'logbook',
+        loadChildren: () =>
+          import('../logbook/logbook.routes').then((m) => m.routesLogBook),
+        data: {
+          title: 'Bitacora',
+        },
+      },
+      {
+        path: 'delete-bets',
+        loadChildren: () =>
+          import('../delete-bets/delete-bets.routes').then((m) => m.routesDeleteBets),
+        data: {
+          title: 'Eliminar apuestas',
+        },
       },
     ],
   },

@@ -1,0 +1,49 @@
+@use "@angular/material" as mat;
+
+/* Personalized palette  */
+$corporate-primary-palette: mat.define-palette(
+  (
+    50: #e1ecf4,
+    100: #b3cde2,
+    200: #80abcf,
+    300: #4d89bb,
+    400: #2670ad,
+    500: #0057a0,
+    600: #004f98,
+    700: #00448e,
+    800: #003a84,
+    900: #002873,
+    contrast: (
+      500: white,
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+    ),
+  )
+);
+
+$corporate-accent-palette: mat.define-palette(mat.$orange-palette, A200);
+$corporate-warn-palette: mat.define-palette(mat.$red-palette);
+
+$light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $corporate-primary-palette,
+      accent: $corporate-accent-palette,
+      warn: $corporate-warn-palette,
+    ),
+  )
+);
+
+$dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $corporate-primary-palette,
+      accent: $corporate-accent-palette,
+      warn: $corporate-warn-palette,
+    ),
+  )
+);
+
+@include mat.all-component-themes($light-theme);

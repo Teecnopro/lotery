@@ -11,6 +11,16 @@ import {
 } from '../../domain/auth/use-cases';
 import { AUTH_SESSION } from '../../domain/auth/ports';
 import { LocalStorageAuthSessionAdapter } from '../../infrastructure/auth/local-storage-auth-session.adapter';
+import { LoadUserProfileUseCase } from '../../domain/users/use-cases';
+import { PAYMENT_PARAMETERIZATION_SERVICE } from '../../domain/payment-parameterization/ports';
+import { FirebasePaymentParameterizationAdapter } from '../../infrastructure/payment-parameterization/payment-parameterization.adapter';
+import { PaymentParameterizationUseCase } from '../../domain/payment-parameterization/use-cases';
+import { ALERT_PARAMETERIZATION_SERVICE } from '../../domain/alert-parameterization/ports';
+import { FirebaseAlertParameterizationAdapter } from '../../infrastructure/alert-parameterization/alert-parameterization.adapter';
+import { AlertParameterizationUseCase } from '../../domain/alert-parameterization/use-cases';
+import { LOG_BOOK_SERVICE } from '../../domain/logBook/ports';
+import { LogBookAdapter } from '../../infrastructure/logBook/logBook.adapter';
+import { LogBookUseCases } from '../../domain/logBook/use-cases/logBook.usecases';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule],
@@ -23,9 +33,26 @@ import { LocalStorageAuthSessionAdapter } from '../../infrastructure/auth/local-
       provide: AUTH_SESSION,
       useClass: LocalStorageAuthSessionAdapter,
     },
+
+    {
+      provide: PAYMENT_PARAMETERIZATION_SERVICE,
+      useClass: FirebasePaymentParameterizationAdapter,
+    },
+    {
+      provide: ALERT_PARAMETERIZATION_SERVICE,
+      useClass: FirebaseAlertParameterizationAdapter,
+    },
+    {
+      provide: LOG_BOOK_SERVICE,
+      useClass: LogBookAdapter
+    },
+    LogBookUseCases,
+    AlertParameterizationUseCase,
     LoginUseCase,
     LogoutUseCase,
     RecoverPasswordUseCase,
+    LoadUserProfileUseCase,
+    PaymentParameterizationUseCase
   ],
 })
-export class AuthModule {}
+export class AuthModule { }

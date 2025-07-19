@@ -1,10 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import {
   Auth,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  deleteUser
 } from '@angular/fire/auth';
 
 import { AuthServicePort } from '../../domain/auth/ports/auth-service.port';

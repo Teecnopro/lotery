@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-container {
+  min-height: 100%;
+  width: 100%;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}

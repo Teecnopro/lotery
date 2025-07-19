@@ -1,0 +1,35 @@
+<div class="form-container" [class.mobile]="isMobile">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Configuración de Alertas</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form #alertForm="ngForm" (ngSubmit)="onSubmit(alertForm)" class="alert-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Digítos</mat-label>
+          <input matInput type="number" name="digits" [(ngModel)]="alert.digits" required
+            placeholder="Ingrese la cantidad de dígitos" [min]="1">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Valor</mat-label>
+          <input matInput type="number" name="value" [(ngModel)]="alert.value" required 
+          placeholder="Ingrese el valor" [min]="1">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción Alerta</mat-label>
+          <input matInput type="text" name="description" [(ngModel)]="alert.description" required
+            placeholder="Ingrese una Descripción">
+        </mat-form-field>
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!alertForm.valid">
+            {{textButton}}
+          </button>
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(alertForm)">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

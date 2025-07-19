@@ -9,9 +9,21 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
+import {
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { NOTIFICATION_PORT } from '../ports';
-import { MaterialNotificationAdapter } from '../infrastructure/primeng-notification.adapter';
+import { MaterialNotificationAdapter } from '../infrastructure/matsnackbar-notification.adapter';
+import { getSpanishPaginatorIntl } from '../function/mat-paginator-intl-es';
 
 @NgModule({
   exports: [
@@ -24,12 +36,21 @@ import { MaterialNotificationAdapter } from '../infrastructure/primeng-notificat
     MatSidenavModule,
     MatToolbarModule,
     MatListModule,
+    MatTooltipModule,
+    MatCheckboxModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatDialogModule,
+    MatChipsModule,
+    MatSelectModule,
+    MatProgressBarModule,
   ],
   providers: [
     {
       provide: NOTIFICATION_PORT,
       useClass: MaterialNotificationAdapter,
     },
+    { provide: MatPaginatorIntl, useFactory: getSpanishPaginatorIntl },
   ],
 })
 export class MaterialModule {}

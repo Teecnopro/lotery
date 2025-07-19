@@ -1,0 +1,38 @@
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Configuración de Pago</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form #paymentForm="ngForm" (ngSubmit)="onSubmit(paymentForm)" class="payment-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Digitos</mat-label>
+          <input matInput type="number" name="digits" [(ngModel)]="payment.digits" required min="1" placeholder="Ingrese los digitos">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Multiplicador de pago</mat-label>
+          <input matInput type="number" name="amount" [(ngModel)]="payment.amount" required min="0" placeholder="Ingrese el multiplicador">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Combinado</mat-label>
+          <mat-select name="combined" [(ngModel)]="payment.combined" required>
+            <mat-option [value]="true">Sí</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="button-group">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!paymentForm.valid || loading">
+            {{loading ? 'Guardando...' : textButton}}
+          </button>
+          <button mat-outlined-button type="button" (click)="limpiarFormulario(paymentForm)" [disabled]="loading">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
