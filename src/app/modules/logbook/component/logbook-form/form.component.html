@@ -7,10 +7,10 @@
         <mat-card-content>
             <form #logBookFilter="ngForm" (ngSubmit)="onSubmit(logBookFilter)" class="logBookFilter-form">
                 <mat-form-field>
-                    <mat-label>Enter a date range</mat-label>
+                    <mat-label>Ingrese la fecha</mat-label>
                     <mat-date-range-input [rangePicker]="picker">
-                        <input matStartDate placeholder="Start date" [(ngModel)]="dateRange.start" name="startDate" required>
-                        <input matEndDate placeholder="End date" [(ngModel)]="dateRange.end" name="endDate" required>
+                        <input matStartDate placeholder="Fecha de inicio" [(ngModel)]="dateRange.start" name="startDate" required>
+                        <input matEndDate placeholder="Fecha fin" [(ngModel)]="dateRange.end" name="endDate" required>
                     </mat-date-range-input>
                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-date-range-picker #picker></mat-date-range-picker>

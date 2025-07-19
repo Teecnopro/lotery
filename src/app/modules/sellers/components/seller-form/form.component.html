@@ -17,7 +17,7 @@
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Estado</mat-label>
-          <mat-select [(ngModel)]="seller.state" [ngModelOptions]="{standalone: true}" required>
+          <mat-select name="state" [(ngModel)]="seller.state" required>
             <mat-option [value]="true">Activo</mat-option>
             <mat-option [value]="false">Inactivo</mat-option>
           </mat-select>

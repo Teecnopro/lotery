@@ -135,6 +135,7 @@ export class SellerFormComponent {
             code: '',
             name: '',
         };
+        form.controls['state'].setValue(true); // Reset state to true
         this.cdr.detectChanges();
     }
 }

@@ -92,12 +92,8 @@ export class SellerTableComponent {
     try {
       const dataSource = await this.sellerUseCase.getSellerByPagination(this.pageIndex, this.pageSize);
       this.totalItems = await this.sellerUseCase.getTotalItems();
-      const copyDataSource = JSON.parse(JSON.stringify(dataSource)) as ISeller[];
       localStorage.removeItem('sellerDataSource');
-      localStorage.setItem('sellerDataSource', JSON.stringify(copyDataSource.map(seller => {
-        delete seller.uid;
-        return seller;
-      })));
+      localStorage.setItem('sellerDataSource', JSON.stringify(dataSource));
       this.dataSource = dataSource;
     } catch (error: any) {
       this.notification.error('Error al cargar los vendedores: ' + error.message);
