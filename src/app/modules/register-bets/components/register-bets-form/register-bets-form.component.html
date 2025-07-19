@@ -8,7 +8,12 @@
       <form [formGroup]="registerBetForm" class="bets-form">
         <mat-form-field appearance="outline" class="full-with">
           <mat-label>Fecha</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="date" (dateChange)="updateList()" />
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="date"
+            (dateChange)="updateList()"
+          />
           <mat-hint>DD/MM/YYYY</mat-hint>
           <mat-datepicker-toggle
             matIconSuffix
@@ -21,8 +26,20 @@
           <div class="lottery-select">
             <mat-form-field appearance="outline">
               <mat-label>Lotería</mat-label>
-              <mat-select #lotterySelect formControlName="lottery" (selectionChange)="activeDeactiveSelect('deactive'); selectSeller.open(); updateList()">
-                <mat-option *ngFor="let item of arrayLotteries" [value]="item"><span [style.color]="item.color">{{ item.name }}</span></mat-option>
+              <mat-select
+                #lotterySelect
+                formControlName="lottery"
+                (selectionChange)="
+                  activeDeactiveSelect('deactive');
+                  selectSeller.open();
+                  updateList()
+                "
+              >
+                <mat-option *ngFor="let item of arrayLotteries" [value]="item"
+                  ><span [style.color]="item.color">{{
+                    item.name
+                  }}</span></mat-option
+                >
               </mat-select>
             </mat-form-field>
           </div>
@@ -40,25 +57,50 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Vendedor</mat-label>
-          <mat-select #selectSeller formControlName="seller" (selectionChange)="onSellerSelected()">
-            <mat-option *ngFor="let item of arraySellers" [value]="item"><span>{{ item.name }}</span></mat-option>
+          <mat-select
+            #selectSeller
+            formControlName="seller"
+            (selectionChange)="onSellerSelected()"
+          >
+            <mat-option *ngFor="let item of arraySellers" [value]="item"
+              ><span>{{ item.name }}</span></mat-option
+            >
           </mat-select>
         </mat-form-field>
 
         <div class="number-check">
           <mat-form-field appearance="outline">
             <mat-label>Número</mat-label>
-            <input #myInputNumber matInput type="text" formControlName="lotteryNumber" (keydown.enter)="inputCombined.focus()"/>
+            <input
+              #myInputNumber
+              matInput
+              type="text"
+              formControlName="lotteryNumber"
+              (keydown.enter)="inputCombined.focus()"
+            />
           </mat-form-field>
 
-          <mat-checkbox #inputCombined color="primary" formControlName="combined" class="checkbox" (keydown.enter)="inputValue.focus()">
+          <mat-checkbox
+            #inputCombined
+            color="primary"
+            formControlName="combined"
+            class="checkbox"
+            (keydown.enter)="inputValue.focus()"
+          >
             Comb.
           </mat-checkbox>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Valor</mat-label>
-          <input #inputValue matInput type="number" formControlName="value" (keydown.enter)="btnSend.focus()" placeholder="0"/>
+          <input
+            #inputValue
+            matInput
+            type="number"
+            formControlName="value"
+            (keydown.enter)="btnSend.focus()"
+            placeholder="0"
+          />
         </mat-form-field>
 
         <div class="button-group">
@@ -67,11 +109,11 @@
             mat-raised-button
             color="primary"
             type="button"
-            [disabled]="!registerBetForm.valid"
+            [disabled]="!registerBetForm.valid || loading"
             (keydown.enter)="sendData()"
             (click)="sendData()"
           >
-            Enviar
+            {{ !loading ? "Enviar" : "Enviando..." }}
           </button>
         </div>
       </form>

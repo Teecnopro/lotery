@@ -83,6 +83,8 @@ export class RegisterBetsFormComponent implements OnInit {
   private notification = inject(NOTIFICATION_PORT);
   private defaultDate!: Timestamp;
 
+  loading = false;
+
   registerBetForm: FormGroup = this.formBuilder.group({
     date: [new Date(), [Validators.required]],
     lottery: [{ value: '', disabled: true }, [Validators.required]],
@@ -137,9 +139,12 @@ export class RegisterBetsFormComponent implements OnInit {
       : lottery?.disable();
   }
   async sendData() {
+    this.loading = true;
     const betDetail = this.buildObj();
     const currentUser = this.user.getUser();
-    await this.registerBetsUseCase.createRegisterBets(betDetail).then(() => {
+
+    try {
+      await this.registerBetsUseCase.createRegisterBets(betDetail).then(() => {
       this.logBookUseCases.createLogBook({
         action: ACTIONS.CREATE,
         date: new Date().valueOf(),
@@ -147,9 +152,26 @@ export class RegisterBetsFormComponent implements OnInit {
         module: MODULES.REGISTER_BETS,
         description: `Apuesta registrada por ${betDetail.seller?.name} para la lotería ${betDetail.lottery?.name} con número ${betDetail.lotteryNumber} y valor ${betDetail.value}`,
       });
+
+      this.resetForm();
     });
+    } catch (error: any) {
+      console.error('Error save register bets:', error);
+      this.notification.error(
+        error?.message || 'Error al guardar los registros de apuestas'
+      );
+    } finally {
+      this.loading = false;
+    }
 
     this.updateList();
+  }
+
+  resetForm() {
+    this.registerBetForm.get("value")?.reset();
+    this.registerBetForm.get("combined")?.reset();
+    this.registerBetForm.get("lotteryNumber")?.reset();
+    this.registerBetForm.get("seller")?.reset();
   }
 
   buildObj(): RegisterBetsDetail {
