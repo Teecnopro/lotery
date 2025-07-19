@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="!loading; else loadingTpl">
   <div *ngIf="loading" class="loading-container">
     <p>Cargando parametrizaciones de pago...</p>
   </div>
@@ -55,4 +55,18 @@
     ></tr>
     <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
   </table>
+
+  <div *ngIf="listBets.length === 0" class="empty-state">
+    <p>No hay resultados disponibles para los filtros seleccionados.</p>
+  </div>
 </div>
+
+<ng-template #loadingTpl>
+  <div class="loading-container">
+    <mat-progress-spinner
+      mode="indeterminate"
+      diameter="50"
+    ></mat-progress-spinner>
+    <p>Cargando datos...</p>
+  </div>
+</ng-template>

@@ -168,10 +168,10 @@ export class RegisterBetsFormComponent implements OnInit {
   }
 
   resetForm() {
-    this.registerBetForm.get("value")?.reset();
-    this.registerBetForm.get("combined")?.reset();
-    this.registerBetForm.get("lotteryNumber")?.reset();
-    this.registerBetForm.get("seller")?.reset();
+    this.registerBetForm.get("value")?.reset(null);
+    this.registerBetForm.get("combined")?.reset(false);
+    this.registerBetForm.get("lotteryNumber")?.reset('');
+    this.registerBetForm.get("seller")?.reset('');
   }
 
   buildObj(): RegisterBetsDetail {

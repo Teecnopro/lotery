@@ -3,7 +3,25 @@
     <div class="form-section-column">
       <app-register-bets-form></app-register-bets-form>
     </div>
-    <div class="form-section-column">
+    <div class="form-section-column resume-desktop">
+      <app-register-bets-resume></app-register-bets-resume>
+    </div>
+
+    <!-- Botón responsive -->
+    <button
+      mat-button
+      color="primary"
+      class="resume-toggle-button"
+      (click)="showResumeResponsive = !showResumeResponsive"
+    >
+      {{ showResumeResponsive ? "Ocultar resumen" : "Mostrar resumen" }}
+    </button>
+
+    <!-- Resumen visible solo en responsive si se activa -->
+    <div
+      class="form-section-column resume-responsive"
+      *ngIf="showResumeResponsive"
+    >
       <app-register-bets-resume></app-register-bets-resume>
     </div>
   </div>

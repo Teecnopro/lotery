@@ -8,6 +8,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-delete-bets-list',
@@ -20,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     CurrencyPipe,
     MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './delete-bets-list.component.html',
   styleUrl: './delete-bets-list.component.scss',

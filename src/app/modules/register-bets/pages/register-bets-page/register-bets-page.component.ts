@@ -51,6 +51,7 @@ export class RegisterBetsPageComponent implements OnInit {
 
   isDetail = false;
   isResume = false;
+  showResumeResponsive = false;
 
   filteredOptions = [
     {

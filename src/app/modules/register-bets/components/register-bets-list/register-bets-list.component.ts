@@ -17,6 +17,7 @@ import { AlertParameterization } from '../../../../domain/alert-parameterization
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, Subscription, take, takeUntil } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-register-bets-list',
@@ -29,6 +30,7 @@ import { Subject, Subscription, take, takeUntil } from 'rxjs';
     MatIconModule,
     CurrencyPipe,
     MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './register-bets-list.component.html',
   styleUrl: './register-bets-list.component.scss',

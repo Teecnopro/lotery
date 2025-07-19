@@ -11,6 +11,7 @@ import { Timestamp } from '@angular/fire/firestore';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { Subject, Subscription, takeUntil } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-register-bets-list-resume',
@@ -23,6 +24,7 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
     MatIconModule,
     CurrencyPipe,
     MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './register-bets-list-resume.component.html',
   styleUrl: './register-bets-list-resume.component.scss',

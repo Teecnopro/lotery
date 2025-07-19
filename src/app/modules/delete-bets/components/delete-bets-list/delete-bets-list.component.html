@@ -1,8 +1,4 @@
-<div>
-  <div *ngIf="loading" class="loading-container">
-    <p>Cargando registros a eliminar...</p>
-  </div>
-
+<div *ngIf="!loading; else loadingTpl">
   <ng-container *ngIf="!loading">
     <table mat-table [dataSource]="listBets" class="mat-elevation-z8">
       <!-- Columnas -->
@@ -47,7 +43,7 @@
         *matRowDef="let row; columns: displayedColumns"
         class="table-row"
       ></tr>
-      <ng-container *ngIf="listBets.length > 0">
+      <ng-container *ngIf="listBets.length > 0 && totalMissing > 0">
         <tr
           mat-footer-row
           *matFooterRowDef="displayedColumns; sticky: true"
@@ -55,4 +51,18 @@
       </ng-container>
     </table>
   </ng-container>
+
+  <div *ngIf="listBets.length === 0" class="empty-state">
+    <p>No hay resultados disponibles para los filtros seleccionados.</p>
+  </div>
 </div>
+
+<ng-template #loadingTpl>
+  <div class="loading-container">
+    <mat-progress-spinner
+      mode="indeterminate"
+      diameter="50"
+    ></mat-progress-spinner>
+    <p>Cargando datos...</p>
+  </div>
+</ng-template>

@@ -22,6 +22,7 @@ import {
 } from '../../../../domain/register-bets/models/register-bets.entity';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-register-bets-list-detail',
@@ -35,6 +36,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
     CurrencyPipe,
     MatTooltipModule,
     MatCheckbox,
+    MatProgressSpinnerModule
   ],
   templateUrl: './register-bets-list-detail.component.html',
   styleUrl: './register-bets-list-detail.component.scss',
