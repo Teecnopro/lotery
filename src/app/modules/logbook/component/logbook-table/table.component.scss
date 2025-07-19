@@ -33,12 +33,6 @@ table {
   line-height: 1.2;
 }
 
-mat-paginator {
-  border-radius: 0 0 8px 8px !important; /* Solo bordes superiores redondeados para la tabla */
-  margin-top: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
 // Action buttons styles
 .actions-header {
   text-align: center !important;
@@ -120,3 +114,4 @@ mat-paginator {
     margin: 0; /* Sin centrado en layout de dos columnas */
   }
 }
+

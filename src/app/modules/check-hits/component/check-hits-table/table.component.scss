@@ -33,12 +33,6 @@ table {
   line-height: 1.2;
 }
 
-mat-paginator {
-  border-radius: 0 0 8px 8px !important; /* Solo bordes inferiores redondeados para el paginador */
-  margin-top: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
 // Loading container styles
 .loading-container {
   padding: 40px;
@@ -101,3 +95,4 @@ mat-paginator {
     margin: 0; /* Sin centrado en layout de dos columnas */
   }
 }
+

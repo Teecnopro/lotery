@@ -13,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { Subscription, Subject } from 'rxjs';
+import { Subscription, Subject, takeUntil } from 'rxjs';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
@@ -21,6 +21,7 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { LOG_BOOK_SERVICE } from '../../../../domain/logBook/ports';
 import { MODULES } from '../../../../shared/const/modules';
 import { ACTIONS } from '../../../../shared/const/actions';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-alert-form',
@@ -43,13 +44,16 @@ export class AlertFormComponent implements OnInit, OnDestroy {
   private subscription?: Subscription;
   private user = inject(AUTH_SESSION);
   private alertUseCases = inject(AlertParameterizationUseCase);
+    private breakpointObserver = inject(BreakpointObserver);
   private logBook = inject(LOG_BOOK_SERVICE);
   private notification = inject(NOTIFICATION_PORT);
+  private destroy$ = new Subject<void>();
 
   constructor(private cdr: ChangeDetectorRef) { }
   textButton: string = 'Crear Alerta';
   alert: AlertParameterization = {};
   isEditing: boolean = false;
+  isMobile: boolean = false;
   loading: boolean = false;
 
   ngOnInit() {
@@ -69,7 +73,17 @@ export class AlertFormComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
+    private configResponsive() {
+      this.breakpointObserver
+        .observe([Breakpoints.Handset])
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((result) => {
+          this.isMobile = result.matches;
+        });
+    }
 
   async onSubmit(form: NgForm) {
     if (!form.valid) {

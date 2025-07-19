@@ -1,9 +1,9 @@
-<div>
+<div style="background-color: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
     <div *ngIf="loading" class="loading-container">
         <p>Consultando aciertos...</p>
     </div>
-    
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!loading">
+    <div class="table-responsive">
+        <table mat-table [dataSource]="dataSource" *ngIf="!loading">
 
         <!-- Columna de Número -->
         <ng-container matColumnDef="numero">
@@ -66,6 +66,7 @@
     <div class="totalValue" *ngIf="![undefined, null, ''].includes(lotteryNumber) && !loading"
         style="text-align: right; color: red; padding-right: 10px; font-weight: 600; background-color: #FFFFFF;">
         {{ 'Total Premios: ' + (totalPaymentWinner | currency : "COP" : "symbol") }}
+    </div>
     </div>
 
     <mat-paginator 

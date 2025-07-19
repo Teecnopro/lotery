@@ -28,3 +28,19 @@
 .toolbar {
   padding: 16px 20px 0;
 }
+
+@media screen and (max-width: 1300px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .form-section {
+    flex: none;
+    width: 100%;
+  }
+
+  .table-section {
+    width: 100%;
+  }
+  
+}

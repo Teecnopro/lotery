@@ -2,7 +2,7 @@ import { Component, Input, inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
-import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { firstValueFrom, map, Subject, Subscription, takeUntil } from 'rxjs';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
@@ -32,10 +32,9 @@ export class AlertTableComponent implements OnInit {
   private notification = inject(NOTIFICATION_PORT);
   private dialog = inject(MatDialog);
   user = inject(AUTH_SESSION);
-
   loading: boolean = false;
   dataSource: AlertParameterization[] = [];
-
+  isMobile: boolean = false;
   displayedColumns: string[] = [
     'digits',
     'value',
@@ -52,6 +51,12 @@ export class AlertTableComponent implements OnInit {
     this.updateTable?.subscribe(() => {
       this.getDataSource();
     });
+  }
+
+  ngOnDestroy() {
+    this.alertObservable?.complete();
+    this.updateTable?.complete();
+    this.showFormObservable?.complete();
   }
 
   async getDataSource() {
