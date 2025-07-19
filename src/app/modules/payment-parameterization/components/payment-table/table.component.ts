@@ -71,18 +71,15 @@ export class PaymentTableComponent implements OnInit {
     this.loading = true;
     try {
       const dataSource = await this.paymentParameterizationUseCase.listPaymentParameterizations();
+      this.dataSource = dataSource
       if (localStorage.getItem('paymentDataSource')) {
         localStorage.removeItem('paymentDataSource');
         if (dataSource.length > 0) {
           localStorage.setItem('paymentDataSource', JSON.stringify(
-            dataSource.map((payment) => {
-              delete payment.uid;
-              return payment;
-            })
+            dataSource
           ));
         }
       }
-      this.dataSource = dataSource;
     } catch (error: any) {
       console.error('Error fetching payment parameterizations:', error);
       this.notification.error(error?.message || 'Error al cargar las parametrizaciones de pago');
@@ -93,6 +90,8 @@ export class PaymentTableComponent implements OnInit {
 
   editPayment(element: PaymentParameterization) {
     // Remover foco del botón antes de la acción
+    console.log('Editing payment:', element);
+    
     if (document.activeElement && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }

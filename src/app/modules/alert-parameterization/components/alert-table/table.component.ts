@@ -59,6 +59,14 @@ export class AlertTableComponent implements OnInit {
     try {
       const dataSource = await this.alertParameterizationUseCase.listAlertParameterizations();
       this.dataSource = dataSource;
+      if (localStorage.getItem('alertDataSource')) {
+        localStorage.removeItem('alertDataSource');
+        if (dataSource.length > 0) {
+          localStorage.setItem('alertDataSource', JSON.stringify(
+            dataSource
+          ));
+        }
+      }
       this.loading = false;
     } catch (error: any) {
       console.error('Error fetching alert parameterizations:', error);
