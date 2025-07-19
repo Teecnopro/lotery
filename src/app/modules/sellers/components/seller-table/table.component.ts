@@ -138,17 +138,15 @@ export class SellerTableComponent {
   }
 
   async applyFilter(filterValue: any) {
-    console.log('Filter value:', filterValue);
-    
-    // if (filterValue && filterValue.length >= 1) {
-    //   const lowerCaseFilter = filterValue.toLowerCase();
-    //   const filteredData = await this.sellerUseCase.getSellersByCodeOrName(lowerCaseFilter);
-    //   this.dataSource = filteredData;
-    //   this.cdr.detectChanges();
-    // } else {
-    //   this.getDataSource();
-    //   this.cdr.detectChanges();
-    // }
+    if (filterValue && filterValue.length >= 1) {
+      const lowerCaseFilter = filterValue.toLowerCase();
+      const filteredData = await this.sellerUseCase.getSellersByCodeOrName(lowerCaseFilter);
+      this.dataSource = filteredData;
+      this.cdr.detectChanges();
+    } else {
+      this.getDataSource();
+      this.cdr.detectChanges();
+    }
   }
 
   toggleState(seller: ISeller) {

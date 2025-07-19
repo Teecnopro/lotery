@@ -54,7 +54,7 @@ export class LogbookTableComponent implements OnInit {
         try {
             const dataSource = await this.logBookUseCase.listLogBooksByPagination(this.pageSize, this.pageIndex, queries);
             this.totalItems = await this.logBookUseCase.getTotalLogBooks(queries);
-            if(queries && Object.keys(queries).length > 0) {
+            if(queries && Object.keys(queries).length > 0 && this.totalItems > 0) {
                 this.pageSize = this.totalItems;
                 this.pageIndex = 1; // Reset to first page if queries are applied
                 this.pageSizeOptions = [this.totalItems];
