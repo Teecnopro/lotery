@@ -1,13 +1,8 @@
-<div *ngIf="!loading; else loadingTpl">
-  <div *ngIf="loading" class="loading-container">
-    <p>Cargando parametrizaciones de pago...</p>
-  </div>
-
+<div>
   <table
     mat-table
     [dataSource]="listBets"
     class="mat-elevation-z8"
-    *ngIf="!loading"
   >
     <!-- Checkbox Column -->
     <ng-container matColumnDef="select">
@@ -137,7 +132,7 @@
   </div>
 </div>
 
-<ng-template #loadingTpl>
+<!-- <ng-template #loadingTpl>
   <div class="loading-container">
     <mat-progress-spinner
       mode="indeterminate"
@@ -145,4 +140,4 @@
     ></mat-progress-spinner>
     <p>Cargando datos...</p>
   </div>
-</ng-template>
+</ng-template> -->

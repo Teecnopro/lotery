@@ -1,9 +1,8 @@
-<div *ngIf="!loading; else loadingTpl">
+<div>
   <table
     mat-table
     [dataSource]="listBets"
     class="mat-elevation-z8"
-    *ngIf="!loading"
   >
     <!-- Columna de Dígitos -->
     <ng-container matColumnDef="lottery">
@@ -93,7 +92,7 @@
   </div>
 </div>
 
-<ng-template #loadingTpl>
+<!-- <ng-template #loadingTpl>
   <div class="loading-container">
     <mat-progress-spinner
       mode="indeterminate"
@@ -101,4 +100,4 @@
     ></mat-progress-spinner>
     <p>Cargando datos...</p>
   </div>
-</ng-template>
+</ng-template> -->

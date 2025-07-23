@@ -109,11 +109,11 @@
             mat-raised-button
             color="primary"
             type="button"
-            [disabled]="!registerBetForm.valid || loading"
-            (keydown.enter)="sendData()"
-            (click)="sendData()"
+            [disabled]="!registerBetForm.valid"
+            (keydown.enter)="sendData(); myInputNumber.focus()"
+            (click)="sendData(); myInputNumber.focus()"
           >
-            {{ !loading ? "Enviar" : "Enviando..." }}
+            Enviar
           </button>
         </div>
       </form>
