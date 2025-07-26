@@ -146,19 +146,9 @@ export class RegisterBetsPageComponent implements OnInit {
 
     if (confirmed) {
       try {
-        await this.registerBetsUseCase
-          .deleteRegisterBets(this.selectedBets.items)
-          .then(() => {
-            this.logBookUseCases.createLogBook({
-              action: ACTIONS.DELETE,
-              date: new Date().valueOf(),
-              user: this.user.getUser()!,
-              module: MODULES.REGISTER_BETS,
-              description: `${this.selectedBets.items.length} registros de apuestas de la lotería ${this.selectedBets?.items[0]?.lottery?.name} eliminados por ${
-                this.user.getUser()?.name
-              }`,
-            });
-          });
+        await this.registerBetsUseCase.deleteRegisterBets(
+          this.selectedBets.items
+        );
 
         this.notification.success('Registros eliminados exitosamente');
 

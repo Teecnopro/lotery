@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AlertParameterization } from '../../../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { AlertParameterizationUseCase } from '../../../../domain/alert-parameterization/use-cases';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Subject, Subscription, take, takeUntil } from 'rxjs';
+import { Subject, Subscription, take, takeUntil, toArray } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
@@ -30,7 +30,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatIconModule,
     CurrencyPipe,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './register-bets-list.component.html',
   styleUrl: './register-bets-list.component.scss',
@@ -109,16 +109,21 @@ export class RegisterBetsListComponent implements OnInit {
     }
 
     try {
-      this.total = await this.registerBetsUseCase.getTotalBets({
-        whereConditions: this.defaultConditions,
-      });
-
-      const { data, hasNext, hasPrev } =
-        await this.registerBetsUseCase.getRegisterBetsByQuery({
+      const [total, dataRegister] = await Promise.all([
+        await this.registerBetsUseCase.getTotalBets({
+          whereConditions: this.defaultConditions,
+        }),
+        this.registerBetsUseCase.getRegisterBetsByQuery({
           pageSize: this.pageSize,
           direction,
           whereConditions: this.defaultConditions,
-        });
+        }),
+      ]);
+
+      this.total = total;
+
+
+      const { data, hasNext, hasPrev } = dataRegister;
 
       this.listBets = data;
       this.hasNext = hasNext as boolean;

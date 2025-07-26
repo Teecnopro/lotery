@@ -141,20 +141,10 @@ export class RegisterBetsFormComponent implements OnInit {
   async sendData() {
     this.loading = true;
     const betDetail = this.buildObj();
-    const currentUser = this.user.getUser();
 
     try {
-      await this.registerBetsUseCase.createRegisterBets(betDetail).then(() => {
-      this.logBookUseCases.createLogBook({
-        action: ACTIONS.CREATE,
-        date: new Date().valueOf(),
-        user: currentUser!,
-        module: MODULES.REGISTER_BETS,
-        description: `Apuesta registrada por ${betDetail.seller?.name} para la lotería ${betDetail.lottery?.name} con número ${betDetail.lotteryNumber} y valor ${betDetail.value}`,
-      });
-
       this.resetForm();
-    });
+      await this.registerBetsUseCase.createRegisterBets(betDetail);
     } catch (error: any) {
       console.error('Error save register bets:', error);
       this.notification.error(
@@ -168,13 +158,13 @@ export class RegisterBetsFormComponent implements OnInit {
   }
 
   resetForm() {
-    this.registerBetForm.get("value")?.reset(null);
-    this.registerBetForm.get("combined")?.reset(false);
-    this.registerBetForm.get("lotteryNumber")?.reset('');
+    this.registerBetForm.get('value')?.reset(null);
+    this.registerBetForm.get('combined')?.reset(false);
+    this.registerBetForm.get('lotteryNumber')?.reset('');
   }
 
   buildObj(): RegisterBetsDetail {
-    const form = this.registerBetForm.getRawValue();
+    const form = { ...this.registerBetForm.getRawValue() };
 
     const { uid, name } = this.user.getUser()!;
 

@@ -160,6 +160,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     }
 
     constraints.push(orderBy('updatedAt', 'desc'));
+    constraints.push(orderBy('warning', 'desc'));
 
     const cursor = this.history[this.currentIndex] ?? undefined;
 
@@ -426,7 +427,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
     const alert = this.alertList.find(
       (alert) =>
-        groupedValue >= alert.value! && alert.digits === lotteryNumber?.length
+        groupedValue > alert.value! && alert.digits === lotteryNumber?.length
     );
     return { isAlert: !!alert, description: alert?.description } as {
       isAlert: boolean;
