@@ -40,7 +40,7 @@ export class CheckHitsFormComponent {
     private notification = inject(NOTIFICATION_PORT);
 
     checkData: CheckData = {
-        date: '',
+        date: new Date().toISOString().split('T')[0], // Default to today's date
         lottery: '',
         lotteryNumber: ''
     };

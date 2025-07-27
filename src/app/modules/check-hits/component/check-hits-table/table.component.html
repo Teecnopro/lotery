@@ -42,7 +42,7 @@
         <!-- Columna de Valor -->
         <ng-container matColumnDef="valor">
             <th mat-header-cell *matHeaderCellDef style="text-align: right;"> Valor </th>
-            <td mat-cell *matCellDef="let element" style="text-align: right;"> {{element.value | currency : "COP" : "symbol"}} </td>
+            <td mat-cell *matCellDef="let element" style="text-align: right;"> {{element.value | currency}} </td>
         </ng-container>
 
         <!-- Columna de Premio -->
@@ -51,7 +51,7 @@
             <td mat-cell *matCellDef="let element" [class.premio-winner]="![undefined, null, ''].includes(lotteryNumber) ? calculatePrize(element).isWinner : false" style="text-align: right;"> 
                 <span *ngIf="![undefined, null, ''].includes(lotteryNumber) ? calculatePrize(element).isWinner : false; else noPremio" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end;">
                     <mat-icon>notification_important</mat-icon>
-                    {{calculatePrize(element).value | currency : "COP" : "symbol"}}
+                    {{calculatePrize(element).value | currency}}
                 </span>
                 <ng-template #noPremio>
                     <span class="no-prize" style="display: flex; align-items: center; gap: 4px; justify-content: flex-end;">Sin premio</span>
@@ -65,7 +65,7 @@
     </table>
     <div class="totalValue" *ngIf="![undefined, null, ''].includes(lotteryNumber) && !loading"
         style="text-align: right; color: red; padding-right: 10px; font-weight: 600; background-color: #FFFFFF;">
-        {{ 'Total Premios: ' + (totalPaymentWinner | currency : "COP" : "symbol") }}
+        {{ 'Total Premios: ' + (totalPaymentWinner | currency) }}
     </div>
     </div>
 
