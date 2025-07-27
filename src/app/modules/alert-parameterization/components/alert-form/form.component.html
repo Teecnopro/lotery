@@ -17,6 +17,13 @@
           placeholder="Ingrese el valor" [min]="1">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Combinado</mat-label>
+          <mat-select name="combined" [(ngModel)]="alert.combined" required>
+            <mat-option [value]="true">Sí</mat-option>
+            <mat-option [value]="false">No</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Descripción Alerta</mat-label>
           <input matInput type="text" name="description" [(ngModel)]="alert.description" required
             placeholder="Ingrese una Descripción">

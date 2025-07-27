@@ -67,7 +67,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     this.getAlerts();
     const warning = this.validateAlert(
       data.lotteryNumber!,
-      data.value as number
+      data.value as number,
+      data.combined as boolean
     );
 
     data.warning = warning.isAlert;
@@ -125,7 +126,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
     const totalDiff = (bet[0].groupedValue as number) - total;
 
-    const warning = this.validateAlert(data.lotteryNumber!, totalDiff);
+    const warning = this.validateAlert(data.lotteryNumber!, totalDiff, data.combined as boolean);
 
     if (totalDiff > 0) {
       await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
@@ -294,7 +295,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     data: RegisterBetsDetail,
     total: number
   ): Promise<void> {
-    const warning = this.validateAlert(data.lotteryNumber!, total);
+    const warning = this.validateAlert(data.lotteryNumber!, total, data.combined);
 
     const dataGroupedBets: RegisterBets = {
       lotteryNumber: data.lotteryNumber,
@@ -421,13 +422,13 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     this.alertList = alerts ? JSON.parse(alerts) : [];
   }
 
-  validateAlert(lotteryNumber: string, groupedValue: number) {
+  validateAlert(lotteryNumber: string, groupedValue: number, combined: boolean = false) {
     if (!this.alertList || this.alertList.length === 0)
       return { isAlert: false, description: 'No hay alertas disponibles' };
 
     const alert = this.alertList.find(
       (alert) =>
-        groupedValue > alert.value! && alert.digits === lotteryNumber?.length
+        groupedValue > alert.value! && alert.digits === lotteryNumber?.length && alert.combined === combined
     );
     return { isAlert: !!alert, description: alert?.description } as {
       isAlert: boolean;

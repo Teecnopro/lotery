@@ -38,6 +38,7 @@ export class AlertTableComponent implements OnInit {
   displayedColumns: string[] = [
     'digits',
     'value',
+    'combined',
     'description',
     'createdBy',
     'createdAt',
