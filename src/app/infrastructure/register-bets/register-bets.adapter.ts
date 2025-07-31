@@ -443,18 +443,31 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   ): Promise<RegisterBetsDetail[]> {
     const betRef = collection(this.firestore, 'register-bets-detail');
     const zeroBasedPageIndex = pageIndex - 1;
-    const constraints: QueryConstraint[] =
-      queries && queries.length > 0 ? this.returnQueries(queries) : [];
+    const { constraints, auxConstraints }: { constraints: QueryConstraint[], auxConstraints: QueryConstraint[] } =
+      queries && queries.length > 0 ? this.returnQueries(queries) : { constraints: [], auxConstraints: [] };
     if (queries && queries.length > 0) {
       const q = query(betRef, ...constraints, orderBy('date', 'desc'));
+      const auxQ = query(betRef, ...auxConstraints, orderBy('date', 'desc'));
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(
+      const auxQuerySnapshot = await getDocs(auxQ);
+      const data = [...querySnapshot.docs.map(
         (doc) =>
-          ({
-            uid: doc.id,
-            ...doc.data(),
-          } as RegisterBetsDetail)
+        ({
+          uid: doc.id,
+          ...doc.data(),
+        } as RegisterBetsDetail)
+      ), ...auxQuerySnapshot.docs.map(
+        (doc) =>
+        ({
+          uid: doc.id,
+          ...doc.data(),
+        } as RegisterBetsDetail))
+      ];
+      // Eliminar duplicados por uid
+      const uniqueData = data.filter(
+        (item, index, self) => index === self.findIndex((t) => t.uid === item.uid)
       );
+      return uniqueData;
     }
 
     constraints.push(orderBy('date', 'desc'));
@@ -464,10 +477,10 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(
         (doc) =>
-          ({
-            uid: doc.id,
-            ...doc.data(),
-          } as RegisterBetsDetail)
+        ({
+          uid: doc.id,
+          ...doc.data(),
+        } as RegisterBetsDetail)
       );
     } else {
       // Para páginas posteriores, obtener el cursor correcto
@@ -491,10 +504,10 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       const pageSnapshot = await getDocs(pageQuery);
       return pageSnapshot.docs.map(
         (doc) =>
-          ({
-            uid: doc.id,
-            ...doc.data(),
-          } as RegisterBetsDetail)
+        ({
+          uid: doc.id,
+          ...doc.data(),
+        } as RegisterBetsDetail)
       );
     }
   }
@@ -503,50 +516,54 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     queries?: { [key: string]: string }[]
   ): Promise<number> {
     const betRef = collection(this.firestore, 'register-bets-detail');
-    const constraints: QueryConstraint[] =
-      queries && queries.length > 0 ? this.returnQueries(queries) : [];
+    const { constraints, auxConstraints }: { constraints: QueryConstraint[], auxConstraints: QueryConstraint[] } =
+      queries && queries.length > 0 ? this.returnQueries(queries) : { constraints: [], auxConstraints: [] };
     const q = query(betRef, ...constraints);
+    const auxQ = query(betRef, ...auxConstraints);
     const countSnapshot = await getCountFromServer(q);
-    return countSnapshot.data().count;
+    const auxCountSnapshot = await getCountFromServer(auxQ);
+    return countSnapshot.data().count + auxCountSnapshot.data().count;
   }
 
-  returnQueries(queries: { [key: string]: string }[]): QueryConstraint[] {
+  returnQueries(queries: { [key: string]: string }[]): { constraints: QueryConstraint[], auxConstraints: QueryConstraint[] } {
     const constraints: QueryConstraint[] = [];
+    const auxConstraints: QueryConstraint[] = [];
     const fields = ['date', 'lottery.id', 'lotteryNumber'];
     for (const field of fields) {
       let value = queries.find((q) => q[field])!;
       if (field === 'date') {
         const date = new Date(`${value[field]}T00:00:00`);
         constraints.push(where(field, '>=', Timestamp.fromDate(date)));
+        auxConstraints.push(where(field, '>=', Timestamp.fromDate(date)));
       } else if (field === 'lotteryNumber') {
-        let lotteryNumberQueries = [];
-        let copyValue = value[field];
-        let copyValueDuplicate = value[field];
-        lotteryNumberQueries.push(copyValue);
+        let searchingForLotteryNumbers: string[] = [];
+        let searchingForLotteryNumbersThirthDigits: string[] = [];
+        let lotteryNumberCopy = value[field];
         for (let i = 0; i < value[field].length; i++) {
-          const query = copyValue.slice(i + 1);
+          const query = lotteryNumberCopy.slice(i + 1);
           if (query.length !== 0) {
-            lotteryNumberQueries.push(query);
+            searchingForLotteryNumbers.push(query);
           }
         }
-        for (let i = copyValueDuplicate.length - 1; i > 0; i--) {
-          const trimmed = copyValueDuplicate.substring(0, i);
-          lotteryNumberQueries.push(trimmed);
-        }
-        if (value[field].length >= 3 && value[field].length <= 4) {
-          const combinations = this.permute(value[field]);
-          combinations.forEach((comb) => {
-            lotteryNumberQueries.push(comb);
-          });
+        if ([3, 4].includes(value[field].length)) {
+          let permutations = this.getListLotteryNumbersPermutations(lotteryNumberCopy);
+          searchingForLotteryNumbers = [...searchingForLotteryNumbers, ...permutations];
+          if (value[field].length === 4) {
+            let extractFirstDigitFromLotteryNumber = value[field].slice(1);
+            searchingForLotteryNumbersThirthDigits = this.getListLotteryNumbersPermutations(extractFirstDigitFromLotteryNumber);
+          }
         }
         // Eliminar números duplicados de lotteryNumberQueries
-        lotteryNumberQueries = Array.from(new Set(lotteryNumberQueries));
-        constraints.push(where('lotteryNumber', 'in', lotteryNumberQueries));
+        searchingForLotteryNumbers = Array.from(new Set(searchingForLotteryNumbers));
+        searchingForLotteryNumbersThirthDigits = Array.from(new Set(searchingForLotteryNumbersThirthDigits));
+        constraints.push(where('lotteryNumber', 'in', searchingForLotteryNumbers));
+        auxConstraints.push(where('lotteryNumber', 'in', searchingForLotteryNumbersThirthDigits));
       } else {
         constraints.push(where(field, '==', value[field]));
+        auxConstraints.push(where(field, '==', value[field]));
       }
     }
-    return constraints;
+    return { constraints, auxConstraints };
   }
 
   permute(str: string): string[] {
@@ -604,5 +621,14 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     });
 
     return betsByVendor;
+  }
+
+  getListLotteryNumbersPermutations(lotteryNumber: string): string[] {
+    const combinations = this.permute(lotteryNumber);
+    const lotteryNumberListPermutations: string[] = [];
+    combinations.forEach((comb) => {
+      lotteryNumberListPermutations.push(comb);
+    });
+    return lotteryNumberListPermutations;
   }
 }

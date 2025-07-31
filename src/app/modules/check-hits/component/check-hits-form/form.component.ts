@@ -38,9 +38,9 @@ export class CheckHitsFormComponent {
     @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
 
     private notification = inject(NOTIFICATION_PORT);
-
+    
     checkData: CheckData = {
-        date: new Date().toISOString().split('T')[0], // Default to today's date
+        date: new Date(Date.now() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Default to today's local date
         lottery: '',
         lotteryNumber: ''
     };

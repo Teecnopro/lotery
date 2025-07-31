@@ -64,6 +64,7 @@ export class CheckHitsTableComponent {
                 this.arraySize = [10, 20, 50, 100];
             }
             this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
+            
         } catch (error: any) {
             this.notification.error('Error al cargar los vendedores: ' + error.message);
         } finally {
@@ -88,14 +89,46 @@ export class CheckHitsTableComponent {
         this.getDataSource();
     }
 
-    calculatePrize(bet: RegisterBetsDetail): { isWinner: boolean, value: number } {
+    calculatePrize(bet: any): { isWinner: boolean, value: number } {
         let payment: PaymentParameterization | undefined;
         let isWinner = false;
-        if (this.lotteryNumber.length !== bet.lotteryNumber?.length) {
+        const isWinnerLotteryNumber: string[] = []
+        const copyLotteryNumber = this.lotteryNumber
+        for (let i = 0; i < this.lotteryNumber.length; i++) {
+            const query = copyLotteryNumber.slice(i + 1);
+            if (query.length !== 0) {
+                isWinnerLotteryNumber.push(query);
+            }
+        }
+        if (bet.lotteryNumber && isWinnerLotteryNumber.includes(bet.lotteryNumber) && bet.combined === false) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === false);
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            isWinner = true
+        } else if (this.lotteryNumber.length !== bet.lotteryNumber?.length && [1, 2].includes(bet.lotteryNumber?.length!) ) {
             payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === bet.combined);
             if (!payment) {
                 return { isWinner: false, value: 0 };
             }
+            isWinner = true
+        } else if (this.lotteryNumber.length !== bet.lotteryNumber?.length && [3].includes(bet.lotteryNumber?.length!) && bet.combined === false && isWinnerLotteryNumber.includes(bet.lotteryNumber!)) {
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === false && isWinnerLotteryNumber.includes(bet.lotteryNumber!));
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            console.log('payment', payment);
+            
+            isWinner = true
+        } else if (this.lotteryNumber.length !== bet.lotteryNumber?.length && [3].includes(bet.lotteryNumber?.length!) && bet.combined === true) {
+            
+            console.log(bet);
+            payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true && payment.combined == bet.combined);
+            if (!payment) {
+                return { isWinner: false, value: 0 };
+            }
+            console.log('payment', payment);
+            
             isWinner = true
         } else if (this.lotteryNumber !== bet.lotteryNumber && this.lotteryNumber.length === bet.lotteryNumber?.length && bet.combined === true) {
             payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);
@@ -116,7 +149,7 @@ export class CheckHitsTableComponent {
             }
             isWinner = true;
         }
-        return {isWinner, value: payment?.amount! * bet.value! || 0};
+        return { isWinner, value: payment?.amount! * bet.value! || 0 };
     }
 
     calculatePaymentWinner() {
