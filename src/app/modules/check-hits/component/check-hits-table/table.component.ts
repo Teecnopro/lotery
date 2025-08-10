@@ -9,6 +9,8 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
 import { Subject } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
+import { REGISTER_BETS_DETAIL } from '../../../../shared/const/controllers';
+import { Timestamp } from '@angular/fire/firestore';
 
 @Component({
     selector: 'app-check-hits-table',
@@ -23,7 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
     ]
 })
 export class CheckHitsTableComponent {
-    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
+    @Input() queries: Subject<{ [key: string]: string }> = new Subject<{ [key: string]: string }>();
     @Input() loading = false;
     private registerBetsUseCase = inject(RegisterBetsUseCase);
     private notification = inject(NOTIFICATION_PORT);
@@ -42,9 +44,9 @@ export class CheckHitsTableComponent {
     async ngOnInit() {
         await this.getDataSource();
         this.getPaymentParameterization();
-        this.queries.subscribe(async (queries) => {
-            this.lotteryNumber = queries.find(query => query['lotteryNumber'])?.['lotteryNumber'] || '';
-            await this.getDataSource(queries);
+        this.queries.subscribe(async (query) => {
+            this.lotteryNumber = query['lotteryNumber'] || '';
+            await this.getDataSource(query);
             this.calculatePaymentWinner();
         });
     }
@@ -52,19 +54,18 @@ export class CheckHitsTableComponent {
     ngOnDestroy() {
     }
 
-    async getDataSource(queries?: { [key: string]: string }[]) {
+    async getDataSource(queries: { [key: string]: any  } = {}, pageSize?: number) {
         this.loading = true;
         try {
-            this.totalItems = await this.registerBetsUseCase.getTotalBetsByQueries(queries);
-            if (queries && queries.length > 0) {
+            this.totalItems = await this.registerBetsUseCase.getTotalBetsDetail(REGISTER_BETS_DETAIL,queries);
+            if (queries && Object.keys(queries).length > 0) {
                 this.pageSize = this.totalItems;
                 this.arraySize = [this.totalItems];
             } else {
-                this.pageSize = 10;
+                this.pageSize = pageSize ? pageSize : 10;
                 this.arraySize = [10, 20, 50, 100];
             }
             this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
-            
         } catch (error: any) {
             this.notification.error('Error al cargar los vendedores: ' + error.message);
         } finally {
@@ -84,9 +85,8 @@ export class CheckHitsTableComponent {
     }
 
     onPageChange(event: any) {
-        this.pageIndex = event.pageIndex === 0 ? 1 : event.pageIndex + 1;
-        this.pageSize = event.pageSize;
-        this.getDataSource();
+        this.pageIndex = event.pageSize != this.pageSize ? 1 : event.pageIndex + 1;
+        this.getDataSource(undefined, event.pageSize);
     }
 
     calculatePrize(bet: any): { isWinner: boolean, value: number } {
@@ -117,18 +117,12 @@ export class CheckHitsTableComponent {
             if (!payment) {
                 return { isWinner: false, value: 0 };
             }
-            console.log('payment', payment);
-            
             isWinner = true
         } else if (this.lotteryNumber.length !== bet.lotteryNumber?.length && [3].includes(bet.lotteryNumber?.length!) && bet.combined === true) {
-            
-            console.log(bet);
             payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true && payment.combined == bet.combined);
             if (!payment) {
                 return { isWinner: false, value: 0 };
             }
-            console.log('payment', payment);
-            
             isWinner = true
         } else if (this.lotteryNumber !== bet.lotteryNumber && this.lotteryNumber.length === bet.lotteryNumber?.length && bet.combined === true) {
             payment = this.paymentDataSource.find(payment => payment.digits === bet.lotteryNumber?.length && payment.combined === true);

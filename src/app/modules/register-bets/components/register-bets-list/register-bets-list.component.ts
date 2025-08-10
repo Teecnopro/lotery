@@ -18,6 +18,8 @@ import { AlertParameterizationUseCase } from '../../../../domain/alert-parameter
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, Subscription, take, takeUntil, toArray } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { query } from '@firebase/firestore';
+import { REGISTER_BETS } from '../../../../shared/const/controllers';
 
 @Component({
   selector: 'app-register-bets-list',
@@ -50,9 +52,10 @@ export class RegisterBetsListComponent implements OnInit {
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
   pageSize = 25;
-  currentPageIndex = 0; // controla el estado actual
+  currentPageIndex = 1; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
+  private query = {}
   private defaultDate!: Timestamp;
   private lottery!: any;
 
@@ -71,6 +74,8 @@ export class RegisterBetsListComponent implements OnInit {
   subscriptions!: Subscription | undefined;
 
   ngOnInit(): void {
+    console.log("aqui 2");
+    
     this.subscriptions = this.registerBetsUseCase
       .listBets$()
       ?.subscribe((value) => {
@@ -89,45 +94,36 @@ export class RegisterBetsListComponent implements OnInit {
           filter = undefined;
         }
 
-        this.getData('reset', filter);
+        this.getData(filter);
       });
   }
 
   async getData(
-    direction: 'next' | 'prev' | 'reset' = 'next',
     filter?: WhereCondition
   ) {
     this.loading = true;
-
-    this.defaultConditions = [
-      ['lottery.id', '==', this.lottery?._id],
-      ['date', '==', this.defaultDate],
-    ];
-
-    if (filter) {
-      this.defaultConditions.push(filter);
+    const dateObj = this.defaultDate.toDate();
+    const formattedDate = dateObj.toISOString().slice(0, 10);
+    this.query = {
+      'lottery.id': this.lottery?._id,
+      'date.seconds': {
+        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
+        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
+      }
     }
+    // TODO: Implement filtering
+    // if (filter) {
+    //   this.defaultConditions.push(filter);
+    // }
 
     try {
-      const [total, dataRegister] = await Promise.all([
-        await this.registerBetsUseCase.getTotalBets({
-          whereConditions: this.defaultConditions,
-        }),
-        this.registerBetsUseCase.getRegisterBetsByQuery({
-          pageSize: this.pageSize,
-          direction,
-          whereConditions: this.defaultConditions,
-        }),
+      const [totalResult, dataRegister] = await Promise.all([
+        this.registerBetsUseCase.getTotalBets(REGISTER_BETS, this.query),
+        this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize),
       ]);
+      this.listBets = dataRegister;
+      this.total = totalResult;
 
-      this.total = total;
-
-
-      const { data, hasNext, hasPrev } = dataRegister;
-
-      this.listBets = data;
-      this.hasNext = hasNext as boolean;
-      this.hasPrev = hasPrev as boolean;
     } catch (error: any) {
       console.error('Error fetching register bets:', error);
       this.notification.error(
@@ -138,32 +134,10 @@ export class RegisterBetsListComponent implements OnInit {
     }
   }
 
-  onPageChange(event: PageEvent) {
-    const pageSizeChanged = event.pageSize !== this.pageSize;
-
-    // Actualizar el nuevo pageSize
-    this.pageSize = event.pageSize;
-
-    let direction: 'next' | 'prev' | 'reset';
-
-    if (pageSizeChanged) {
-      // Si cambió el tamaño de página, reiniciar desde la primera página
-      this.currentPageIndex = 0;
-      direction = 'reset';
-    } else {
-      const newPage = event.pageIndex;
-      if (newPage === 0 && this.currentPageIndex !== 0) {
-        direction = 'reset';
-      } else if (newPage > this.currentPageIndex) {
-        direction = 'next';
-      } else {
-        direction = 'prev';
-      }
-      this.currentPageIndex = newPage;
+    onPageChange(event: any) {
+      this.currentPageIndex = event.pageSize != this.currentPageIndex ? 1 : event.pageIndex + 1;
+      this.getData();
     }
-
-    this.getData(direction);
-  }
 
   onViewDetail(item: RegisterBets) {
     this.viewDetail.emit({ detail: true, item });

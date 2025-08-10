@@ -23,6 +23,7 @@ import {
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { REGISTER_BETS_DETAIL } from '../../../../shared/const/controllers';
 
 @Component({
   selector: 'app-register-bets-list-detail',
@@ -66,10 +67,10 @@ export class RegisterBetsListDetailComponent implements OnInit {
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
   pageSize = 25;
-  currentPageIndex = 0; // controla el estado actual
+  currentPageIndex = 1; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
-
+  private defaultQueries: { [key: string]: any } = {};
   view = "list-detail";
 
   listBets: RegisterBetsDetail[] = [];
@@ -84,10 +85,11 @@ export class RegisterBetsListDetailComponent implements OnInit {
     'value',
   ];
 
-  async ngOnInit() {
-    this.registerBetsUseCase.listBets$()?.subscribe((value) => {
+  subscriptions: any;
 
-      this.getData('reset');
+  async ngOnInit() {
+    this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
+      this.getData();
     });
 
     if (this.isSeller) {
@@ -95,47 +97,50 @@ export class RegisterBetsListDetailComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.subscriptions?.unsubscribe();
+  }
+
   async getData(
-    direction: 'next' | 'prev' | 'reset' = 'next',
-    filter?: WhereCondition
+    filter?: { [key: string]: string | Timestamp | boolean | number | undefined }
   ) {
     this.loading = true;
-
-    this.defaultConditions = [
-      ['lottery.id', '==', this.lottery?._id],
-      ['date', '==', this.defaultDate],
-    ];
-
+    const dateObj = this.defaultDate.toDate();
+    const formattedDate = dateObj.toISOString().slice(0, 10);
+    this.defaultQueries = {
+      'lottery.id': this.lottery?._id,
+      'date.seconds': {
+        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
+        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
+      }
+    };
     if (!this.isSeller) {
-      this.defaultConditions.push(
-        ['combined', '==', this.groupedBet.combined],
-        ['lotteryNumber', '==', this.groupedBet.lotteryNumber]
-      );
+      this.defaultQueries = {
+        ...this.defaultQueries,
+        'combined': this.groupedBet.combined,
+        'lotteryNumber': this.groupedBet.lotteryNumber
+      };
     } else {
-      this.defaultConditions.push(['seller.id', '==', this.sellerId]);
+      this.defaultQueries = {
+        ...this.defaultQueries,
+        'seller.id': this.sellerId
+      };
     }
 
+
     if (filter) {
-      this.defaultConditions.push(filter);
+      this.defaultQueries = {
+        ...this.defaultQueries,
+        ...filter
+      };
     }
 
     try {
-      this.total = await this.registerBetsUseCase.getTotalBets({
-        whereConditions: this.defaultConditions,
-        bd: 'register-bets-detail',
-      });
-
-      const { data, hasNext, hasPrev } =
-        await this.registerBetsUseCase.getRegisterBetsByQueryDetail({
-          pageSize: this.pageSize,
-          direction,
-          whereConditions: this.defaultConditions,
-        });
-
+      this.total = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, this.defaultQueries);
+      const data = await this.registerBetsUseCase.getBetsDetailsByPagination(this.currentPageIndex, this.pageSize, this.defaultQueries);
+      console.log(this.defaultQueries);
+      
       this.listBets = data;
-      this.hasNext = hasNext as boolean;
-      this.hasPrev = hasPrev as boolean;
-
       this.selection.clear();
 
       if (this.listBets.length === 0) {
@@ -152,30 +157,8 @@ export class RegisterBetsListDetailComponent implements OnInit {
   }
 
   onPageChange(event: PageEvent) {
-    const pageSizeChanged = event.pageSize !== this.pageSize;
-
-    // Actualizar el nuevo pageSize
-    this.pageSize = event.pageSize;
-
-    let direction: 'next' | 'prev' | 'reset';
-
-    if (pageSizeChanged) {
-      // Si cambió el tamaño de página, reiniciar desde la primera página
-      this.currentPageIndex = 0;
-      direction = 'reset';
-    } else {
-      const newPage = event.pageIndex;
-      if (newPage === 0 && this.currentPageIndex !== 0) {
-        direction = 'reset';
-      } else if (newPage > this.currentPageIndex) {
-        direction = 'next';
-      } else {
-        direction = 'prev';
-      }
-      this.currentPageIndex = newPage;
-    }
-
-    this.getData(direction);
+      this.currentPageIndex = event.pageSize != this.currentPageIndex ? 1 : event.pageIndex + 1;
+      this.getData();
   }
 
   isAllSelected() {

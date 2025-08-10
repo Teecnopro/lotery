@@ -35,7 +35,7 @@ interface CheckData {
 })
 export class CheckHitsFormComponent {
     @Output() searchResults = new EventEmitter<any>();
-    @Input() queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
+    @Input() queries: Subject<{ [key: string]: string }> = new Subject<{ [key: string]: string }>();
 
     private notification = inject(NOTIFICATION_PORT);
     
@@ -61,11 +61,11 @@ export class CheckHitsFormComponent {
             return;
         }
         if (form.valid) {
-            const query: { [key: string]: any }[] = [
-                { "date": form.value.date },
-                { "lottery.id": form.value.lottery },
-                { "lotteryNumber": form.value.lotteryNumber }
-            ]
+            const query: { [key: string]: any } = {
+                "date": form.value.date,
+                "lottery.id": form.value.lottery,
+                "lotteryNumber": form.value.lotteryNumber
+            };
             this.queries.next(query);
         }
     }
@@ -77,6 +77,6 @@ export class CheckHitsFormComponent {
             lottery: '',
             lotteryNumber: ''
         };
-        this.queries.next([]);
+        this.queries.next({});
     }
 }

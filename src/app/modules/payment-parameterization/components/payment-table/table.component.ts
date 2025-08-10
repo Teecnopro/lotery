@@ -90,8 +90,6 @@ export class PaymentTableComponent implements OnInit {
 
   editPayment(element: PaymentParameterization) {
     // Remover foco del botón antes de la acción
-    console.log('Editing payment:', element);
-    
     if (document.activeElement && document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }

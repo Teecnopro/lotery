@@ -15,7 +15,6 @@ import {
   limit,
   or,
   orderBy,
-  query,
   QueryConstraint,
   QueryDocumentSnapshot,
   setDoc,
@@ -33,16 +32,17 @@ import {
   RegisterBetsDetail,
 } from '../../domain/register-bets/models/register-bets.entity';
 import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { IQueryBetsByVendor } from '../../modules/reports/interface/IReports.interface';
+import { RegisterBetsService } from './register-bets.services';
+import { REGISTER_BETS, REGISTER_BETS_DETAIL } from '../../shared/const/controllers';
+import { query } from '@firebase/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   private betsSubject: BehaviorSubject<ListBets | null> =
     new BehaviorSubject<ListBets | null>(null);
-
-  private tope = 12000;
   private pageSize = 25;
 
   // Pagination
@@ -51,7 +51,10 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   alertList: AlertParameterization[] = [];
   private hasNext = false;
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore,
+    private register_bets_api: RegisterBetsService
+  ) {
     this.getAlerts();
   }
 
@@ -70,34 +73,20 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       data.value as number,
       data.combined as boolean
     );
-
     data.warning = warning.isAlert;
     data.alertDescription = warning.description || '';
-
-    const bets = collection(this.firestore, 'register-bets-detail');
-    await addDoc(bets, {
-      ...data,
-    });
-
+    await firstValueFrom(this.register_bets_api.addBet(REGISTER_BETS_DETAIL,data));
     const total = await this.grupedTotalValue(data);
     await this.createGroupedBets(data, total);
   }
 
   async delete(data: RegisterBetsDetail[]): Promise<void> {
-    let totalSumary = this.totalToDelete(data);
-
-    const batch = writeBatch(this.firestore);
-
-    const ids = data.map((item) => item.uid);
-
-    ids.forEach((id) => {
-      const ref = doc(this.firestore, `register-bets-detail/${id}`);
-      batch.delete(ref);
-    });
-
-    await batch.commit();
-
-    await this.deleteOrUpdateGroupedBets(data[0], totalSumary);
+    // let totalSumary = this.totalToDelete(data);
+    const ids = data.map((item) => item.uid!);
+    await firstValueFrom(this.register_bets_api.deleteManyBets(REGISTER_BETS_DETAIL, ids))
+    // TODO: implementar
+    // await batch.commit();
+    // await this.deleteOrUpdateGroupedBets(data[0], totalSumary);
   }
 
   totalToDelete(data: RegisterBetsDetail[]) {
@@ -111,108 +100,48 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async deleteOrUpdateGroupedBets(data: RegisterBets, total: number) {
-    const betsRef = collection(this.firestore, 'register-bets');
+    // TODO: implementar
+    // const betsRef = collection(this.firestore, 'register-bets');
 
-    const q = this.queryBase(data, betsRef);
+    // const q = this.queryBase(data, betsRef);
 
-    const bet = (await getDocs(q)).docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as RegisterBets),
-    }));
+    // const bet = (await getDocs(q)).docs.map((doc) => ({
+    //   id: doc.id,
+    //   ...(doc.data() as RegisterBets),
+    // }));
 
-    if (bet.length === 0) {
-      throw new Error('No existen apuestas agrupadas');
-    }
+    // if (bet.length === 0) {
+    //   throw new Error('No existen apuestas agrupadas');
+    // }
 
-    const totalDiff = (bet[0].groupedValue as number) - total;
+    // const totalDiff = (bet[0].groupedValue as number) - total;
 
-    const warning = this.validateAlert(data.lotteryNumber!, totalDiff, data.combined as boolean);
+    // const warning = this.validateAlert(data.lotteryNumber!, totalDiff, data.combined as boolean);
 
-    if (totalDiff > 0) {
-      await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
-        updatedAt: data.updatedAt,
-        groupedValue: totalDiff,
-        warning: warning.isAlert,
-        alertDescription: warning.description || '',
-      });
-      return;
-    }
+    // if (totalDiff > 0) {
+    //   await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
+    //     updatedAt: data.updatedAt,
+    //     groupedValue: totalDiff,
+    //     warning: warning.isAlert,
+    //     alertDescription: warning.description || '',
+    //   });
+    //   return;
+    // }
 
-    await deleteDoc(doc(this.firestore, 'register-bets', bet[0].id));
+    // await deleteDoc(doc(this.firestore, 'register-bets', bet[0].id));
   }
 
-  async getByQuery({
-    direction,
-    whereConditions,
-    pageSize,
-  }: FirebaseQuery): Promise<ResponseQuery<RegisterBets>> {
-    const betRef = collection(this.firestore, 'register-bets');
-
-    if (direction === 'reset') {
-      this.currentIndex = -1;
-      this.history = [];
-    }
-
-    // Aplicando filtros
-    const constraints: QueryConstraint[] = [];
-
-    for (const [field, op, value] of whereConditions!) {
-      constraints.push(where(field, op, value));
-    }
-
-    constraints.push(orderBy('updatedAt', 'desc'));
-    constraints.push(orderBy('warning', 'desc'));
-
-    const cursor = this.history[this.currentIndex] ?? undefined;
-
-    let q;
-
-    if (direction === 'next' && cursor) {
-      constraints.push(startAfter(cursor));
-    } else if (direction === 'prev' && this.currentIndex > 0) {
-      const prevCursor = this.history[this.currentIndex - 2]; // retrocede 2 posiciones para obtener la anterior
-      prevCursor ? constraints.push(startAfter(prevCursor)) : null;
-      this.currentIndex -= 2; // retrocede manualmente
-    }
-
-    constraints.push(limit(pageSize || this.pageSize));
-
-    q = query(betRef, ...constraints);
-
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map(
-      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBets)
-    );
-
-    // Actualizar historial y cursor
-    if (snapshot.docs.length > 0) {
-      this.currentIndex++;
-      this.history[this.currentIndex] = snapshot.docs[snapshot.docs.length - 1];
-    }
-
-    this.hasNext = snapshot.docs.length === (pageSize || this.pageSize);
-
-    return { data, hasNext: this.hasNext, hasPrev: this.currentIndex > 0 };
+  async getByQuery(
+    query: {[key: string]: any} = {},
+    pageIndex: number = 1,
+    pageSize: number = 25,
+  ){
+    // TODO: implementar ordenar por updatedAt y warning
+    return firstValueFrom(this.register_bets_api.getBetsByPagination(REGISTER_BETS, query, pageIndex, pageSize ));
   }
 
-  async getTotalBets({
-    whereConditions,
-    bd = 'register-bets',
-  }: FirebaseQuery): Promise<number> {
-    const betRef = collection(this.firestore, bd);
-
-    // Aplicando filtros
-    const constraints: QueryConstraint[] = [];
-
-    for (const [field, op, value] of whereConditions!) {
-      constraints.push(where(field, op, value));
-    }
-
-    const q = query(betRef, ...constraints);
-
-    const snapshot = await getCountFromServer(q);
-
-    return snapshot.data().count;
+  async getTotalBets(controller: string, query:{[key: string]: string | Timestamp | boolean | number | undefined} = {}): Promise<number> {
+    return firstValueFrom(this.register_bets_api.getTotalBets(controller, query));
   }
 
   async getByQueryDetail({
@@ -268,27 +197,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     return { data, hasNext: this.hasNext, hasPrev: this.currentIndex > 0 };
   }
 
-  async getByUid(uid: string): Promise<RegisterBets> {
-    const payment = await getDoc(doc(this.firestore, 'register-bets', uid));
-    if (!payment.exists()) throw new Error('Pago no encontrado');
-    return payment.data() as RegisterBets;
-  }
-
   async grupedTotalValue(data: RegisterBetsDetail) {
-    const betsRef = collection(this.firestore, 'register-bets-detail');
-
-    const q = this.queryBase(data, betsRef);
-
-    const details = await getDocs(q);
-
-    let sumary = 0;
-
-    details.docs.forEach((doc) => {
-      const data = doc.data() as RegisterBetsDetail;
-      sumary += data.value as number;
-    });
-
-    return sumary;
+    return firstValueFrom(this.register_bets_api.sumBets(REGISTER_BETS_DETAIL, this.queryBase(data)));
   }
 
   async createGroupedBets(
@@ -308,113 +218,47 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       updatedAt: data.updatedAt,
     };
 
-    const betsRef = collection(this.firestore, 'register-bets');
-
-    const q = this.queryBase(data, betsRef);
-
-    const bet = (await getDocs(q)).docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    if (bet.length > 0) {
-      await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
-        updatedAt: data.updatedAt,
-        groupedValue: total,
-        warning: warning.isAlert,
-        alertDescription: warning.description || '',
-      });
-      return;
+    const rsp = await this.getByQuery(this.queryBase(dataGroupedBets))
+    if (rsp.length > 0) {
+      return firstValueFrom(this.register_bets_api.updateTotalValue(REGISTER_BETS, this.queryBase(dataGroupedBets), dataGroupedBets));
     }
-
-    await addDoc(betsRef, {
-      ...dataGroupedBets,
-    });
+    await firstValueFrom(this.register_bets_api.addBet(REGISTER_BETS, dataGroupedBets));
   }
 
   queryBase(
-    data: RegisterBetsDetail | RegisterBets,
-    ref: CollectionReference<DocumentData, DocumentData>
+    data: RegisterBetsDetail | RegisterBets
   ) {
-    return query(
-      ref,
-      where('lotteryNumber', '==', data.lotteryNumber),
-      where('date', '==', data.date),
-      where('lottery.id', '==', data.lottery?.id),
-      where('combined', '==', data.combined)
-    );
-  }
-
-  async getDataToResume({ whereConditions }: FirebaseQuery): Promise<any> {
-    const betRefDetail = collection(this.firestore, 'register-bets-detail');
-    const betRef = collection(this.firestore, 'register-bets');
-
-    // Aplicando filtros
-    const constraints: QueryConstraint[] = [];
-
-    for (const [field, op, value] of whereConditions!) {
-      constraints.push(where(field, op, value));
+    return {
+      "lotteryNumber": data.lotteryNumber,
+      "date": data.date,
+      "combined": data.combined,
+      "lottery": data.lottery,
     }
-
-    const qDetail = query(betRefDetail, ...constraints);
-    const q = query(betRef, ...constraints, where('warning', '==', true));
-
-    const snapshotDetail = await getDocs(qDetail);
-    const snapshot = await getDocs(q);
-
-    const dataDetail = snapshotDetail.docs.map(
-      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBetsDetail)
-    );
-    const dataGrouped = snapshot.docs.map(
-      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBets)
-    );
-
-    return this.parseDataToResume(dataDetail, dataGrouped);
   }
 
-  parseDataToResume(data: RegisterBetsDetail[], dataGrouped: RegisterBets[]) {
+  async getDataToResume(query: {[key: string]: any}): Promise<any> {
+    return this.parseDataToResume(query);
+  }
+
+  async parseDataToResume(query: {[key: string]: any}): Promise<any> {
     let objParse: any = {};
-
-    for (let item of data) {
-      if (objParse[item?.lottery?.name as string]) continue;
-
-      // Filtrar por lotería
-      const lotteryFiltered = data.filter(
-        (bet) => bet?.lottery?.name === item.lottery?.name
-      );
-
-      objParse[item?.lottery?.name as string] =
-        this.getTotalResume(lotteryFiltered);
-    }
-
-    objParse['Total'] = this.getTotalResume(data);
-    objParse['Advertencias'] = this.getTotalResumeWarning(dataGrouped);
+    objParse['Total'] = await this.getTotalResume(REGISTER_BETS, query);
+    objParse['Advertencias'] = await this.getTotalResume(REGISTER_BETS_DETAIL,{...query,warning: true});
     objParse['Comisiones (55%)'] = {
       totalData: undefined,
       cont: Math.round(
-        (objParse['Total']?.cont - objParse['Advertencias']?.cont) * 0.55
+        (objParse['Total'].cont - objParse['Advertencias'].cont) * 0.55
       ),
     };
-
     return objParse;
   }
 
-  getTotalResume(data: RegisterBetsDetail[]) {
-    let cont = 0;
-    for (let item of data) {
-      cont += item.value as number;
-    }
-
-    return { cont, totalData: data.length };
-  }
-
-  getTotalResumeWarning(data: RegisterBets[]) {
-    let cont = 0;
-    for (let item of data) {
-      cont += item.groupedValue as number;
-    }
-
-    return { cont, totalData: data.length };
+  async getTotalResume(controller: string, query: { [key: string]: any } = {}) {
+    const [total, sumBet] = await Promise.all([
+      firstValueFrom(this.register_bets_api.getTotalBets(controller, query)),
+      firstValueFrom(this.register_bets_api.sumBets(controller, query))
+    ]);
+    return { totalData: total, cont: sumBet };
   }
 
   async getAlerts() {
@@ -436,134 +280,65 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     };
   }
 
+    async getBetsDetailsByPagination(
+    pageIndex: number,
+    pageSize: number,
+    queries: { [key: string]: string } = {}
+  ): Promise<RegisterBetsDetail[]> {
+    return firstValueFrom(this.register_bets_api.getBetsByPagination(REGISTER_BETS_DETAIL, queries, pageIndex, pageSize));
+  }
+
   async getBetsByPagination(
     pageIndex: number,
     pageSize: number,
-    queries?: { [key: string]: string }[]
+    queries: { [key: string]: string } = {}
   ): Promise<RegisterBetsDetail[]> {
-    const betRef = collection(this.firestore, 'register-bets-detail');
-    const zeroBasedPageIndex = pageIndex - 1;
-    const { constraints, auxConstraints }: { constraints: QueryConstraint[], auxConstraints: QueryConstraint[] } =
-      queries && queries.length > 0 ? this.returnQueries(queries) : { constraints: [], auxConstraints: [] };
-    if (queries && queries.length > 0) {
-      const q = query(betRef, ...constraints, orderBy('date', 'desc'));
-      const auxQ = query(betRef, ...auxConstraints, orderBy('date', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const auxQuerySnapshot = await getDocs(auxQ);
-      const data = [...querySnapshot.docs.map(
-        (doc) =>
-        ({
-          uid: doc.id,
-          ...doc.data(),
-        } as RegisterBetsDetail)
-      ), ...auxQuerySnapshot.docs.map(
-        (doc) =>
-        ({
-          uid: doc.id,
-          ...doc.data(),
-        } as RegisterBetsDetail))
-      ];
-      // Eliminar duplicados por uid
-      const uniqueData = data.filter(
-        (item, index, self) => index === self.findIndex((t) => t.uid === item.uid)
-      );
-      return uniqueData;
-    }
-
-    constraints.push(orderBy('date', 'desc'));
-    if (zeroBasedPageIndex === 0) {
-      // Primera página
-      const q = query(betRef, ...constraints, limit(pageSize));
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(
-        (doc) =>
-        ({
-          uid: doc.id,
-          ...doc.data(),
-        } as RegisterBetsDetail)
-      );
-    } else {
-      // Para páginas posteriores, obtener el cursor correcto
-      const cursorQuery = query(
-        betRef,
-        ...constraints,
-        limit(zeroBasedPageIndex * pageSize)
-      );
-      const cursorSnapshot = await getDocs(cursorQuery);
-      const docs = cursorSnapshot.docs;
-      if (docs.length < zeroBasedPageIndex * pageSize) {
-        return [];
-      }
-      const lastDoc = docs[docs.length - 1];
-      const pageQuery = query(
-        betRef,
-        ...constraints,
-        startAfter(lastDoc),
-        limit(pageSize)
-      );
-      const pageSnapshot = await getDocs(pageQuery);
-      return pageSnapshot.docs.map(
-        (doc) =>
-        ({
-          uid: doc.id,
-          ...doc.data(),
-        } as RegisterBetsDetail)
-      );
-    }
+    const q = Object.keys(queries).length > 0 ? this.returnQueries(queries) : {};
+    return firstValueFrom(this.register_bets_api.getBetsByPagination(REGISTER_BETS_DETAIL, q, pageIndex, pageSize));
   }
 
-  async getTotalBetsQueries(
-    queries?: { [key: string]: string }[]
-  ): Promise<number> {
-    const betRef = collection(this.firestore, 'register-bets-detail');
-    const { constraints, auxConstraints }: { constraints: QueryConstraint[], auxConstraints: QueryConstraint[] } =
-      queries && queries.length > 0 ? this.returnQueries(queries) : { constraints: [], auxConstraints: [] };
-    const q = query(betRef, ...constraints);
-    const auxQ = query(betRef, ...auxConstraints);
-    const countSnapshot = await getCountFromServer(q);
-    const auxCountSnapshot = await getCountFromServer(auxQ);
-    return countSnapshot.data().count + auxCountSnapshot.data().count;
+  returnQueries(queries: { [key: string]: string }) {
+    const q = {
+      "date.seconds": {
+        "$gte": Timestamp.fromDate(new Date(`${queries['date']}T00:00:00`)).seconds,
+        "$lte": Timestamp.fromDate(new Date(`${queries['date']}T23:59:59`)).seconds
+      },
+      "lotteryNumber": {
+        "$in": this.returnArrayLotteryNumbers(queries['lotteryNumber'])
+      },
+      "lottery.id": queries['lottery.id'],
+    }
+    return q;
   }
 
-  returnQueries(queries: { [key: string]: string }[]): { constraints: QueryConstraint[], auxConstraints: QueryConstraint[] } {
-    const constraints: QueryConstraint[] = [];
-    const auxConstraints: QueryConstraint[] = [];
-    const fields = ['date', 'lottery.id', 'lotteryNumber'];
-    for (const field of fields) {
-      let value = queries.find((q) => q[field])!;
-      if (field === 'date') {
-        const date = new Date(`${value[field]}T00:00:00`);
-        constraints.push(where(field, '>=', Timestamp.fromDate(date)));
-        auxConstraints.push(where(field, '>=', Timestamp.fromDate(date)));
-      } else if (field === 'lotteryNumber') {
-        let searchingForLotteryNumbers: string[] = [];
-        let searchingForLotteryNumbersThirthDigits: string[] = [];
-        let lotteryNumberCopy = value[field];
-        for (let i = 0; i < value[field].length; i++) {
-          const query = lotteryNumberCopy.slice(i + 1);
-          if (query.length !== 0) {
-            searchingForLotteryNumbers.push(query);
-          }
-        }
-        if ([3, 4].includes(value[field].length)) {
-          let permutations = this.getListLotteryNumbersPermutations(lotteryNumberCopy);
-          searchingForLotteryNumbers = [...searchingForLotteryNumbers, ...permutations];
-          if (value[field].length === 4) {
-            let extractFirstDigitFromLotteryNumber = value[field].slice(1);
-            searchingForLotteryNumbersThirthDigits = this.getListLotteryNumbersPermutations(extractFirstDigitFromLotteryNumber);
-          }
-        }
-        // Eliminar números duplicados de lotteryNumberQueries
-        searchingForLotteryNumbers = Array.from(new Set(searchingForLotteryNumbers));
-        searchingForLotteryNumbersThirthDigits = Array.from(new Set(searchingForLotteryNumbersThirthDigits));
-        constraints.push(where('lotteryNumber', 'in', searchingForLotteryNumbers));
-        auxConstraints.push(where('lotteryNumber', 'in', searchingForLotteryNumbersThirthDigits));
-      } else {
-        constraints.push(where(field, '==', value[field]));
-        auxConstraints.push(where(field, '==', value[field]));
+  async getTotalBetsDetail(controller: string, queries: { [key: string]: any } = {}): Promise<number> {
+    const q = Object.keys(queries).length > 0 ? this.returnQueries(queries) : {};
+    return firstValueFrom(this.register_bets_api.getTotalBets(controller, q));
+  }
+
+  returnArrayLotteryNumbers(lotteryNumber: string): string[] {
+    let searchingForLotteryNumbers: string[] = [];
+    let searchingForLotteryNumbersThirthDigits: string[] = [];
+    let lotteryNumberCopy = lotteryNumber;
+    searchingForLotteryNumbers.push(lotteryNumberCopy);
+    for (let i = 0; i < lotteryNumber.length; i++) {
+      const query = lotteryNumberCopy.slice(i + 1);
+      if (query.length !== 0) {
+        searchingForLotteryNumbers.push(query);
       }
     }
-    return { constraints, auxConstraints };
+    if ([3, 4].includes(lotteryNumber.length)) {
+      let permutations = this.getListLotteryNumbersPermutations(lotteryNumberCopy);
+      searchingForLotteryNumbers = [...searchingForLotteryNumbers, ...permutations];
+      if (lotteryNumber.length === 4) {
+        let extractFirstDigitFromLotteryNumber = lotteryNumber.slice(1);
+        searchingForLotteryNumbersThirthDigits = this.getListLotteryNumbersPermutations(extractFirstDigitFromLotteryNumber);
+      }
+    }
+    // Eliminar números duplicados de lotteryNumberQueries
+    searchingForLotteryNumbers = Array.from(new Set(searchingForLotteryNumbers));
+    searchingForLotteryNumbersThirthDigits = Array.from(new Set(searchingForLotteryNumbersThirthDigits));
+    return [...searchingForLotteryNumbers, ...searchingForLotteryNumbersThirthDigits];
   }
 
   permute(str: string): string[] {

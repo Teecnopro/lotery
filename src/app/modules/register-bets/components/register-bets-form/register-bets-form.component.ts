@@ -141,7 +141,6 @@ export class RegisterBetsFormComponent implements OnInit {
   async sendData() {
     this.loading = true;
     const betDetail = this.buildObj();
-
     try {
       this.resetForm();
       await this.registerBetsUseCase.createRegisterBets(betDetail);
@@ -169,8 +168,6 @@ export class RegisterBetsFormComponent implements OnInit {
     const { uid, name } = this.user.getUser()!;
 
     const date = new Date(form.date);
-    date.setHours(0, 0, 0, 0);
-
     return {
       lottery: { id: form.lottery._id, name: form.lottery.name },
       date: Timestamp.fromDate(date),

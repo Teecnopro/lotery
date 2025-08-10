@@ -50,8 +50,6 @@ export class PaymentFormComponent {
     if (this.paymentObservable) {
       this.subscription = this.paymentObservable.subscribe(
         (data: PaymentParameterization) => {
-          console.log('Received payment data:', data);
-          
           if (data && data.uid !== undefined) {
             this.textButton = 'Editar Pago';
             this.isEditing = true;

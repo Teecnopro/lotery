@@ -48,16 +48,22 @@ export class RegisterBetsResumeComponent implements OnInit {
     this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       if (!value) return;
       this.defaultDate = value.date;
-      this.getDataToResume();
+      this.getDataToResume(value.lottery._id);
     });
   }
 
-  async getDataToResume() {
-    const filter: WhereCondition[] = [
-      ["date", "==", this.defaultDate]
-    ]
+  async getDataToResume(lotteryID: string) {
+    const dateObj = this.defaultDate.toDate();
+    const formattedDate = dateObj.toISOString().slice(0, 10);
+    const query = {
+      'date.seconds': {
+        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
+        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
+      },
+      "lottery.id": lotteryID
+    };
 
-    const data = await this.registerBetsUseCase.getDataToResume({whereConditions: filter});
+    const data = await this.registerBetsUseCase.getDataToResume(query);
     this.resume = Object.entries(data).map(([key, value]) => ({ key, value }));
   }
 }

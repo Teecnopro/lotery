@@ -68,8 +68,7 @@ export class UserListComponent implements OnInit, OnDestroy {
       const rawsUsers: UserData[] = await this.getUseCase.execute();
       this.dataSource.data = rawsUsers;
     } catch (error) {
-      console.log('Error fetching users:', error);
-      
+      console.error('Error fetching users:', error);
       this.notification.error(getFirebaseAuthErrorMessage(error));
     }
   }

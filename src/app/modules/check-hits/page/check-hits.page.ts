@@ -21,7 +21,7 @@ interface CheckResult {
     standalone: true,
 })
 export class CheckHitsPage implements OnInit {
-    queries: Subject<{ [key: string]: string }[]> = new Subject<{ [key: string]: string }[]>();
+    queries: Subject<{ [key: string]: string }> = new Subject<{ [key: string]: string }>();
     searchResults: CheckResult[] = [];
     loading = false;
     showForm = false;
