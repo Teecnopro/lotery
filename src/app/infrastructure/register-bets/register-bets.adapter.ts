@@ -61,7 +61,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   async delete(data: RegisterBetsDetail[]): Promise<void> {
     let totalSumary = this.totalToDelete(data);
     const ids = data.map((item) => item._id!);
-    await firstValueFrom(this.register_bets_api.deleteManyBets(REGISTER_BETS_DETAIL, ids))
+    await firstValueFrom(this.register_bets_api.deleteManyBetsByIds(REGISTER_BETS_DETAIL, ids))
     // TODO: implementar
     await this.deleteOrUpdateGroupedBets(data[0], totalSumary);
   }
@@ -95,7 +95,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       }));
       return;
     }
-    await firstValueFrom(this.register_bets_api.deleteBet(REGISTER_BETS, rsp[0].uid!));
+    await firstValueFrom(this.register_bets_api.deleteBetById(REGISTER_BETS, rsp[0].uid!));
   }
 
   async getByQuery(

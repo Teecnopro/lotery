@@ -49,7 +49,7 @@ export class DeleteBetsFormComponent {
     const setStartDate = new Date(startDate);
     setStartDate.setHours(0, 0, 0, 0);
     const setEndDate = new Date(endDate);
-    setEndDate.setHours(0, 0, 0, 0);
+    setEndDate.setHours(23, 59, 59, 999);
 
     this.deleteBetsUseCase.updateList$({ startDate: setStartDate, endDate: setEndDate })
     this.deleteBetForm.reset();

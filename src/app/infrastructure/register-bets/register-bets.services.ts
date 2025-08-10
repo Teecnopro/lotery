@@ -16,7 +16,7 @@ export class RegisterBetsService {
         return this.servicesApi.get<RegisterBets[]>(controller);
     }
 
-    getBetsByPagination(controller: string, query: { [key: string]: string } = {}, pageIndex: number = 1, pageSize: number = 10): Observable<RegisterBets[]> {
+    getBetsByPagination(controller: string, query: { [key: string]: any } = {}, pageIndex: number = 1, pageSize: number = 10): Observable<RegisterBets[]> {
         return this.servicesApi.post<RegisterBets[]>(`${controller}/pagination`, { query, pageIndex, pageSize });
     }
 
@@ -32,12 +32,16 @@ export class RegisterBetsService {
         return this.servicesApi.post<number>(`${controller}/sum`, queries);
     }
 
-    deleteBet(controller: string, id: string): Observable<void> {
+    deleteBetById(controller: string, id: string): Observable<void> {
         return this.servicesApi.post<void>(`${controller}/delete`, { id });
     }
 
-    deleteManyBets(controller: string, ids: string[]): Observable<void> {
-        return this.servicesApi.post<void>(`${controller}/deleteManyBets`, { ids });
+    deleteBetsByQuery(controller: string, query: any): Observable<void> {
+        return this.servicesApi.post<void>(`${controller}/deleteManyBetsByQuery`, { query });
+    }
+
+    deleteManyBetsByIds(controller: string, ids: string[]): Observable<void> {
+        return this.servicesApi.post<void>(`${controller}/deleteManyBetsByIds`, { ids });
     }
 
     updateTotalValue(controller: string, queries: any, data: any): Observable<void> {
