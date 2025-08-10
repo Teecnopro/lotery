@@ -81,7 +81,7 @@
   <mat-paginator
     [length]="total"
     [pageSize]="pageSize"
-    [pageSizeOptions]="[25, 50, 75]"
+    [pageSizeOptions]="[100, 200, 1000]"
     (page)="onPageChange($event)"
     *ngIf="listBets.length"
   >

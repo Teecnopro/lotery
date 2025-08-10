@@ -87,7 +87,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   registerBetForm: FormGroup = this.formBuilder.group({
     date: [new Date(), [Validators.required]],
-    lottery: [{ value: '', disabled: true }, [Validators.required]],
+    lottery: [{ value: ''}, [Validators.required]],
     seller: ['', [Validators.required]],
     lotteryNumber: [
       '',
@@ -104,12 +104,14 @@ export class RegisterBetsFormComponent implements OnInit {
 
   arrayLotteries = lotteries;
   arraySellers: ISeller[] = [];
+  color: string = '';
 
   constructor() {}
 
   async ngOnInit() {
     // Inicializando valores por defecto
     this.registerBetForm?.get('lottery')?.setValue(lotteries[0]);
+    this.color = lotteries[0].color;
     const date = new Date();
     date.setHours(0, 0, 0, 0);
     this.defaultDate = Timestamp.fromDate(date);
@@ -208,5 +210,9 @@ export class RegisterBetsFormComponent implements OnInit {
 
   async getSellers() {
     this.arraySellers = await this.sellersUseCase.getSellersActive();
+  }
+
+  changeColor(color: string) {
+    this.color = color;
   }
 }

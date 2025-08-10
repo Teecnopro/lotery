@@ -51,7 +51,7 @@ export class RegisterBetsListComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 25;
+  pageSize = 100;
   currentPageIndex = 1; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
