@@ -71,10 +71,14 @@ export class FirebaseAlertParameterizationAdapter
 
     getAlertParameterizationByValue(
         value: number | string | undefined,
-        digits?: number | undefined
+        digits?: number | undefined,
+        combined?: boolean | undefined
     ): Promise<AlertParameterization | null> {
         const collectionRef = collection(this.firestore, 'alert-parameterizations');
         let q = query(collectionRef, where('value', '==', value), where('digits', '==', digits));
+        if (combined) {
+            q = query(collectionRef, where('value', '==', value), where('digits', '==', digits), where('combined', '==', combined));
+        }
         return getDocs(q).then((snapshot) => {
             if (snapshot.empty) return null;
             const doc = snapshot.docs[0];

@@ -3,6 +3,7 @@ import { AuthUser } from '../../auth/models/auth-user.entity';
 import { WhereCondition } from '../../../shared/models/query.entity';
 
 export interface RegisterBetsDetail {
+  _id?: string
   uid?: string;
   lotteryNumber?: string;
   lottery?: { id: string; name: string };
@@ -19,6 +20,7 @@ export interface RegisterBetsDetail {
 }
 
 export interface RegisterBets {
+  _id?: string;
   uid?: string;
   lotteryNumber?: string;
   lottery?: { id: string; name: string };

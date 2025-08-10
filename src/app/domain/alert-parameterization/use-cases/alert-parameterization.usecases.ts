@@ -23,8 +23,9 @@ export class AlertParameterizationUseCase {
   }
   getAlertParameterizationsByValue(
     value: number | string  | undefined,
-    digits?: number | undefined
+    digits?: number | undefined,
+    combined?: boolean | undefined
   ): Promise<AlertParameterization | null> {
-    return this.alertParameterization.getAlertParameterizationByValue(value, digits);
+    return this.alertParameterization.getAlertParameterizationByValue(value, digits, combined);
   }
 }

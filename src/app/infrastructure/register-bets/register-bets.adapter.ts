@@ -1,29 +1,10 @@
-import { inject, Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import {
-  addDoc,
-  collection,
-  collectionData,
-  CollectionReference,
-  deleteDoc,
-  doc,
   DocumentData,
   Firestore,
-  getCountFromServer,
-  getDoc,
-  getDocs,
-  limit,
-  or,
-  orderBy,
-  QueryConstraint,
   QueryDocumentSnapshot,
-  setDoc,
-  startAfter,
-  startAt,
   Timestamp,
-  updateDoc,
-  where,
-  writeBatch,
 } from '@angular/fire/firestore';
 import { RegisterBetsServicePort } from '../../domain/register-bets/ports';
 import {
@@ -31,13 +12,11 @@ import {
   RegisterBets,
   RegisterBetsDetail,
 } from '../../domain/register-bets/models/register-bets.entity';
-import { FirebaseQuery, ResponseQuery } from '../../shared/models/query.entity';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { IQueryBetsByVendor } from '../../modules/reports/interface/IReports.interface';
 import { RegisterBetsService } from './register-bets.services';
 import { REGISTER_BETS, REGISTER_BETS_DETAIL } from '../../shared/const/controllers';
-import { query } from '@firebase/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
@@ -49,7 +28,6 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   history: QueryDocumentSnapshot<DocumentData>[] = [];
   currentIndex = -1;
   alertList: AlertParameterization[] = [];
-  private hasNext = false;
 
   constructor(
     private firestore: Firestore,
@@ -81,12 +59,11 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async delete(data: RegisterBetsDetail[]): Promise<void> {
-    // let totalSumary = this.totalToDelete(data);
-    const ids = data.map((item) => item.uid!);
+    let totalSumary = this.totalToDelete(data);
+    const ids = data.map((item) => item._id!);
     await firstValueFrom(this.register_bets_api.deleteManyBets(REGISTER_BETS_DETAIL, ids))
     // TODO: implementar
-    // await batch.commit();
-    // await this.deleteOrUpdateGroupedBets(data[0], totalSumary);
+    await this.deleteOrUpdateGroupedBets(data[0], totalSumary);
   }
 
   totalToDelete(data: RegisterBetsDetail[]) {
@@ -101,34 +78,24 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
   async deleteOrUpdateGroupedBets(data: RegisterBets, total: number) {
     // TODO: implementar
-    // const betsRef = collection(this.firestore, 'register-bets');
+    const q = this.queryBase(data);
+    const rsp = await this.getByQuery(q);
+    if (rsp.length === 0) {
+      return;
+    }
 
-    // const q = this.queryBase(data, betsRef);
-
-    // const bet = (await getDocs(q)).docs.map((doc) => ({
-    //   id: doc.id,
-    //   ...(doc.data() as RegisterBets),
-    // }));
-
-    // if (bet.length === 0) {
-    //   throw new Error('No existen apuestas agrupadas');
-    // }
-
-    // const totalDiff = (bet[0].groupedValue as number) - total;
-
-    // const warning = this.validateAlert(data.lotteryNumber!, totalDiff, data.combined as boolean);
-
-    // if (totalDiff > 0) {
-    //   await updateDoc(doc(this.firestore, 'register-bets', bet[0].id), {
-    //     updatedAt: data.updatedAt,
-    //     groupedValue: totalDiff,
-    //     warning: warning.isAlert,
-    //     alertDescription: warning.description || '',
-    //   });
-    //   return;
-    // }
-
-    // await deleteDoc(doc(this.firestore, 'register-bets', bet[0].id));
+    const totalDiff = (rsp[0].groupedValue as number) - total;
+    const warning = this.validateAlert(data.lotteryNumber!, totalDiff, data.combined as boolean);
+    if (totalDiff > 0) {
+      await firstValueFrom(this.register_bets_api.updateTotalValue(REGISTER_BETS, q, {
+        updatedAt: data.updatedAt,
+        groupedValue: totalDiff,
+        warning: warning.isAlert,
+        alertDescription: warning.description || '',
+      }));
+      return;
+    }
+    await firstValueFrom(this.register_bets_api.deleteBet(REGISTER_BETS, rsp[0].uid!));
   }
 
   async getByQuery(
@@ -164,7 +131,6 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       date: data.date,
       updatedAt: data.updatedAt,
     };
-
     const rsp = await this.getByQuery(this.queryBase(dataGroupedBets))
     if (rsp.length > 0) {
       return firstValueFrom(this.register_bets_api.updateTotalValue(REGISTER_BETS, this.queryBase(dataGroupedBets), dataGroupedBets));
@@ -175,9 +141,17 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   queryBase(
     data: RegisterBetsDetail | RegisterBets
   ) {
+
+    const dateObj = data.date instanceof Timestamp
+      ? data.date.toDate()
+      : new Timestamp((data.date as any)?.seconds ?? Math.floor(new Date(data.date as any).getTime() / 1000), 0).toDate();
+    const formattedDate = dateObj.toISOString().slice(0, 10);
     return {
       "lotteryNumber": data.lotteryNumber,
-      "date": data.date,
+      "date.seconds": {
+        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
+        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
+      },
       "combined": data.combined,
       "lottery": data.lottery,
     }

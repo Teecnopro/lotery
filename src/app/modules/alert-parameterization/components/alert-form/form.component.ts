@@ -104,7 +104,8 @@ export class AlertFormComponent implements OnInit, OnDestroy {
     try {
       const existingAlert = await this.alertUseCases.getAlertParameterizationsByValue(
         alertData.value, 
-        alertData.digits
+        alertData.digits,
+        alertData.combined
       );
       if (existingAlert && !this.isEditing) {
         this.notification.error('Ya existe una parametrización de alerta con este valor');

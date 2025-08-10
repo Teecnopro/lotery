@@ -32,8 +32,12 @@ export class RegisterBetsService {
         return this.servicesApi.post<number>(`${controller}/sum`, queries);
     }
 
+    deleteBet(controller: string, id: string): Observable<void> {
+        return this.servicesApi.post<void>(`${controller}/delete`, { id });
+    }
+
     deleteManyBets(controller: string, ids: string[]): Observable<void> {
-        return this.servicesApi.delete<void>(`${controller}/deleteManyBets`, { ids });
+        return this.servicesApi.post<void>(`${controller}/deleteManyBets`, { ids });
     }
 
     updateTotalValue(controller: string, queries: any, data: any): Observable<void> {
