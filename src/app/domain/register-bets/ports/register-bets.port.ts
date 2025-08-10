@@ -15,9 +15,6 @@ export interface RegisterBetsServicePort {
   create(data: RegisterBetsDetail): Promise<void>;
   delete(data: RegisterBetsDetail[]): Promise<void>;
   getByQuery(query: { [key: string]: any }, pageIndex: number, pageSize: number): Promise<RegisterBets[]>;
-  getByQueryDetail(
-    query: FirebaseQuery
-  ): Promise<ResponseQuery<RegisterBetsDetail>>;
   listBets$(): Observable<ListBets | null> | null;
   updateList$(data: ListBets): void;
   getDataToResume(query: { [key: string]: any }): Promise<any>;
@@ -33,5 +30,5 @@ export interface RegisterBetsServicePort {
     pageSize: number,
     queries?: { [key: string]: any },
   ): Promise<RegisterBetsDetail[]>;
-  getBetsToListResume(query: FirebaseQuery): Promise<Map<string, IQueryBetsByVendor>>
+  getBetsToListResume(query: { [key: string]: any }, pageSize: number, pageIndex: number): Promise<Map<string, IQueryBetsByVendor>>
 }

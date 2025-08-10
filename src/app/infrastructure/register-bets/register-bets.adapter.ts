@@ -144,59 +144,6 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     return firstValueFrom(this.register_bets_api.getTotalBets(controller, query));
   }
 
-  async getByQueryDetail({
-    direction,
-    whereConditions,
-    pageSize,
-  }: FirebaseQuery): Promise<ResponseQuery<RegisterBetsDetail>> {
-    const betRef = collection(this.firestore, 'register-bets-detail');
-
-    if (direction === 'reset') {
-      this.currentIndex = -1;
-      this.history = [];
-    }
-
-    // Aplicando filtros
-    const constraints: QueryConstraint[] = [];
-
-    for (const [field, op, value] of whereConditions!) {
-      constraints.push(where(field, op, value));
-    }
-
-    constraints.push(orderBy('updatedAt', 'desc'));
-
-    const cursor = this.history[this.currentIndex] ?? undefined;
-
-    let q;
-
-    if (direction === 'next' && cursor) {
-      constraints.push(startAfter(cursor));
-    } else if (direction === 'prev' && this.currentIndex > 0) {
-      const prevCursor = this.history[this.currentIndex - 2]; // retrocede 2 posiciones para obtener la anterior
-      prevCursor ? constraints.push(startAfter(prevCursor)) : null;
-      this.currentIndex -= 2; // retrocede manualmente
-    }
-
-    constraints.push(limit(pageSize || this.pageSize));
-
-    q = query(betRef, ...constraints);
-
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map(
-      (doc) => ({ uid: doc.id, ...doc.data() } as RegisterBetsDetail)
-    );
-
-    // Actualizar historial y cursor
-    if (snapshot.docs.length > 0) {
-      this.currentIndex++;
-      this.history[this.currentIndex] = snapshot.docs[snapshot.docs.length - 1];
-    }
-
-    this.hasNext = snapshot.docs.length === (pageSize || this.pageSize);
-
-    return { data, hasNext: this.hasNext, hasPrev: this.currentIndex > 0 };
-  }
-
   async grupedTotalValue(data: RegisterBetsDetail) {
     return firstValueFrom(this.register_bets_api.sumBets(REGISTER_BETS_DETAIL, this.queryBase(data)));
   }
@@ -358,25 +305,13 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     return Array.from(results);
   }
 
-  async getBetsToListResume({
-    whereConditions,
-  }: FirebaseQuery): Promise<Map<string, IQueryBetsByVendor>> {
-    const refBd = collection(this.firestore, 'register-bets-detail');
+  async getBetsToListResume(query: { [key: string]: any }, pageSize: number = 25, pageIndex: number = 0): Promise<Map<string, IQueryBetsByVendor>> {
 
-    // Aplicando filtros
-    const constraints: QueryConstraint[] = [];
-
-    for (const [field, op, value] of whereConditions!) {
-      constraints.push(where(field, op, value));
-    }
-
-    const queryBets = query(refBd, ...constraints);
-
-    const snapshot = await getDocs(queryBets);
+    const data = await this.getBetsDetailsByPagination(pageSize, pageIndex, query);
     const betsByVendor = new Map<string, IQueryBetsByVendor>();
 
-    snapshot?.forEach((doc) => {
-      const data = doc.data();
+    data?.forEach((doc) => {
+      const data = doc
       const seller = data?.['seller'];
 
       const value = data?.['value'] ?? 0;

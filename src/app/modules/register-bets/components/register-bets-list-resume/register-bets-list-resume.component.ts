@@ -51,6 +51,7 @@ export class RegisterBetsListResumeComponent implements OnInit {
   currentPageIndex = 0; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
+  private defaultQueries: { [key: string]: any } = {};
   private defaultDate!: Timestamp;
   private lottery!: any;
 
@@ -61,7 +62,7 @@ export class RegisterBetsListResumeComponent implements OnInit {
   subscriptions!: Subscription | undefined;
 
   ngOnInit(): void {
-    this.registerBetsUseCase.listBets$()?.subscribe((value) => {
+    this.registerBetsUseCase.listBets$()?.pipe(takeUntil(this.destroy$)).subscribe((value) => {
       if (!value) return;
       this.defaultDate = value.date;
       this.lottery = value.lottery;
@@ -72,18 +73,24 @@ export class RegisterBetsListResumeComponent implements OnInit {
     this.getData();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   async getData() {
     this.loading = true;
-
-    this.defaultConditions = [
-      ['lottery.id', '==', this.lottery?._id],
-      ['date', '==', this.defaultDate],
-    ];
-
+    const dateObj = this.defaultDate.toDate();
+    const formattedDate = dateObj.toISOString().slice(0, 10);
+    this.defaultQueries = {
+      'lottery.id': this.lottery?._id,
+      'date.seconds': {
+        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
+        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
+      }
+    };
     try {
-      const sellers = await this.registerBetsUseCase.getBetsToListResume({
-        whereConditions: this.defaultConditions,
-      });
+      const sellers = await this.registerBetsUseCase.getBetsToListResume(this.defaultQueries, this.pageSize, this.currentPageIndex);
 
       this.listBets = Array.from(sellers.entries()).map(([i, value]) => ({
         id: i,

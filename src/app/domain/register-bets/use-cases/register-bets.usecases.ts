@@ -18,9 +18,6 @@ export class RegisterBetsUseCase {
   getRegisterBetsByQuery(query: { [key: string]: any }, pageIndex: number, pageSize: number): Promise<RegisterBets[]> {
     return this.registerBets.getByQuery(query, pageIndex, pageSize);
   }
-  getRegisterBetsByQueryDetail(query: FirebaseQuery): Promise<ResponseQuery<RegisterBetsDetail>> {
-    return this.registerBets.getByQueryDetail(query);
-  }
 
   listBets$(): Observable<ListBets | null> | null {
     return this.registerBets.listBets$();
@@ -58,7 +55,7 @@ export class RegisterBetsUseCase {
     return this.registerBets.getBetsDetailsByPagination(pageIndex, pageSize, queries);
   }
 
-  async getBetsToListResume(query: FirebaseQuery): Promise<Map<string, IQueryBetsByVendor>> {
-    return this.registerBets.getBetsToListResume(query);
+  async getBetsToListResume(query: { [key: string]: any }, pageSize: number = 25, pageIndex: number = 0): Promise<Map<string, IQueryBetsByVendor>> {
+    return this.registerBets.getBetsToListResume(query, pageSize, pageIndex);
   }
 }

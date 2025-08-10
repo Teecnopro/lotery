@@ -74,8 +74,6 @@ export class RegisterBetsListComponent implements OnInit {
   subscriptions!: Subscription | undefined;
 
   ngOnInit(): void {
-    console.log("aqui 2");
-    
     this.subscriptions = this.registerBetsUseCase
       .listBets$()
       ?.subscribe((value) => {

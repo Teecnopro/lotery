@@ -138,8 +138,6 @@ export class RegisterBetsListDetailComponent implements OnInit {
     try {
       this.total = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, this.defaultQueries);
       const data = await this.registerBetsUseCase.getBetsDetailsByPagination(this.currentPageIndex, this.pageSize, this.defaultQueries);
-      console.log(this.defaultQueries);
-      
       this.listBets = data;
       this.selection.clear();
 
