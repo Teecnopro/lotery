@@ -1,33 +1,19 @@
 import { Injectable } from '@angular/core';
 
 import {
-  addDoc,
   collection,
-  collectionData,
-  CollectionReference,
   deleteDoc,
-  doc,
-  DocumentData,
   Firestore,
   getCountFromServer,
-  getDoc,
   getDocs,
   limit,
-  or,
-  orderBy,
   query,
   QueryConstraint,
-  QueryDocumentSnapshot,
-  setDoc,
-  startAfter,
-  startAt,
   Timestamp,
-  updateDoc,
   where,
   writeBatch,
 } from '@angular/fire/firestore';
 import { RegisterBetsDetail } from '../../domain/register-bets/models/register-bets.entity';
-import { AlertParameterization } from '../../domain/alert-parameterization/models/alert-parameterization.entity';
 import { DeleteBetsServicePort } from '../../domain/delete-bets/ports';
 import {
   ListDeleteBets,
