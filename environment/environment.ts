@@ -9,5 +9,5 @@ export const environment = {
     messagingSenderId: '161152013906',
     measurementId: 'G-5WRTMHSWXQ',
   },
-  api: "lotery-api.vercel.app",
+  api: "https://lotery-api.vercel.app/",
 };
