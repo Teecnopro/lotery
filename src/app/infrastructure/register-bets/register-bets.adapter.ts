@@ -112,6 +112,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async grupedTotalValue(data: RegisterBetsDetail) {
+    console.log(this.queryBase(data));
+
     return firstValueFrom(this.register_bets_api.sumBets(REGISTER_BETS_DETAIL, this.queryBase(data)));
   }
 
@@ -144,16 +146,20 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
     const dateObj = data.date instanceof Timestamp
       ? data.date.toDate()
-      : new Timestamp((data.date as any)?.seconds ?? Math.floor(new Date(data.date as any).getTime() / 1000), 0).toDate();
+      : new Timestamp((data.date as any)?.seconds ?? Math.floor(new Date(data.date as any).getTimezoneOffset() * 60000), 0).toDate();
     const formattedDate = dateObj.toISOString().slice(0, 10);
+    const initDate = new Date(formattedDate);
+    const endDate = new Date(formattedDate);
+    initDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
     return {
       "lotteryNumber": data.lotteryNumber,
       "date.seconds": {
-        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
-        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
+        "$gte": Timestamp.fromDate(initDate).seconds,
+        "$lte": Timestamp.fromDate(endDate).seconds
       },
       "combined": data.combined,
-      "lottery": data.lottery,
+      "lottery.id": data.lottery!.id,
     }
   }
 
@@ -175,6 +181,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async getTotalResume(controller: string, query: { [key: string]: any } = {}) {
+    console.log(query);
+    
     const [total, sumBet] = await Promise.all([
       firstValueFrom(this.register_bets_api.getTotalBets(controller, query)),
       firstValueFrom(this.register_bets_api.sumBets(controller, query))
