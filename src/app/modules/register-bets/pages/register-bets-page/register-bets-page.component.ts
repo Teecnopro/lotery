@@ -78,7 +78,7 @@ export class RegisterBetsPageComponent implements OnInit {
   private dialog = inject(MatDialog);
   private notification = inject(NOTIFICATION_PORT);
 
-  defaultDate!: Timestamp;
+  defaultDate!: Date;
   lottery!: any;
 
   returnView: 'resume' | 'detail' = 'detail';
@@ -90,7 +90,11 @@ export class RegisterBetsPageComponent implements OnInit {
         items: [],
         selected: false,
       };
-      this.defaultDate = value.date;
+
+      const date = value.date;
+      date.setHours(0, 0, 0, 0);
+
+      this.defaultDate = date;
       this.lottery = value.lottery;
       this.isResume = value.resume || false;
 

@@ -81,7 +81,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   private user = inject(AUTH_SESSION);
   private notification = inject(NOTIFICATION_PORT);
-  private defaultDate!: Timestamp;
+  private defaultDate!: Date;
 
   loading = false;
 
@@ -113,8 +113,7 @@ export class RegisterBetsFormComponent implements OnInit {
     this.registerBetForm?.get('lottery')?.setValue(lotteries[0]);
     this.color = lotteries[0].color;
     const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    this.defaultDate = Timestamp.fromDate(date);
+    this.defaultDate = date;
 
     // Actualizando metodo del listado
     this.registerBetsUseCase.updateList$({
@@ -140,6 +139,7 @@ export class RegisterBetsFormComponent implements OnInit {
       ? (lottery?.enable(), this.lotterySelect.open())
       : lottery?.disable();
   }
+
   async sendData() {
     this.loading = true;
     const betDetail = this.buildObj();
@@ -170,9 +170,11 @@ export class RegisterBetsFormComponent implements OnInit {
     const { uid, name } = this.user.getUser()!;
 
     const date = new Date(form.date);
+    date.setHours(0, 0, 0, 0);
+
     return {
       lottery: { id: form.lottery._id, name: form.lottery.name },
-      date: Timestamp.fromDate(date),
+      date: date,
       lotteryNumber: form.lotteryNumber,
       seller: {
         id: form.seller.uid,
@@ -181,8 +183,8 @@ export class RegisterBetsFormComponent implements OnInit {
       },
       combined: form.combined,
       value: form.value,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       creator: { uid, name },
       updater: { uid, name },
     };
@@ -198,11 +200,10 @@ export class RegisterBetsFormComponent implements OnInit {
     const form = this.registerBetForm.getRawValue();
 
     const date = new Date(form.date);
-    date.setHours(0, 0, 0, 0);
 
     // Actualizando metodo del listado
     this.registerBetsUseCase.updateList$({
-      date: Timestamp.fromDate(date),
+      date: date,
       lottery: form.lottery,
       view: ['list'],
     });

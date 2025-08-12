@@ -56,7 +56,7 @@ export class RegisterBetsListComponent implements OnInit {
 
   private defaultConditions: WhereCondition[] = [];
   private query = {}
-  private defaultDate!: Timestamp;
+  private defaultDate!: Date;
   private lottery!: any;
 
   listBets: RegisterBets[] = [];
@@ -100,19 +100,13 @@ export class RegisterBetsListComponent implements OnInit {
     filter?: WhereCondition
   ) {
     this.loading = true;
-    const dateObj = this.defaultDate.toDate();
-    const formattedDate = dateObj.toISOString().slice(0, 10);
+    const dateObj = this.defaultDate;
+    dateObj.setHours(0, 0, 0, 0);
+
     this.query = {
       'lottery.id': this.lottery?._id,
-      'date.seconds': {
-        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
-        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
-      }
+      'date': dateObj
     }
-    // TODO: Implement filtering
-    // if (filter) {
-    //   this.defaultConditions.push(filter);
-    // }
 
     try {
       const [totalResult, dataRegister] = await Promise.all([

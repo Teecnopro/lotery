@@ -52,7 +52,7 @@ export class RegisterBetsListResumeComponent implements OnInit {
 
   private defaultConditions: WhereCondition[] = [];
   private defaultQueries: { [key: string]: any } = {};
-  private defaultDate!: Timestamp;
+  private defaultDate!: Date;
   private lottery!: any;
 
   listBets: any[] = [];
@@ -64,7 +64,9 @@ export class RegisterBetsListResumeComponent implements OnInit {
   ngOnInit(): void {
     this.registerBetsUseCase.listBets$()?.pipe(takeUntil(this.destroy$)).subscribe((value) => {
       if (!value) return;
+
       this.defaultDate = value.date;
+      this.defaultDate.setHours(0, 0, 0, 0);
       this.lottery = value.lottery;
 
       this.isResume = value.resume || false;
@@ -80,14 +82,10 @@ export class RegisterBetsListResumeComponent implements OnInit {
 
   async getData() {
     this.loading = true;
-    const dateObj = this.defaultDate.toDate();
-    const formattedDate = dateObj.toISOString().slice(0, 10);
+
     this.defaultQueries = {
       'lottery.id': this.lottery?._id,
-      'date.seconds': {
-        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
-        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
-      }
+      'date': this.defaultDate
     };
     try {
       const sellers = await this.registerBetsUseCase.getBetsToListResume(this.defaultQueries, this.pageSize, this.currentPageIndex);

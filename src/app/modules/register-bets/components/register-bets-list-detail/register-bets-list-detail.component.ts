@@ -46,7 +46,7 @@ export class RegisterBetsListDetailComponent implements OnInit {
   @Input('grupedBet') groupedBet!: RegisterBets;
   @Input('isSeller') isSeller: boolean = false;
   @Input('sellerId') sellerId!: string;
-  @Input('defaultDate') defaultDate!: Timestamp;
+  @Input('defaultDate') defaultDate!: Date;
   @Input('lottery') lottery!: any;
 
   @Output() isSelectToDeleted = new EventEmitter<{
@@ -105,15 +105,14 @@ export class RegisterBetsListDetailComponent implements OnInit {
     filter?: { [key: string]: string | Timestamp | boolean | number | undefined }
   ) {
     this.loading = true;
-    const dateObj = this.defaultDate.toDate();
-    const formattedDate = dateObj.toISOString().slice(0, 10);
+    const dateObj = this.defaultDate;
+    dateObj.setHours(0, 0, 0, 0);
+
     this.defaultQueries = {
       'lottery.id': this.lottery?._id,
-      'date.seconds': {
-        "$gte": Timestamp.fromDate(new Date(`${formattedDate}T00:00:00`)).seconds,
-        "$lte": Timestamp.fromDate(new Date(`${formattedDate}T23:59:59`)).seconds
-      }
+      'date': dateObj
     };
+
     if (!this.isSeller) {
       this.defaultQueries = {
         ...this.defaultQueries,
@@ -134,6 +133,9 @@ export class RegisterBetsListDetailComponent implements OnInit {
         ...filter
       };
     }
+
+    console.log(this.defaultQueries);
+
 
     try {
       this.total = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, this.defaultQueries);

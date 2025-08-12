@@ -11,10 +11,10 @@ export interface RegisterBetsDetail {
   value?: number;
   combined?: boolean;
   warning?: boolean;
-  date?: Timestamp;
-  createdAt?: Timestamp;
+  date?: Date;
+  createdAt?: Date;
   creator?: AuthUser | null;
-  updatedAt?: Timestamp;
+  updatedAt?: Date;
   updater?: AuthUser | null;
   alertDescription?: string | undefined | null;
 }
@@ -28,12 +28,12 @@ export interface RegisterBets {
   combined?: boolean;
   warning?: boolean;
   alertDescription?: string | undefined | null;
-  date?: Timestamp;
-  updatedAt?: Timestamp;
+  date?: Date;
+  updatedAt?: Date;
 }
 
 export interface ListBets {
-  date: Timestamp;
+  date: Date;
   lottery: any;
   whereConditions?: WhereCondition;
   resetFilter?: boolean;

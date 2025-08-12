@@ -123,7 +123,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   ): Promise<void> {
     const warning = this.validateAlert(data.lotteryNumber!, total, data.combined);
 
-    const dataGroupedBets: RegisterBets = {
+    let dataGroupedBets: RegisterBets = {
       lotteryNumber: data.lotteryNumber,
       lottery: data.lottery,
       groupedValue: total,
@@ -137,6 +137,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     if (rsp.length > 0) {
       return firstValueFrom(this.register_bets_api.updateTotalValue(REGISTER_BETS, this.queryBase(dataGroupedBets), dataGroupedBets));
     }
+
     await firstValueFrom(this.register_bets_api.addBet(REGISTER_BETS, dataGroupedBets));
   }
 
@@ -144,20 +145,9 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
     data: RegisterBetsDetail | RegisterBets
   ) {
 
-    const dateObj = data.date instanceof Timestamp
-      ? data.date.toDate()
-      : new Timestamp((data.date as any)?.seconds ?? Math.floor(new Date(data.date as any).getTimezoneOffset() * 60000), 0).toDate();
-    const formattedDate = dateObj.toISOString().slice(0, 10);
-    const initDate = new Date(formattedDate);
-    const endDate = new Date(formattedDate);
-    initDate.setHours(0, 0, 0, 0);
-    endDate.setHours(23, 59, 59, 999);
     return {
       "lotteryNumber": data.lotteryNumber,
-      "date.seconds": {
-        "$gte": Timestamp.fromDate(initDate).seconds,
-        "$lte": Timestamp.fromDate(endDate).seconds
-      },
+      "date": data.date,
       "combined": data.combined,
       "lottery.id": data.lottery!.id,
     }
@@ -181,8 +171,6 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async getTotalResume(controller: string, query: { [key: string]: any } = {}) {
-    console.log(query);
-    
     const [total, sumBet] = await Promise.all([
       firstValueFrom(this.register_bets_api.getTotalBets(controller, query)),
       firstValueFrom(this.register_bets_api.sumBets(controller, query))
