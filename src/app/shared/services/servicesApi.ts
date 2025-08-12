@@ -9,7 +9,9 @@ import { environment } from '../../../../environment/environment';
 export class servicesApi {
     private readonly baseUrl = environment.api;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+        console.log('API Base URL:', this.baseUrl);
+    }
 
     // Método genérico para GET
     get<T>(controller: string, params?: any): Observable<T> {
