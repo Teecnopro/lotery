@@ -48,4 +48,8 @@ export class RegisterBetsService {
         return this.servicesApi.post<void>(`${controller}/updateTotalValue`, { queries, data });
     }
 
+    getDataToResume(controller: string, queries: any): Observable<any> {
+       return this.servicesApi.post<any>(`${controller}/getDataToResume`, queries);
+    }
+
 }

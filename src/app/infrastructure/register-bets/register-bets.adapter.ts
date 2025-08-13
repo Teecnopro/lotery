@@ -134,6 +134,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       updatedAt: data.updatedAt,
     };
     const rsp = await this.getByQuery(this.queryBase(dataGroupedBets))
+    console.log("🚀 ~ FirebaseRegisterBetsAdapter ~ createGroupedBets ~ this.queryBase(dataGroupedBets):", this.queryBase(dataGroupedBets))
     if (rsp.length > 0) {
       return firstValueFrom(this.register_bets_api.updateTotalValue(REGISTER_BETS, this.queryBase(dataGroupedBets), dataGroupedBets));
     }
@@ -154,29 +155,30 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   async getDataToResume(query: {[key: string]: any}): Promise<any> {
-    return this.parseDataToResume(query);
+    return await firstValueFrom(this.register_bets_api.getDataToResume(REGISTER_BETS, {...query,warning: true}));
   }
 
-  async parseDataToResume(query: {[key: string]: any}): Promise<any> {
-    let objParse: any = {};
-    objParse['Total'] = await this.getTotalResume(REGISTER_BETS, query);
-    objParse['Advertencias'] = await this.getTotalResume(REGISTER_BETS_DETAIL,{...query,warning: true});
-    objParse['Comisiones (55%)'] = {
-      totalData: undefined,
-      cont: Math.round(
-        (objParse['Total'].cont - objParse['Advertencias'].cont) * 0.55
-      ),
-    };
-    return objParse;
-  }
+  // async parseDataToResume(query: {[key: string]: any}): Promise<any> {
+  //   let objParse: any = {};
+  //   const data = await this.getTotalResume(REGISTER_BETS_DETAIL, query);
+  //   objParse['Total'] = await this.getTotalResume(REGISTER_BETS, query);
+  //   objParse['Advertencias'] = await this.getTotalResume(REGISTER_BETS, {...query,warning: true});
+  //   objParse['Comisiones (55%)'] = {
+  //     totalData: undefined,
+  //     cont: Math.round(
+  //       (objParse['Total'].cont - objParse['Advertencias'].cont) * 0.55
+  //     ),
+  //   };
+  //   return objParse;
+  // }
 
-  async getTotalResume(controller: string, query: { [key: string]: any } = {}) {
-    const [total, sumBet] = await Promise.all([
-      firstValueFrom(this.register_bets_api.getTotalBets(controller, query)),
-      firstValueFrom(this.register_bets_api.sumBets(controller, query))
-    ]);
-    return { totalData: total, cont: sumBet };
-  }
+  // async getTotalResume(controller: string, query: { [key: string]: any } = {}) {
+  //   const [total, sumBet] = await Promise.all([
+  //     firstValueFrom(this.register_bets_api.getTotalBets(controller, query)),
+  //     firstValueFrom(this.register_bets_api.sumBets(controller, query))
+  //   ]);
+  //   return { totalData: total, cont: sumBet };
+  // }
 
   async getAlerts() {
     const alerts = localStorage.getItem('alertDataSource');

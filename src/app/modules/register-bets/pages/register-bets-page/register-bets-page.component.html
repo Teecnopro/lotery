@@ -60,7 +60,6 @@
       *ngIf="!viewDetail?.detail && !isResume"
       (viewDetail)="viewDetail = $event"
     ></app-register-bets-list>
-    {{viewDetail | json}}
     <app-register-bets-list-detail
       *ngIf="viewDetail?.detail && !isResume"
       [grupedBet]="viewDetail.item!"

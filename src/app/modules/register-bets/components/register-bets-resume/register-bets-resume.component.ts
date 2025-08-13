@@ -55,11 +55,10 @@ export class RegisterBetsResumeComponent implements OnInit {
 
   async getDataToResume(lotteryID: string) {
     const query = {
-      'date': this.defaultDate,
-      "lottery.id": lotteryID
+      'date': this.defaultDate
     };
 
     const data = await this.registerBetsUseCase.getDataToResume(query);
-    this.resume = Object.entries(data).map(([key, value]) => ({ key, value }));
+    this.resume = data;
   }
 }

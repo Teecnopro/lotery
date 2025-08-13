@@ -20,6 +20,7 @@ import { Subject, Subscription, take, takeUntil, toArray } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { query } from '@firebase/firestore';
 import { REGISTER_BETS } from '../../../../shared/const/controllers';
+import { mapWhereToMongo } from '../../../../shared/function/mapperWhereConditions';
 
 @Component({
   selector: 'app-register-bets-list',
@@ -106,6 +107,13 @@ export class RegisterBetsListComponent implements OnInit {
     this.query = {
       'lottery.id': this.lottery?._id,
       'date': dateObj
+    }
+
+    if (filter) {
+      this.query = {
+        ...this.query,
+        ...mapWhereToMongo([filter])
+      };
     }
 
     try {

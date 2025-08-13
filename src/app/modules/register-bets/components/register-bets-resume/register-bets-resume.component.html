@@ -19,7 +19,7 @@
               *matCellDef="let element"
               style="font-weight: bold;"
             >
-              {{ element.key }}
+              {{ element._id }}
             </td>
           </ng-container>
           <ng-container matColumnDef="records">
@@ -29,7 +29,7 @@
               *matCellDef="let element"
               style="text-align: right"
             >
-              {{ element.value.totalData }}
+              {{ element.cantidad }}
             </td>
           </ng-container>
           <ng-container matColumnDef="total">
@@ -40,7 +40,7 @@
               style="text-align: right"
             >
               <span>{{
-                element.value.cont
+                element.total
                   | currency : "COP" : "symbol-narrow" : "1.0-0"
               }}</span>
             </td>
@@ -53,9 +53,9 @@
             *matRowDef="let row; columns: displayedColumns"
             class="table-row"
             [ngClass]="{
-              'color-total': row.key === 'Total',
-              'color-warning': row.key === 'Advertencias',
-              'color-commission': row.key === 'Comisiones (55%)'
+              'color-total': row._id === 'Total:',
+              'color-warning': row._id === 'Advertencias:',
+              'color-commission': row._id === 'Comisiones (55%):'
             }"
           ></tr>
         </table>
