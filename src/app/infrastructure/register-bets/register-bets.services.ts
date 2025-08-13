@@ -20,6 +20,10 @@ export class RegisterBetsService {
         return this.servicesApi.post<RegisterBets[]>(`${controller}/pagination`, { query, pageIndex, pageSize });
     }
 
+    getBetsByPaginationDelete(controller: string, query: { [key: string]: any } = {}, pageIndex: number = 1, pageSize: number = 10): Observable<RegisterBets[]> {
+        return this.servicesApi.post<RegisterBets[]>(`${controller}/paginationDelete`, { query, pageIndex, pageSize });
+    }
+
     addBet(controller: string, bet: RegisterBets): Observable<RegisterBets> {
         return this.servicesApi.post<RegisterBets>(controller, bet);
     }

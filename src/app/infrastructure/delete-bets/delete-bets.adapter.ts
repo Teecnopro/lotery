@@ -59,9 +59,9 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
 
   async bulkDelete(startDate: Date, endDate: Date) {
     const q = {
-      "date.seconds": {
-        "$gte": Timestamp.fromDate(startDate).seconds,
-        "$lte": Timestamp.fromDate(endDate).seconds
+      "date": {
+        "$gte": startDate,
+        "$lte": endDate
       },
     }
     await firstValueFrom(this.register_bets_api.deleteBetsByQuery(REGISTER_BETS_DETAIL, q));
@@ -73,12 +73,12 @@ export class FirebaseDeleteBetsAdapter implements DeleteBetsServicePort {
     endDate: Date
   ): Promise<ResponseQueryDelete<RegisterBetsDetail>> {
     const q = {
-      "date.seconds": {
-        "$gte": Timestamp.fromDate(startDate).seconds,
-        "$lte": Timestamp.fromDate(endDate).seconds
+      "date": {
+        "$gte": startDate,
+        "$lte": endDate
       },
     }
-    const rsp = await firstValueFrom(this.register_bets_api.getBetsByPagination(REGISTER_BETS_DETAIL, q, 1, 10));
+    const rsp = await firstValueFrom(this.register_bets_api.getBetsByPaginationDelete(REGISTER_BETS_DETAIL, q, 1, 10));
     return { data: rsp, total: rsp.length };
   }
 }
