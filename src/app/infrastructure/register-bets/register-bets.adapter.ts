@@ -78,13 +78,17 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
   async deleteOrUpdateGroupedBets(data: RegisterBets, total: number) {
     // TODO: implementar
-    const q = this.queryBase(data);
+    const q = this.queryBase(data, true);
+    console.log("🚀 ~ FirebaseRegisterBetsAdapter ~ deleteOrUpdateGroupedBets ~ q:", q)
+
     const rsp = await this.getByQuery(q);
+    console.log("🚀 ~ FirebaseRegisterBetsAdapter ~ deleteOrUpdateGroupedBets ~ rsp:", rsp)
     if (rsp.length === 0) {
       return;
     }
 
     const totalDiff = (rsp[0].groupedValue as number) - total;
+    console.log("🚀 ~ FirebaseRegisterBetsAdapter ~ deleteOrUpdateGroupedBets ~ totalDiff:", totalDiff)
     const warning = this.validateAlert(data.lotteryNumber!, totalDiff, data.combined as boolean);
     if (totalDiff > 0) {
       await firstValueFrom(this.register_bets_api.updateTotalValue(REGISTER_BETS, q, {
@@ -143,7 +147,8 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
   }
 
   queryBase(
-    data: RegisterBetsDetail | RegisterBets
+    data: RegisterBetsDetail | RegisterBets,
+    resetHours: boolean = false
   ) {
 
     return {
@@ -151,6 +156,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
       "date": data.date,
       "combined": data.combined,
       "lottery.id": data.lottery!.id,
+      resetHours: resetHours ? true : undefined,
     }
   }
 
