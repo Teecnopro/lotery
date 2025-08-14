@@ -52,7 +52,7 @@ export class RegisterBetsListComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 100;
+  pageSize = 25;
   currentPageIndex = 1; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
@@ -135,7 +135,8 @@ export class RegisterBetsListComponent implements OnInit {
   }
 
     onPageChange(event: any) {
-      this.currentPageIndex = event.pageSize != this.currentPageIndex ? 1 : event.pageIndex + 1;
+      this.pageSize = event.pageSize;
+      this.currentPageIndex = event.pageIndex + 1;
       this.getData();
     }
 

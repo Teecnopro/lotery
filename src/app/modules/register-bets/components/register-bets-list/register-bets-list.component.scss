@@ -2,22 +2,38 @@
 
 .table-container {
   padding: 20px;
-  height: 50%;
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  max-width: 800px; /* Limitar el ancho máximo */
-  margin: 0 auto; /* Centrar la tabla */
+  overflow: visible; // Asegura que no tenga scroll
+  /* height: 100%;  // Elimina esta línea para evitar scroll en el componente principal */
 }
 
-.mat-elevation-z8 {
-  border-radius: 8px 8px 0 0 !important; /* Solo bordes superiores redondeados para la tabla */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.scroll-table-wrapper {
+  flex: 1 1 auto;
+  max-height: 350px; // Puedes eliminar esta línea si no quieres limitar la altura
+  overflow-y: visible; // Cambia 'auto' por 'visible' para quitar el scroll vertical
+  overflow-x: hidden;
 }
 
 table {
   width: 100%;
-  overflow: hidden;
-  flex: 1;
+  border-collapse: separate;
+}
+
+.mat-elevation-z8 {
+  border-radius: 8px 8px 0 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+mat-paginator {
+  border-radius: 0 0 8px 8px !important;
+  margin-top: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: static; // Asegura que el paginador no se mueva
+  width: 100%;
+  background: white;
 }
 
 // Filas más angostas

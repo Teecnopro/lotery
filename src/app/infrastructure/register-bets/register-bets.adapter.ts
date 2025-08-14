@@ -224,10 +224,7 @@ export class FirebaseRegisterBetsAdapter implements RegisterBetsServicePort {
 
   returnQueries(queries: { [key: string]: string }) {
     const q = {
-      "date.seconds": {
-        "$gte": Timestamp.fromDate(new Date(`${queries['date']}T00:00:00`)).seconds,
-        "$lte": Timestamp.fromDate(new Date(`${queries['date']}T23:59:59`)).seconds
-      },
+      "date": queries['date'],
       "lotteryNumber": {
         "$in": this.returnArrayLotteryNumbers(queries['lotteryNumber'])
       },

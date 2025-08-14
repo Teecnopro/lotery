@@ -38,7 +38,7 @@ export class CheckHitsFormComponent {
     @Input() queries: Subject<{ [key: string]: string }> = new Subject<{ [key: string]: string }>();
 
     private notification = inject(NOTIFICATION_PORT);
-    
+
     checkData: CheckData = {
         date: new Date(Date.now() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Default to today's local date
         lottery: '',
@@ -61,8 +61,10 @@ export class CheckHitsFormComponent {
             return;
         }
         if (form.valid) {
+            const dateObj = new Date(`${form.value.date}T00:00:00`); // Convert to Date object
+
             const query: { [key: string]: any } = {
-                "date": form.value.date,
+                "date": dateObj,
                 "lottery.id": form.value.lottery,
                 "lotteryNumber": form.value.lotteryNumber
             };
