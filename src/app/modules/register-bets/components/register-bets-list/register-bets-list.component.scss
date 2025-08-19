@@ -1,25 +1,25 @@
 @import url('../../../../../_custom-theme.scss');
 
 .table-container {
-  padding: 20px;
+  padding: 8px; // Menos espacio alrededor
   max-width: 800px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  overflow: visible; // Asegura que no tenga scroll
-  /* height: 100%;  // Elimina esta línea para evitar scroll en el componente principal */
+  overflow: visible;
 }
 
 .scroll-table-wrapper {
   flex: 1 1 auto;
-  max-height: 350px; // Puedes eliminar esta línea si no quieres limitar la altura
-  overflow-y: visible; // Cambia 'auto' por 'visible' para quitar el scroll vertical
+  max-height: 320px; // Opcional: menos altura máxima
+  overflow-y: visible;
   overflow-x: hidden;
 }
 
 table {
   width: 100%;
   border-collapse: separate;
+  font-size: 13px; // Más pequeño
 }
 
 .mat-elevation-z8 {
@@ -27,116 +27,57 @@ table {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-mat-paginator {
-  border-radius: 0 0 8px 8px !important;
-  margin-top: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: static; // Asegura que el paginador no se mueva
-  width: 100%;
-  background: white;
-}
-
-// Filas más angostas
 .table-row {
-  height: 32px !important;
+  height: 40px !important; // Filas más altas
 }
 
 .mat-mdc-header-row {
-  height: 40px !important;
+  height: 44px !important; // Encabezado más alto
 }
 
 .mat-mdc-cell, .mat-mdc-header-cell {
-  padding: 4px 12px !important;
-  font-size: 14px;
-  line-height: 1.2;
+  padding: 8px 16px !important; // Más espacio interno
+  font-size: 15 px; // Texto más grande
+  line-height: 1.4;
 }
 
-mat-paginator {
-  border-radius: 0 0 8px 8px !important; /* Bordes inferiores redondeados */
-  margin-top: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.actions-cell button {
+  margin: 0 2px;
+  width: 36px !important;
+  height: 22px;
+  font-size: 20px;
+  padding: 0 4px;
 }
 
-// Action buttons styles
-.actions-header {
-  text-align: center !important;
-}
-
-.actions-cell {
-  text-align: center;
-  font-size: 15px !important;
-  button {
-    margin: 0 3px;
-    width: 50px !important;
-    height: 30px;
-    font-size: 15px;
-    font-weight: 500;
-    border-radius: 50%;
-    line-height: 1;
-    padding: 0 6px;
-  }
-
-  .edit-btn {
-    background-color: #ff9800;
-    color: white;
-
-    &:hover {
-      background-color: #f57c00;
-    }
-  }
-
-  .delete-btn {
-    background-color: #f44336;
-    color: white;
-
-    &:hover {
-      background-color: #d32f2f;
-    }
-  }
-}
-
-// Loading container styles
-.loading-container {
-  padding: 40px;
-  text-align: center;
-  color: #666;
-  font-style: italic;
+.empty-state {
+  margin-top: 8px;
+  font-size: 20px;
 }
 
 // Responsive design
 @media (max-width: 768px) {
   .table-container {
-    padding: 16px;
+    padding: 4px;
   }
 
   table {
-    font-size: 14px;
+    font-size: 20px;
   }
 
   .mat-mdc-cell, .mat-mdc-header-cell {
-    padding: 3px 6px !important;
+    padding: 1px 4px !important;
   }
 
   .table-row {
-    height: 28px !important;
+    height: 20px !important;
   }
 
   .actions-cell button {
-    min-width: 45px;
-    height: 20px;
+    min-width: 30px;
+    height: 18px;
     margin: 0 1px;
-    font-size: 10px;
-    padding: 0 4px;
-  }
-}
-
-// When inside a two-column layout
-@media (min-width: 1025px) {
-  .table-container {
-    padding: 0;
-    height: calc(100vh - 40px);
-    max-width: 100%; /* En layout de dos columnas, usar todo el espacio disponible */
-    margin: 0; /* Sin centrado en layout de dos columnas */
+    font-size: 16px;
+    padding: 0 2px;
   }
 }
 
@@ -171,6 +112,6 @@ mat-paginator {
   text-align: center;
   margin-top: 16px;
   color: black;
-  font-size: 14px;
+  font-size: 16px;
 }
 
