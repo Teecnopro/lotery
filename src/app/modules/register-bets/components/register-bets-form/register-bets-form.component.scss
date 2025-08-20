@@ -153,3 +153,39 @@
     font-size: 8px;         // fuente más pequeña
   }
 }
+
+.custom-select {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+
+  .selected {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: #fff;
+  }
+
+  .options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+    margin-top: 2px;
+    z-index: 10;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  .option {
+    padding: 6px 10px;
+  }
+
+  .option:hover {
+    background: #f0f0f0;
+  }
+}
+

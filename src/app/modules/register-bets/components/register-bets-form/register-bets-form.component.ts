@@ -12,7 +12,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { NgFor } from '@angular/common';
+import { CommonModule, NgFor } from '@angular/common';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
 import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
@@ -20,11 +20,12 @@ import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { ISeller } from '../../../../domain/sellers/models/seller.model';
 import { lotteries } from '../../../../shared/const';
 import { SellerUseCase } from '../../../../domain/sellers/use-cases';
+import { CdkNoDataRow } from "@angular/cdk/table";
 
 @Component({
   selector: 'app-register-bets-form',
   standalone: true,
-  imports: [ReactiveFormsModule, NgFor],
+  imports: [ReactiveFormsModule, NgFor, CommonModule],
   templateUrl: './register-bets-form.component.html',
   styleUrl: './register-bets-form.component.scss',
 })
@@ -44,7 +45,12 @@ export class RegisterBetsFormComponent implements OnInit {
   loading = false;
 
   registerBetForm: FormGroup = this.formBuilder.group({
-    date: [new Date(Date.now() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], [Validators.required]],
+    date: [
+      new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0],
+      [Validators.required],
+    ],
     lottery: [{ value: '' }, [Validators.required]],
     seller: ['', [Validators.required]],
     lotteryNumber: [
@@ -64,10 +70,14 @@ export class RegisterBetsFormComponent implements OnInit {
   arraySellers: ISeller[] = [];
   color: string = '';
 
+  selectedOption: any = null;
+  showOptions = false;
+
   constructor() {}
 
   async ngOnInit() {
     // Inicializando valores por defecto
+    this.selectedOption = lotteries[0];
     this.registerBetForm?.get('lottery')?.setValue(lotteries[0]);
     this.color = lotteries[0].color;
     const date = new Date();
@@ -139,7 +149,10 @@ export class RegisterBetsFormComponent implements OnInit {
     const form = { ...this.registerBetForm.getRawValue() };
     const { uid, name } = this.user.getUser()!;
     const dateObj = new Date(`${form.date}T00:00:00`);
-    console.log("🚀 ~ RegisterBetsFormComponent ~ buildObj ~ dateObj:", dateObj)
+    console.log(
+      '🚀 ~ RegisterBetsFormComponent ~ buildObj ~ dateObj:',
+      dateObj
+    );
 
     return {
       lottery: { id: form.lottery._id, name: form.lottery.name },
@@ -167,7 +180,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   updateList() {
     const form = this.registerBetForm.getRawValue();
-    const date = new Date(`${form.date}T00:00:00`); ;
+    const date = new Date(`${form.date}T00:00:00`);
     this.registerBetsUseCase.updateList$({
       date: date,
       lottery: form.lottery,
@@ -181,5 +194,18 @@ export class RegisterBetsFormComponent implements OnInit {
 
   changeColor(color: string) {
     this.color = color;
+  }
+
+  toggleOptions() {
+    this.showOptions = !this.showOptions;
+  }
+
+  selectOption(item: any) {
+    this.selectedOption = item;
+    this.showOptions = false;
+    // ejemplo: actualizar el formControl
+    this.registerBetForm.get('lottery')?.setValue(item);
+
+    this.updateList();
   }
 }

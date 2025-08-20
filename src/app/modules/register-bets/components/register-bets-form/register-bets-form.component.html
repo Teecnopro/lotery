@@ -9,24 +9,28 @@
         <div class="form-group full-width">
           <label for="date">Fecha</label>
           <span class="hint">DD/MM/YYYY</span>
-          <input
-            type="date"
-            id="date"
-            formControlName="date"
-            (change)="updateList()"
-            class="form-input"
-          />
+          <input type="date" id="date" formControlName="date" (change)="updateList()" class="form-input" />
         </div>
 
         <div class="lottery">
-          <div
-            class="lottery-select"
-            style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: column;"
-          >
+          <div class="lottery-select"
+            style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: column;">
             <div style="width: 100%;">
               <div class="form-group full-width">
                 <label for="lottery"><strong>Lotería</strong></label>
-                <select
+                <div class="custom-select">
+                  <div class="selected" (click)="toggleOptions()">
+                    <span [style.color]="selectedOption?.color || 'black'" [style.fontWeight]="selectOption?.name ? 'bold' : 'normal'">{{ selectedOption?.name || 'Seleccione una lotería' }}</span>
+                  </div>
+                  <div class="options" *ngIf="showOptions">
+                    <div *ngFor="let item of arrayLotteries" class="option" [style.color]="item.color"
+                      (click)="selectOption(item)">
+                      {{ item.name }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- <select
                   #lotterySelect
                   id="lottery"
                   formControlName="lottery"
@@ -39,7 +43,7 @@
                   <option *ngFor="let item of arrayLotteries" [ngValue]="item">
                     <strong [style]="{color: item.color}">{{ item.name }}</strong>
                   </option>
-                </select>
+                </select> -->
               </div>
             </div>
           </div>
@@ -47,13 +51,7 @@
 
         <div class="form-group full-width">
           <label for="seller">Vendedor</label>
-          <select
-            #selectSeller
-            id="seller"
-            formControlName="seller"
-            (change)="onSellerSelected()"
-            class="form-select"
-          >
+          <select #selectSeller id="seller" formControlName="seller" (change)="onSellerSelected()" class="form-select">
             <option *ngFor="let item of arraySellers" [ngValue]="item">
               {{ item.name }}
             </option>
@@ -63,51 +61,27 @@
         <div class="number-check">
           <div class="form-group">
             <label for="lotteryNumber">Número</label>
-            <input
-              #myInputNumber
-              type="text"
-              id="lotteryNumber"
-              formControlName="lotteryNumber"
-              (keydown.enter)="inputValue.focus()"
-              class="form-input"
-            />
+            <input #myInputNumber type="text" id="lotteryNumber" formControlName="lotteryNumber"
+              (keydown.enter)="inputValue.focus()" class="form-input" />
           </div>
 
           <div class="checkbox-group">
-            <input
-              #inputCombined
-              type="checkbox"
-              id="combined"
-              formControlName="combined"
-              (keydown.enter)="inputValue.focus()"
-              class="checkbox"
-            />
+            <input #inputCombined type="checkbox" id="combined" formControlName="combined"
+              (keydown.enter)="inputValue.focus()" class="checkbox" />
             <label for="combined">Comb.</label>
           </div>
         </div>
 
         <div class="form-group full-width">
           <label for="value">Valor</label>
-          <input
-            #inputValue
-            type="number"
-            id="value"
-            formControlName="value"
-            (keydown.enter)="btnSend.focus()"
-            placeholder="0"
-            class="form-input"
-          />
+          <input #inputValue type="number" id="value" formControlName="value" (keydown.enter)="btnSend.focus()"
+            placeholder="0" class="form-input" />
         </div>
 
         <div class="button-group">
-          <button
-            #btnSend
-            type="button"
-            [disabled]="!registerBetForm.valid"
-            (keydown.enter)="sendData(); myInputNumber.focus()"
-            (click)="sendData(); myInputNumber.focus()"
-            class="btn-primary"
-          >
+          <button #btnSend type="button" [disabled]="!registerBetForm.valid"
+            (keydown.enter)="sendData(); myInputNumber.focus()" (click)="sendData(); myInputNumber.focus()"
+            class="btn-primary">
             Enviar
           </button>
         </div>
