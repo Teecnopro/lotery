@@ -8,86 +8,44 @@ import {
 } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
-  FormsModule,
-  NgForm,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelect, MatSelectModule } from '@angular/material/select';
-import {
-  MatOptionModule,
-  provideNativeDateAdapter,
-} from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-
-import { sellers } from '../../mocks/mocks';
 import { NgFor } from '@angular/common';
 import { RegisterBetsUseCase } from '../../../../domain/register-bets/use-cases';
-import {
-  RegisterBets,
-  RegisterBetsDetail,
-} from '../../../../domain/register-bets/models/register-bets.entity';
-import {
-  DocumentData,
-  QueryDocumentSnapshot,
-  Timestamp,
-} from '@angular/fire/firestore';
+import { RegisterBetsDetail } from '../../../../domain/register-bets/models/register-bets.entity';
 import { AUTH_SESSION } from '../../../../domain/auth/ports';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
 import { ISeller } from '../../../../domain/sellers/models/seller.model';
 import { lotteries } from '../../../../shared/const';
-import { LogoutUseCase } from '../../../../domain/auth/use-cases';
 import { SellerUseCase } from '../../../../domain/sellers/use-cases';
-import { LogBookUseCases } from '../../../../domain/logBook/use-cases/logBook.usecases';
-import { ACTIONS } from '../../../../shared/const/actions';
-import { MODULES } from '../../../../shared/const/modules';
 
 @Component({
   selector: 'app-register-bets-form',
   standalone: true,
-  imports: [
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatButtonModule,
-    MatCardModule,
-    MatDatepickerModule,
-    ReactiveFormsModule,
-    NgFor,
-    MatCheckboxModule,
-  ],
+  imports: [ReactiveFormsModule, NgFor],
   templateUrl: './register-bets-form.component.html',
   styleUrl: './register-bets-form.component.scss',
-  providers: [provideNativeDateAdapter()],
 })
 export class RegisterBetsFormComponent implements OnInit {
-  @ViewChild('lotterySelect') lotterySelect!: MatSelect;
+  @ViewChild('lotterySelect') lotterySelect!: ElementRef<HTMLSelectElement>;
   @ViewChild('myInputNumber') myInputNumber!: ElementRef<HTMLInputElement>;
+  @ViewChild('selectSeller') selectSeller!: ElementRef<HTMLSelectElement>;
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private sellersUseCase = inject(SellerUseCase);
-  private logBookUseCases = inject(LogBookUseCases);
-
   private formBuilder = inject(FormBuilder);
-
   private user = inject(AUTH_SESSION);
   private notification = inject(NOTIFICATION_PORT);
+
   private defaultDate!: Date;
 
   loading = false;
 
   registerBetForm: FormGroup = this.formBuilder.group({
     date: [new Date(), [Validators.required]],
-    lottery: [{ value: ''}, [Validators.required]],
+    lottery: [{ value: '' }, [Validators.required]],
     seller: ['', [Validators.required]],
     lotteryNumber: [
       '',
@@ -115,7 +73,7 @@ export class RegisterBetsFormComponent implements OnInit {
     const date = new Date();
     this.defaultDate = date;
 
-    // Actualizando metodo del listado
+    // Actualizando método del listado
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
       lottery: this.registerBetForm.get('lottery')?.value,
@@ -129,15 +87,26 @@ export class RegisterBetsFormComponent implements OnInit {
     setTimeout(() => {
       this.myInputNumber.nativeElement.focus();
       this.myInputNumber.nativeElement.select();
-    }, 100); // Esperar a que se cierre el panel
+    }, 100); // Esperar a que se procese el cambio
+  }
+
+  onLotterySelected(lottery: any) {
+    console.log("🚀 ~ RegisterBetsFormComponent ~ onLotterySelected ~ lottery:", lottery)
+    if (lottery && lottery.color) {
+      this.color = lottery.color;
+      console.log("🚀 ~ RegisterBetsFormComponent ~ onLotterySelected ~ this.color:", this.color)
+      this.selectSeller.nativeElement.focus();
+    }
   }
 
   activeDeactiveSelect(action: 'active' | 'deactive'): void {
     const lottery = this.registerBetForm.get('lottery');
-
-    action === 'active'
-      ? (lottery?.enable(), this.lotterySelect.open())
-      : lottery?.disable();
+    if (action === 'active') {
+      lottery?.enable();
+      this.lotterySelect.nativeElement.focus();
+    } else {
+      lottery?.disable();
+    }
   }
 
   async sendData() {
@@ -166,9 +135,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   buildObj(): RegisterBetsDetail {
     const form = { ...this.registerBetForm.getRawValue() };
-
     const { uid, name } = this.user.getUser()!;
-
     const date = new Date(form.date);
     date.setHours(0, 0, 0, 0);
 
@@ -198,10 +165,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   updateList() {
     const form = this.registerBetForm.getRawValue();
-
     const date = new Date(form.date);
-
-    // Actualizando metodo del listado
     this.registerBetsUseCase.updateList$({
       date: date,
       lottery: form.lottery,

@@ -22,24 +22,29 @@ table {
   font-size: 13px; // Más pequeño
 }
 
+tr {
+  height: 30px;
+  font-size: 13px;
+}
+
 .mat-elevation-z8 {
   border-radius: 8px 8px 0 0 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.table-row {
-  height: 40px !important; // Filas más altas
-}
+// .table-row {
+//   height: 40px !important; // Filas más altas
+// }
 
-.mat-mdc-header-row {
-  height: 44px !important; // Encabezado más alto
-}
+// .mat-mdc-header-row {
+//   height: 44px !important; // Encabezado más alto
+// }
 
-.mat-mdc-cell, .mat-mdc-header-cell {
-  padding: 8px 16px !important; // Más espacio interno
-  font-size: 15 px; // Texto más grande
-  line-height: 1.4;
-}
+// .mat-mdc-cell, .mat-mdc-header-cell {
+//   padding: 8px 16px !important; // Más espacio interno
+//   font-size: 15 px; // Texto más grande
+//   line-height: 1.4;
+// }
 
 .actions-cell button {
   margin: 0 2px;
@@ -114,4 +119,3 @@ table {
   color: black;
   font-size: 16px;
 }
-

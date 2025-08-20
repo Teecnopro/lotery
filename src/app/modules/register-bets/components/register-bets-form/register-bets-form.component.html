@@ -1,131 +1,117 @@
 <div class="form-container">
-  <mat-card class="form-card">
-    <mat-card-header>
-      <mat-card-title>Agregar apuestas</mat-card-title>
-    </mat-card-header>
+  <div class="form-card">
+    <div class="form-header">
+      <h3 class="form-title">Agregar apuestas</h3>
+    </div>
 
-    <mat-card-content>
+    <div class="form-content">
       <form [formGroup]="registerBetForm" class="bets-form">
-          <mat-hint>DD/MM/YYYY</mat-hint>
-        <mat-form-field appearance="outline" class="full-with">
-          <mat-label>Fecha</mat-label>
+        <div class="form-group full-width">
+          <label for="date">Fecha</label>
+          <span class="hint">DD/MM/YYYY</span>
           <input
-            matInput
-            [matDatepicker]="picker"
+            type="date"
+            id="date"
             formControlName="date"
-            (dateChange)="updateList()"
+            (change)="updateList()"
+            class="form-input"
           />
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+        </div>
 
         <div class="lottery">
-          <div class="lottery-select"
-            [style]="{
-              'display': 'flex',
-              'width': '100%',
-              'align-items': 'center',
-              'justify-content': 'center',
-              'flex-direction': 'column',
-              'height': '100%'
-            }"
+          <div
+            class="lottery-select"
+            style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: column;"
           >
-            <div
-              [style]="{
-                'width': '100%',
-              }"
-            >
-              <mat-form-field style="width: 100%;">
-                <mat-label><strong>Lotería</strong></mat-label>
-                <mat-select
+            <div style="width: 100%;">
+              <div class="form-group full-width">
+                <label for="lottery"><strong>Lotería</strong></label>
+                <select
                   #lotterySelect
+                  id="lottery"
                   formControlName="lottery"
-                  (selectionChange)="
-                    selectSeller.open();
-                    updateList();
-                    changeColor($event.value.color);
-                  "
+                  (ngModelChange)="onLotterySelected($event); updateList()"
                   [style.color]="color"
-                  [style.font-size]="color ? '1.4em' : '1em'"
-                  [style.font-weight]="color ? 'bold' : 'normal'"
+                  [style.fontSize]="color ? '1.2em' : '0.9em'"
+                  [style.fontWeight]="color ? 'bold' : 'normal'"
+                  class="form-select"
                 >
-                  <mat-option *ngFor="let item of arrayLotteries" [value]="item"
-                    ><span [style.color]="item.color">
-                      <strong>{{ item.name }}</strong>
-                    </span></mat-option
-                  >
-                </mat-select>
-              </mat-form-field>
+                  <option *ngFor="let item of arrayLotteries" [ngValue]="item">
+                    <strong [style]="{color: item.color}">{{ item.name }}</strong>
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
-
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Vendedor</mat-label>
-          <mat-select
+        <div class="form-group full-width">
+          <label for="seller">Vendedor</label>
+          <select
             #selectSeller
+            id="seller"
             formControlName="seller"
-            (selectionChange)="onSellerSelected()"
+            (change)="onSellerSelected()"
+            class="form-select"
           >
-            <mat-option *ngFor="let item of arraySellers" [value]="item"
-              ><span>{{ item.name }}</span></mat-option
-            >
-          </mat-select>
-        </mat-form-field>
+            <option *ngFor="let item of arraySellers" [ngValue]="item">
+              {{ item.name }}
+            </option>
+          </select>
+        </div>
 
         <div class="number-check">
-          <mat-form-field appearance="outline">
-            <mat-label>Número</mat-label>
+          <div class="form-group">
+            <label for="lotteryNumber">Número</label>
             <input
               #myInputNumber
-              matInput
               type="text"
+              id="lotteryNumber"
               formControlName="lotteryNumber"
               (keydown.enter)="inputValue.focus()"
+              class="form-input"
             />
-          </mat-form-field>
+          </div>
 
-          <mat-checkbox
-            #inputCombined
-            color="primary"
-            formControlName="combined"
-            class="checkbox"
-            (keydown.enter)="inputValue.focus()"
-          >
-            Comb.
-          </mat-checkbox>
+          <div class="checkbox-group">
+            <input
+              #inputCombined
+              type="checkbox"
+              id="combined"
+              formControlName="combined"
+              (keydown.enter)="inputValue.focus()"
+              class="checkbox"
+            />
+            <label for="combined">Comb.</label>
+          </div>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Valor</mat-label>
+        <div class="form-group full-width">
+          <label for="value">Valor</label>
           <input
             #inputValue
-            matInput
             type="number"
+            id="value"
             formControlName="value"
             (keydown.enter)="btnSend.focus()"
             placeholder="0"
+            class="form-input"
           />
-        </mat-form-field>
+        </div>
 
         <div class="button-group">
           <button
             #btnSend
-            mat-raised-button
-            color="primary"
             type="button"
             [disabled]="!registerBetForm.valid"
             (keydown.enter)="sendData(); myInputNumber.focus()"
             (click)="sendData(); myInputNumber.focus()"
+            class="btn-primary"
           >
             Enviar
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </div>

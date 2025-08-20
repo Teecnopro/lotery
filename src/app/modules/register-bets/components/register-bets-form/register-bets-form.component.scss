@@ -6,57 +6,87 @@
 
 .form-card {
   width: 100%;
-  max-width: 100%;
+  max-width: 350px;      // mantenido como en el original
+  min-height: 180px;     // reducido para compacidad vertical
+  padding: 6px 8px;      // padding reducido verticalmente
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
-  mat-card-header {
-    margin-bottom: 16px;
-    text-align: center;
+.form-header {
+  margin-bottom: 4px;    // reducido margen vertical
+  text-align: center;
+  color: #1976d2;
+}
 
-    mat-card-title {
-      font-size: 20px;
-      font-weight: 500;
-      color: #1976d2;
-      margin: 0;
-    }
-  }
+.form-title {
+  font-size: 16px;       // más pequeño
+  font-weight: 500;
+  margin: 0;
 }
 
 .bets-form {
   display: flex;
   flex-direction: column;
+  gap: 3px;              // reducido espacio vertical
+}
 
-  .full-width {
-    width: 100%;
-  }
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
 
-  mat-form-field {
-    .mat-mdc-text-field-wrapper {
-      border-radius: 4px;
-    }
-  }
+.full-width {
+  width: 100%;           // mantenido como en el original
+}
+
+.form-input,
+.form-select {
+  font-size: 13px;     // fuente pequeña para compacidad
+  padding: 0;            // sin padding vertical
+  height: 20px;          // altura mínima
+  line-height: 16px;     // altura de línea compacta
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-group label {
+  font-size: 12px;      // etiqueta más pequeña
+  margin-bottom: 1px;    // reducido margen
+  font-weight: 500;
+}
+
+.hint {
+  font-size: 10px;     // hint más pequeño
+  margin-bottom: 1px;    // reducido margen vertical
+  line-height: 0.8em;    // altura de línea compacta
+  color: #666;
 }
 
 .button-group {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 3px;       // reducido margen vertical
+}
 
-  button {
-    min-width: 100px;
-    height: 40px;
-    border-radius: 4px;
-    font-weight: 500;
+.btn-primary {
+  min-width: 80px;       // mantenido como en el original
+  height: 20px;          // altura más pequeña
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;        // fuente más pequeña
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 
-    &[color="primary"] {
-      &:disabled {
-        background: #ccc;
-        color: #999;
-      }
-    }
-  }
+.btn-primary:disabled {
+  background: #ccc;
+  color: #999;
+  cursor: not-allowed;
 }
 
 .lottery {
@@ -64,19 +94,10 @@
   justify-content: space-between;
   align-items: center;
   gap: 5px;
+}
 
-  .lottery-select {
-    width: calc(75% - 2.5px);
-
-    mat-form-field {
-      width: 100%;
-    }
-  }
-
-  .lottery-button {
-    width: calc(20% - 2.5px);
-    margin-bottom: 18px;
-  }
+.lottery-select {
+  width: calc(75% - 2.5px); // mantenido como en el original
 }
 
 .number-check {
@@ -84,36 +105,51 @@
   justify-content: space-between;
   align-items: center;
   gap: 5px;
+}
 
-  mat-form-field {
-    width: calc(75% - 2.5px);
+.number-check .form-group {
+  width: calc(75% - 2.5px); // mantenido como en el original
+}
 
-    // mat-form-field {
-    //   width: 100%;
-    // }
-  }
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  width: calc(20% - 2.5px); // mantenido como en el original
+  margin-top: 18px;
+}
 
-  mat-checkbox {
-    width: calc(20% - 2.5px);
-    margin-bottom: 18px;
-  }
+.checkbox-group input[type="checkbox"] {
+  transform: scale(0.65);   // checkbox más pequeño
+  margin: 0 4px 0 0;
+}
+
+.checkbox-group label {
+  font-size: 12px;     // etiqueta más pequeña
 }
 
 // Responsive design
 @media (max-width: 768px) {
   .form-container {
-    padding: 16px;
+    padding: 16px;          // mantenido como en el original
   }
 
   .form-card {
-    padding: 16px;
+    max-width: 100%;        // mantenido como en el original
+    min-height: 160px;      // reducido alto mínimo
+    padding: 6px 8px;       // reducido padding vertical
+  }
+
+  .bets-form {
+    gap: 2px;               // más compacto verticalmente
   }
 
   .button-group {
     flex-direction: column;
+  }
 
-    button {
-      width: 100%;
-    }
+  .btn-primary {
+    width: 100%;            // mantenido como en el original
+    height: 18px;           // altura más pequeña
+    font-size: 8px;         // fuente más pequeña
   }
 }

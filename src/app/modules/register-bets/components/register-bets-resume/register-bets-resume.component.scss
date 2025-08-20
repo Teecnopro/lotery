@@ -15,12 +15,17 @@
     text-align: center;
 
     mat-card-title {
-      font-size: 20px;
+      text-align: center;
+      font-size: 16px;
       font-weight: 500;
       color: #1976d2;
       margin: 0;
     }
   }
+}
+
+tr {
+  height: 36px;
 }
 
 .payment-form {
@@ -97,3 +102,44 @@
 .table-row {
   text-align: right;
 }
+
+/* Ajustes de tamaño tabla */
+.mat-table {
+  font-size: 12px;   /* fuente más pequeña */
+  line-height: 1.2;  /* compacta */
+}
+
+.mat-header-row,
+.mat-row {
+  height: 28px;      /* altura de filas más baja */
+}
+
+.mat-header-cell,
+.mat-cell {
+  font-size: 12px;   /* fuente más pequeña */
+  padding: 4px 6px;  /* menos espacio en celdas */
+}
+
+.compact-table {
+  font-size: 12px; // letra más pequeña
+  line-height: 1.2;
+
+  .mat-header-row,
+  .mat-row {
+    height: 28px;
+  }
+
+  .mat-header-cell,
+  .mat-cell {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+}
+
+.mat-footer-row,
+.mat-header-row,
+.mat-row {
+    display: inline-flex;
+    min-width: 10px;
+}
+
