@@ -20,20 +20,26 @@ table {
   flex: 1;
 }
 
+tr {
+  height: 30px;
+  font-size: 13px;
+}
+
+
 // Filas más angostas
-.table-row {
-  height: 32px !important;
-}
+// .table-row {
+//   height: 32px !important;
+// }
 
-.mat-mdc-header-row {
-  height: 40px !important;
-}
+// .mat-mdc-header-row {
+//   height: 40px !important;
+// }
 
-.mat-mdc-cell, .mat-mdc-header-cell {
-  padding: 4px 12px !important;
-  font-size: 14px;
-  line-height: 1.2;
-}
+// .mat-mdc-cell, .mat-mdc-header-cell {
+//   padding: 4px 12px !important;
+//   font-size: 14px;
+//   line-height: 1.2;
+// }
 
 mat-paginator {
   border-radius: 0 0 8px 8px !important; /* Bordes inferiores redondeados */
