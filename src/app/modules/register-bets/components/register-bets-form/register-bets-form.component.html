@@ -30,7 +30,7 @@
                   #lotterySelect
                   id="lottery"
                   formControlName="lottery"
-                  (ngModelChange)="onLotterySelected($event); updateList()"
+                  (change)="onLotterySelected($event); updateList()"
                   [style.color]="color"
                   [style.fontSize]="color ? '1.2em' : '0.9em'"
                   [style.fontWeight]="color ? 'bold' : 'normal'"

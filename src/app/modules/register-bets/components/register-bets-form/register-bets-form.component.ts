@@ -39,12 +39,12 @@ export class RegisterBetsFormComponent implements OnInit {
   private user = inject(AUTH_SESSION);
   private notification = inject(NOTIFICATION_PORT);
 
-  private defaultDate!: Date;
+  defaultDate!: Date;
 
   loading = false;
 
   registerBetForm: FormGroup = this.formBuilder.group({
-    date: [new Date(), [Validators.required]],
+    date: [new Date(Date.now() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], [Validators.required]],
     lottery: [{ value: '' }, [Validators.required]],
     seller: ['', [Validators.required]],
     lotteryNumber: [
@@ -90,11 +90,13 @@ export class RegisterBetsFormComponent implements OnInit {
     }, 100); // Esperar a que se procese el cambio
   }
 
-  onLotterySelected(lottery: any) {
-    console.log("🚀 ~ RegisterBetsFormComponent ~ onLotterySelected ~ lottery:", lottery)
+  onLotterySelected(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const index = selectElement.selectedIndex;
+    const lottery = this.arrayLotteries[index];
+
     if (lottery && lottery.color) {
       this.color = lottery.color;
-      console.log("🚀 ~ RegisterBetsFormComponent ~ onLotterySelected ~ this.color:", this.color)
       this.selectSeller.nativeElement.focus();
     }
   }
@@ -136,12 +138,12 @@ export class RegisterBetsFormComponent implements OnInit {
   buildObj(): RegisterBetsDetail {
     const form = { ...this.registerBetForm.getRawValue() };
     const { uid, name } = this.user.getUser()!;
-    const date = new Date(form.date);
-    date.setHours(0, 0, 0, 0);
+    const dateObj = new Date(`${form.date}T00:00:00`);
+    console.log("🚀 ~ RegisterBetsFormComponent ~ buildObj ~ dateObj:", dateObj)
 
     return {
       lottery: { id: form.lottery._id, name: form.lottery.name },
-      date: date,
+      date: dateObj,
       lotteryNumber: form.lotteryNumber,
       seller: {
         id: form.seller.uid,
@@ -165,7 +167,7 @@ export class RegisterBetsFormComponent implements OnInit {
 
   updateList() {
     const form = this.registerBetForm.getRawValue();
-    const date = new Date(form.date);
+    const date = new Date(`${form.date}T00:00:00`); ;
     this.registerBetsUseCase.updateList$({
       date: date,
       lottery: form.lottery,
