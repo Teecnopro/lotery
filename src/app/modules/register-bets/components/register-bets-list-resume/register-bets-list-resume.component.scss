@@ -7,6 +7,27 @@
   flex-direction: column;
   max-width: 800px; /* Limitar el ancho máximo */
   margin: 0 auto; /* Centrar la tabla */
+  overflow-y: auto;
+}
+
+.table-scroll {
+  max-height: 550px;   // alto máximo visible (ajústalo a lo que quieras)
+  overflow-y: auto;    // scroll vertical
+  overflow-x: auto;    // scroll horizontal si hay muchas columnas
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; // fuerza scroll horizontal si se reduce demasiado
+  }
+}
+
+/* Ajustar cabecera sticky */
+.mat-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white; // para que no quede transparente al hacer scroll
 }
 
 // tr {
@@ -17,28 +38,15 @@
 .mat-elevation-z8 {
   border-radius: 8px 8px 0 0 !important; /* Solo bordes superiores redondeados para la tabla */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
 table {
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   flex: 1;
+  overflow-y: auto;
 }
-
-// Filas más angostas
-// .table-row {
-//   height: 32px !important;
-// }
-
-// .mat-mdc-header-row {
-//   height: 40px !important;
-// }
-
-// .mat-mdc-cell, .mat-mdc-header-cell {
-//   // padding: 4px 12px !important;
-//   font-size: 13;
-//   // line-height: 1.2;
-// }
 
 tr {
   height: 30px;

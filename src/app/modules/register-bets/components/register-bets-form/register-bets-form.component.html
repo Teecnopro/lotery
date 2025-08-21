@@ -7,9 +7,12 @@
     <div class="form-content">
       <form [formGroup]="registerBetForm" class="bets-form">
         <div class="form-group full-width">
-          <label for="date">Fecha</label>
-          <span class="hint">DD/MM/YYYY</span>
-          <input type="date" id="date" formControlName="date" (change)="updateList()" class="form-input" />
+          <div class="left">
+            <label for="date">Fecha</label>
+          </div>
+          <div class="rigth">
+            <input type="date" id="date" formControlName="date" (change)="updateList()" class="form-input" />
+          </div>
         </div>
 
         <div class="lottery">
@@ -17,65 +20,67 @@
             style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: column;">
             <div style="width: 100%;">
               <div class="form-group full-width">
-                <label for="lottery"><strong>Lotería</strong></label>
-                <div class="custom-select">
-                  <div class="selected" (click)="toggleOptions()">
-                    <span [style.color]="selectedOption?.color || 'black'" [style.fontWeight]="selectOption?.name ? 'bold' : 'normal'">{{ selectedOption?.name || 'Seleccione una lotería' }}</span>
-                  </div>
-                  <div class="options" *ngIf="showOptions">
-                    <div *ngFor="let item of arrayLotteries" class="option" [style.color]="item.color"
-                      (click)="selectOption(item)">
-                      {{ item.name }}
+                <div class="left">
+                  <label for="lottery"><strong>Lotería</strong></label>
+                </div>
+                <div class="rigth">
+                  <div class="custom-select">
+                    <div class="selected" (click)="toggleOptions()">
+                      <span [style.color]="selectedOption?.color || 'black'"
+                        [style.fontWeight]="selectOption?.name ? 'bold' : 'normal'">{{ selectedOption?.name ||
+                        'Seleccione una lotería' }}</span>
+                    </div>
+                    <div class="options" *ngIf="showOptions">
+                      <div *ngFor="let item of arrayLotteries" class="option" [style.color]="item.color"
+                        (click)="selectOption(item)">
+                        {{ item.name }}
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <!-- <select
-                  #lotterySelect
-                  id="lottery"
-                  formControlName="lottery"
-                  (change)="onLotterySelected($event); updateList()"
-                  [style.color]="color"
-                  [style.fontSize]="color ? '1.2em' : '0.9em'"
-                  [style.fontWeight]="color ? 'bold' : 'normal'"
-                  class="form-select"
-                >
-                  <option *ngFor="let item of arrayLotteries" [ngValue]="item">
-                    <strong [style]="{color: item.color}">{{ item.name }}</strong>
-                  </option>
-                </select> -->
               </div>
             </div>
           </div>
         </div>
 
         <div class="form-group full-width">
-          <label for="seller">Vendedor</label>
-          <select #selectSeller id="seller" formControlName="seller" (change)="onSellerSelected()" class="form-select">
-            <option *ngFor="let item of arraySellers" [ngValue]="item">
-              {{ item.name }}
-            </option>
-          </select>
+          <div class="left">
+            <label for="seller">Vendedor</label>
+          </div>
+          <div class="rigth">
+            <select style="width: 100%;" #selectSeller id="seller" formControlName="seller"
+              (change)="onSellerSelected()" class="form-select">
+              <option *ngFor="let item of arraySellers" [ngValue]="item">
+                {{ item.name }}
+              </option>
+            </select>
+          </div>
         </div>
-
-        <div class="number-check">
-          <div class="form-group">
+        <div class="form-group">
+          <div class="left">
             <label for="lotteryNumber">Número</label>
+          </div>
+          <div class="rigth flex-comb">
             <input #myInputNumber type="text" id="lotteryNumber" formControlName="lotteryNumber"
               (keydown.enter)="inputValue.focus()" class="form-input" />
-          </div>
 
-          <div class="checkbox-group">
-            <input #inputCombined type="checkbox" id="combined" formControlName="combined"
-              (keydown.enter)="inputValue.focus()" class="checkbox" />
-            <label for="combined">Comb.</label>
+            <div class="checkbox-group">
+              <input #inputCombined type="checkbox" id="combined" formControlName="combined"
+                (keydown.enter)="inputValue.focus()" class="checkbox" />
+              <label for="combined">Comb.</label>
+            </div>
           </div>
         </div>
 
         <div class="form-group full-width">
-          <label for="value">Valor</label>
-          <input #inputValue type="number" id="value" formControlName="value" (keydown.enter)="btnSend.focus()"
-            placeholder="0" class="form-input" />
+
+          <div class="left">
+            <label for="value">Valor</label>
+          </div>
+          <div class="rigth">
+            <input #inputValue type="number" id="value" formControlName="value" (keydown.enter)="btnSend.focus()"
+              placeholder="0" class="form-input" />
+          </div>
         </div>
 
         <div class="button-group">

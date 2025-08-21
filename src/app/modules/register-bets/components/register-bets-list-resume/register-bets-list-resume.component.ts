@@ -47,7 +47,7 @@ export class RegisterBetsListResumeComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 25;
+  pageSize = 1000000000000000000;
   currentPageIndex = 0; // controla el estado actual
 
   private defaultConditions: WhereCondition[] = [];
@@ -87,6 +87,7 @@ export class RegisterBetsListResumeComponent implements OnInit {
       'lottery.id': this.lottery?._id,
       'date': this.defaultDate
     };
+
     try {
       const sellers = await this.registerBetsUseCase.getBetsToListResume(this.defaultQueries, this.pageSize, this.currentPageIndex);
 

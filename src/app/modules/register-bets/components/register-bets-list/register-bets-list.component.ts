@@ -72,6 +72,8 @@ export class RegisterBetsListComponent implements OnInit {
 
   view = 'list';
 
+  filterQuery!: any;
+
   subscriptions!: Subscription | undefined;
 
   ngOnInit(): void {
@@ -82,6 +84,8 @@ export class RegisterBetsListComponent implements OnInit {
 
         this.defaultDate = value.date;
         this.lottery = value.lottery;
+
+        this.filterQuery = value || null;
 
         let filter;
 
@@ -137,7 +141,7 @@ export class RegisterBetsListComponent implements OnInit {
     onPageChange(event: any) {
       this.pageSize = event.pageSize;
       this.currentPageIndex = event.pageIndex + 1;
-      this.getData();
+      this.getData(this.filterQuery?.whereConditions ? this.filterQuery?.whereConditions : null);
     }
 
   onViewDetail(item: RegisterBets) {

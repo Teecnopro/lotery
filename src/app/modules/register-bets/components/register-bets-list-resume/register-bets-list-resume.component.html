@@ -1,9 +1,7 @@
-<div>
-  <!-- <div *ngIf="loading" class="loading-container">
-    <p>Cargando parametrizaciones de pago...</p>
-  </div> -->
+<div class="table-container">
 
-  <table
+  <div class="table-scroll">
+    <table
     mat-table
     [dataSource]="listBets"
     class="mat-elevation-z8"
@@ -57,6 +55,7 @@
 
   <div *ngIf="listBets.length === 0" class="empty-state">
     <p>No hay resultados disponibles para los filtros seleccionados.</p>
+  </div>
   </div>
 </div>
 

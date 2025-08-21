@@ -33,7 +33,22 @@
 
 .form-group {
   display: flex;
-  flex-direction: column;
+  // flex-direction: column;
+  // justify-content: space-between;
+  width: 100%;
+
+  .left {
+    width: 20%;
+  }
+
+  .rigth {
+    width: calc(80% - 4px);
+  }
+}
+
+
+.flex-comb {
+  display: flex;
 }
 
 .full-width {
@@ -49,6 +64,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+  width: 100%;           // mantenido como en el original
 }
 
 .form-group label {
@@ -115,7 +131,7 @@
   display: flex;
   align-items: center;
   width: calc(20% - 2.5px); // mantenido como en el original
-  margin-top: 18px;
+  // margin-top: 18px;
 }
 
 .checkbox-group input[type="checkbox"] {
