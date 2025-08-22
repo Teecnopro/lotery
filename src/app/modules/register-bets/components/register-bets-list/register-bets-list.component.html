@@ -4,34 +4,40 @@
       <!-- Columna de Dígitos -->
       <ng-container matColumnDef="lottery">
         <th mat-header-cell *matHeaderCellDef>Lotería</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning }">
+        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}">
           {{ element.lottery.name }}
         </td>
+        <td mat-footer-cell *matFooterCellDef ><strong>Total general: <span class="grand-total">{{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }}</span></strong></td>
       </ng-container>
       <ng-container matColumnDef="lotteryNumber">
         <th mat-header-cell *matHeaderCellDef>Número</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning }">
+        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}">
           {{ element.lotteryNumber }}
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Columna de Descripción -->
       <ng-container matColumnDef="combined">
         <th mat-header-cell *matHeaderCellDef>Combinado</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning }">
-          {{ element.combined ? "SI" : "NO" }}
+        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}">
+          {{ element.combined ? "COMBINADO" : "" }}
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Columna de -->
       <ng-container matColumnDef="value">
         <th mat-header-cell *matHeaderCellDef>Valor</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning }" style="text-align: right">
-          <mat-icon matTooltip="{{
+        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}" style="text-align: right">
+          <div style="display: flex; align-items: center; justify-content: end;">
+            <mat-icon matTooltip="{{
               element.alertDescription ? element.alertDescription : ''
-            }}" color="warn" [ngClass]="{ 'icon-warning': element.warning }" *ngIf="element.warning">warning</mat-icon>
-          <span [ngClass]="{ 'text-warning': element.warning }">{{
+            }}" color="warn" [ngClass]="{ 'icon-warning': element.warning && !warning}" *ngIf="element.warning && !warning" style="font-size: 15px; height: 16px;">warning</mat-icon>
+          <span [ngClass]="{ 'text-warning': element.warning && !warning}">{{
             element.groupedValue | currency : "COP" : "symbol-narrow" : "1.0-0"
             }}</span>
+          </div>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
       <!-- Columna de Acciones -->
       <ng-container matColumnDef="detail">
@@ -41,11 +47,13 @@
             <mat-icon>assignment</mat-icon>
           </button>
         </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
 
       <!-- Encabezado y filas -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
   </div>
 
@@ -53,9 +61,9 @@
     <p>No hay resultados disponibles para los filtros seleccionados.</p>
   </div>
 
-  <mat-paginator [length]="total" [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 75, 100]"
+  <!-- <mat-paginator [length]="total" [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 75, 100]"
     (page)="onPageChange($event)" *ngIf="listBets.length">
-  </mat-paginator>
+  </mat-paginator> -->
 </div>
 
 <!-- <ng-template #loadingTpl>

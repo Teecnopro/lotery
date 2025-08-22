@@ -60,6 +60,7 @@
     <app-register-bets-list
       *ngIf="!viewDetail?.detail && !isResume"
       (viewDetail)="viewDetail = $event"
+      [warning]="warning"
     ></app-register-bets-list>
     <app-register-bets-list-detail
       *ngIf="viewDetail?.detail && !isResume"

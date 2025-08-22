@@ -101,13 +101,13 @@
   width: 100%;
   max-width: 800px; // Más compacto
   overflow-y: hidden;
-  max-height: 65vh; // Menor altura máxima
+  max-height: auto; // Menor altura máxima
   border-radius: 8px;
   margin: 0;
   padding: 0;
 
   @media (max-width: 768px) {
-    max-height: 30vh;
+    max-height: auto;
     padding: 0.25rem;
   }
 }

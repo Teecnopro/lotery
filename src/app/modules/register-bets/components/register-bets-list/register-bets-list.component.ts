@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import {
@@ -40,6 +40,8 @@ import { mapWhereToMongo } from '../../../../shared/function/mapperWhereConditio
 })
 export class RegisterBetsListComponent implements OnInit {
   @Output() viewDetail = new EventEmitter<ViewDetail>();
+  @Input() warning = false;
+
 
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
@@ -52,8 +54,10 @@ export class RegisterBetsListComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 25;
+  pageSize = 1000000000000000000;
   currentPageIndex = 1; // controla el estado actual
+
+  grandTotal = 0;
 
   private defaultConditions: WhereCondition[] = [];
   private query = {}
@@ -126,7 +130,12 @@ export class RegisterBetsListComponent implements OnInit {
         this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize),
       ]);
       this.listBets = dataRegister;
-      this.total = totalResult;
+      this.grandTotal = this.listBets?.reduce(
+        (acc, item) => acc + item?.groupedValue!,
+        0
+      );
+
+      // this.total = totalResult;
 
     } catch (error: any) {
       console.error('Error fetching register bets:', error);

@@ -11,7 +11,7 @@
 
 .scroll-table-wrapper {
   flex: 1 1 auto;
-  max-height: 500px; // Opcional: menos altura máxima
+  max-height: auto; // Opcional: menos altura máxima
   overflow-y: visible;
   overflow-x: hidden;
 }
@@ -23,8 +23,12 @@ table {
 }
 
 tr {
-  height: 30px;
-  font-size: 13px;
+  height: 20px;
+  font-size: 12px;
+}
+
+.grand-total {
+  color: #0057a0;
 }
 
 .mat-elevation-z8 {

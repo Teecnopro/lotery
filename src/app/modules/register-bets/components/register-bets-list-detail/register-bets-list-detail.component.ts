@@ -66,8 +66,10 @@ export class RegisterBetsListDetailComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 25;
+  pageSize = 1000000000000000000;
   currentPageIndex = 1; // controla el estado actual
+
+  grandTotal = 0;
 
   private defaultConditions: WhereCondition[] = [];
   private defaultQueries: { [key: string]: any } = {};
@@ -134,13 +136,16 @@ export class RegisterBetsListDetailComponent implements OnInit {
       };
     }
 
-    console.log(this.defaultQueries);
-
-
     try {
       this.total = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, this.defaultQueries);
       const data = await this.registerBetsUseCase.getBetsDetailsByPagination(this.currentPageIndex, this.pageSize, this.defaultQueries);
       this.listBets = data;
+
+      this.grandTotal = this.listBets?.reduce(
+        (acc, item) => acc + item?.value!,
+        0
+      );
+
       this.selection.clear();
 
       if (this.listBets.length === 0) {

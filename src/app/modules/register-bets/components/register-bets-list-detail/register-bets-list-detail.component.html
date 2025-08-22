@@ -22,6 +22,7 @@
         >
         </mat-checkbox>
       </td>
+      <td mat-footer-cell *matFooterCellDef ><strong>Total general: <span class="grand-total">{{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }}</span></strong></td>
     </ng-container>
 
     <ng-container matColumnDef="consecutive">
@@ -33,6 +34,7 @@
       >
         {{ element.seller.code }}
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <ng-container matColumnDef="seller">
@@ -44,6 +46,7 @@
       >
         {{ element.seller.name }}
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <!-- Columna de Dígitos -->
@@ -56,6 +59,7 @@
       >
         {{ element.lottery.name }}
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
     <ng-container matColumnDef="lotteryNumber">
       <th mat-header-cell *matHeaderCellDef>Número</th>
@@ -66,6 +70,7 @@
       >
         {{ element.lotteryNumber }}
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
     <!-- Columna de Descripción -->
     <ng-container matColumnDef="combined">
@@ -75,8 +80,9 @@
         *matCellDef="let element"
         [ngClass]="{ 'warning-color': element.warning }"
       >
-        {{ element.combined ? "SI" : "NO" }}
+        {{ element.combined ? "COMBINADO" : "" }}
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
     <!-- Columna de -->
     <ng-container matColumnDef="value">
@@ -98,6 +104,7 @@
           element.value | currency : "COP" : "symbol-narrow" : "1.0-0"
         }}</span>
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
     <!-- Columna de Acciones -->
     <ng-container matColumnDef="options">
@@ -107,6 +114,7 @@
           <mat-icon>delete</mat-icon>
         </button>
       </td>
+      <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>
 
     <!-- Encabezado y filas -->
@@ -116,16 +124,17 @@
       *matRowDef="let row; columns: displayedColumns"
       class="table-row"
     ></tr>
+    <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
   </table>
 
-  <mat-paginator
+  <!-- <mat-paginator
     [length]="total"
     [pageSize]="pageSize"
     [pageSizeOptions]="[25, 50, 75]"
     (page)="onPageChange($event)"
     *ngIf="listBets.length"
   >
-  </mat-paginator>
+  </mat-paginator> -->
 
   <div *ngIf="listBets.length === 0" class="empty-state">
     <p>No hay resultados disponibles para los filtros seleccionados.</p>

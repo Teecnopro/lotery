@@ -53,6 +53,8 @@ export class RegisterBetsPageComponent implements OnInit {
   isResume = false;
   showResumeResponsive = false;
 
+  warning = false;
+
   filteredOptions = [
     {
       nameSelected: 'Advertencias',
@@ -114,6 +116,10 @@ export class RegisterBetsPageComponent implements OnInit {
 
     item.selected = true;
 
+    if (item.nameSelected === 'Advertencias') {
+      this.warning = true;
+    }
+
     this.viewDetail['detail'] = false;
 
     this.registerBetsUseCase.updateList$({
@@ -126,6 +132,7 @@ export class RegisterBetsPageComponent implements OnInit {
   }
 
   onReset(item: any) {
+    this.warning = false;
     item.selected = false;
 
     this.viewDetail['detail'] = false;

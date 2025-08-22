@@ -21,8 +21,8 @@ table {
 }
 
 tr {
-  height: 30px;
-  font-size: 13px;
+  height: 20px;
+  font-size: 12px;
 }
 
 
@@ -161,4 +161,8 @@ mat-paginator {
   margin-top: 16px;
   color: black;
   font-size: 14px;
+}
+
+.grand-total {
+  color: #0057a0;
 }
