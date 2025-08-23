@@ -23,7 +23,9 @@
               *matCellDef="let element"
               style="text-align: right"
             >
+            <span *ngIf="element._id !== 'Comisiones (55%):' && element._id !== 'Advertencias:'">
               {{ element.cantidad }}
+            </span>
             </td>
           </ng-container>
           <ng-container matColumnDef="total">
