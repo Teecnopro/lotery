@@ -31,7 +31,7 @@ export class CheckHitsTableComponent {
     private notification = inject(NOTIFICATION_PORT);
     dataSource: RegisterBetsDetail[] = [];
     paymentDataSource: PaymentParameterization[] = [];
-    displayedColumns: string[] = ['numero', 'vendedor', 'combinado', 'valor', 'premio'];
+    displayedColumns: string[] = [ 'vendedor','numero', 'combinado', 'valor', 'premio'];
     pageIndex: number = 1;
     pageSize: number = 10;
     totalItems: number = 0;
