@@ -131,7 +131,6 @@ export class RegisterBetsPageComponent implements OnInit {
       resume: item?.resume || false,
       view: item?.filterViewActive,
     });
-    console.log("🚀 ~ RegisterBetsPageComponent ~ onFilter ~ onFilter:")
   }
 
   onReset(needList = true, item?: any) {
@@ -190,15 +189,10 @@ export class RegisterBetsPageComponent implements OnInit {
 
   async deleteBet() {
     if (this.viewDetail?.isSeller) {
-      console.log("seller");
-
       for (const item of this.selectedBets.items) {
-        await this.registerBetsUseCase.deleteRegisterBets(
-          [item]
-        );
+        await this.registerBetsUseCase.deleteRegisterBets([item]);
       }
     } else {
-      console.log("detail normal");
       await this.registerBetsUseCase.deleteRegisterBets(
         this.selectedBets.items
       );

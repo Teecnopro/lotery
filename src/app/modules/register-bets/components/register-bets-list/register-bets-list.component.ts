@@ -61,7 +61,7 @@ export class RegisterBetsListComponent implements OnInit {
   grandTotal = 0;
 
   private defaultConditions: WhereCondition[] = [];
-  private query = {}
+  private query: any = {}
   private defaultDate!: Date;
   private lottery!: any;
 
@@ -126,9 +126,8 @@ export class RegisterBetsListComponent implements OnInit {
     }
 
     try {
-      console.log("🚀 ~ RegisterBetsListComponent ~ getData ~ this.warning :", this.warning )
       const [totalResult, dataRegister] = await Promise.all([
-        this.registerBetsUseCase.getTotalBets(!this.warning ? REGISTER_BETS_DETAIL : REGISTER_BETS, this.query),
+        this.registerBetsUseCase.getTotalBets(!this.query['warning'] ? REGISTER_BETS_DETAIL : REGISTER_BETS, this.query),
         this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize),
       ]);
       this.listBets = dataRegister;

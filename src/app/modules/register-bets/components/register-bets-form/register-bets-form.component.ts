@@ -149,10 +149,6 @@ export class RegisterBetsFormComponent implements OnInit {
     const form = { ...this.registerBetForm.getRawValue() };
     const { uid, name } = this.user.getUser()!;
     const dateObj = new Date(`${form.date}T00:00:00`);
-    console.log(
-      '🚀 ~ RegisterBetsFormComponent ~ buildObj ~ dateObj:',
-      dateObj
-    );
 
     return {
       lottery: { id: form.lottery._id, name: form.lottery.name },
