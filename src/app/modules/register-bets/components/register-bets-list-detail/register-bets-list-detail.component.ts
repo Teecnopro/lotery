@@ -64,6 +64,8 @@ export class RegisterBetsListDetailComponent implements OnInit {
   hasPrev = false;
   loading = false;
 
+  totalWarning = 0;
+
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
   pageSize = 1000000000000000000;
@@ -141,6 +143,8 @@ export class RegisterBetsListDetailComponent implements OnInit {
         (acc, item) => acc + item?.value!,
         0
       );
+
+      this.totalWarning = this.listBets?.filter(bet => bet.warning).length || 0;
 
       this.selection.clear();
 

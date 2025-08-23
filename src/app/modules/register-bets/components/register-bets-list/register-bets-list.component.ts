@@ -57,6 +57,7 @@ export class RegisterBetsListComponent implements OnInit {
   pageSize = 1000000000000000000;
   currentPageIndex = 1; // controla el estado actual
 
+  totalWarning = 0;
   grandTotal = 0;
 
   private defaultConditions: WhereCondition[] = [];
@@ -135,6 +136,8 @@ export class RegisterBetsListComponent implements OnInit {
         (acc, item) => acc + item?.groupedValue!,
         0
       );
+
+      this.totalWarning = this.listBets?.filter(bet => bet.warning).length || 0;
 
       this.total = totalResult;
 
