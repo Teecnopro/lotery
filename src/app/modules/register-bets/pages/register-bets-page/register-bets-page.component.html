@@ -51,7 +51,7 @@
       *ngFor="let item of filteredOptions"
       class="item-filter"
       [ngClass]="{ 'color-selected': item.selected }"
-      (click)="!item.selected ? onFilter(item) : onReset(item)"
+      (click)="!item.selected ? onFilter(item) : onReset(true, item)"
       >{{ !item.selected ? item.nameSelected : item.nameNoSelected }}</span
     >
   </div>
@@ -65,8 +65,8 @@
     <app-register-bets-list-detail
       *ngIf="viewDetail?.detail && !isResume"
       [grupedBet]="viewDetail.item!"
-      (isSelectToDeleted)="selectedBets = $event"
-      (emitDetail)="viewDetail.detail = $event"
+      (isSelectToDeleted)="selectedBets = $event; "
+      (emitDetail)="viewDetail.detail = $event; onReset(false)"
       [isSeller]="viewDetail.isSeller || false"
       [sellerId]="viewDetail.sellerId || ''"
       [defaultDate]="defaultDate"

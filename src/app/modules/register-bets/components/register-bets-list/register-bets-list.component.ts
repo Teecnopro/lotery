@@ -19,7 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, Subscription, take, takeUntil, toArray } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { query } from '@firebase/firestore';
-import { REGISTER_BETS } from '../../../../shared/const/controllers';
+import { REGISTER_BETS, REGISTER_BETS_DETAIL } from '../../../../shared/const/controllers';
 import { mapWhereToMongo } from '../../../../shared/function/mapperWhereConditions';
 
 @Component({
@@ -125,8 +125,9 @@ export class RegisterBetsListComponent implements OnInit {
     }
 
     try {
+      console.log("🚀 ~ RegisterBetsListComponent ~ getData ~ this.warning :", this.warning )
       const [totalResult, dataRegister] = await Promise.all([
-        this.registerBetsUseCase.getTotalBets(REGISTER_BETS, this.query),
+        this.registerBetsUseCase.getTotalBets(!this.warning ? REGISTER_BETS_DETAIL : REGISTER_BETS, this.query),
         this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize),
       ]);
       this.listBets = dataRegister;
@@ -135,7 +136,7 @@ export class RegisterBetsListComponent implements OnInit {
         0
       );
 
-      // this.total = totalResult;
+      this.total = totalResult;
 
     } catch (error: any) {
       console.error('Error fetching register bets:', error);

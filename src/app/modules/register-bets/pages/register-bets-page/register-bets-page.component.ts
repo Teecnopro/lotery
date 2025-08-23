@@ -118,6 +118,8 @@ export class RegisterBetsPageComponent implements OnInit {
 
     if (item.nameSelected === 'Advertencias') {
       this.warning = true;
+    } else {
+      this.warning = false;
     }
 
     this.viewDetail['detail'] = false;
@@ -129,13 +131,24 @@ export class RegisterBetsPageComponent implements OnInit {
       resume: item?.resume || false,
       view: item?.filterViewActive,
     });
+    console.log("🚀 ~ RegisterBetsPageComponent ~ onFilter ~ onFilter:")
   }
 
-  onReset(item: any) {
+  onReset(needList = true, item?: any) {
     this.warning = false;
-    item.selected = false;
 
     this.viewDetail['detail'] = false;
+
+    if (!needList) {
+      this.filteredOptions = this.filteredOptions.map((option) => {
+        option.selected = false;
+        return option;
+      });
+
+      return;
+    }
+
+    item.selected = false;
 
     this.registerBetsUseCase.updateList$({
       date: this.defaultDate,
@@ -157,9 +170,7 @@ export class RegisterBetsPageComponent implements OnInit {
 
     if (confirmed) {
       try {
-        await this.registerBetsUseCase.deleteRegisterBets(
-          this.selectedBets.items
-        );
+        await this.deleteBet();
 
         this.notification.success('Registros eliminados exitosamente');
 
@@ -174,6 +185,23 @@ export class RegisterBetsPageComponent implements OnInit {
           error?.message || 'Error al eliminar los registros'
         );
       }
+    }
+  }
+
+  async deleteBet() {
+    if (this.viewDetail?.isSeller) {
+      console.log("seller");
+
+      for (const item of this.selectedBets.items) {
+        await this.registerBetsUseCase.deleteRegisterBets(
+          [item]
+        );
+      }
+    } else {
+      console.log("detail normal");
+      await this.registerBetsUseCase.deleteRegisterBets(
+        this.selectedBets.items
+      );
     }
   }
 

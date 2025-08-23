@@ -11,7 +11,7 @@
       <td mat-cell *matCellDef="let element">
         {{ (element?.code + " - " + element?.userName ) | uppercase }}
       </td>
-      <td mat-footer-cell *matFooterCellDef ><strong>Total general: <span class="grand-total">{{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }}</span></strong></td>
+      <td mat-footer-cell *matFooterCellDef ><strong>Total registros: <span class="grand-total">{{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }} ({{listBets.length}})</span></strong></td>
     </ng-container>
 
     <!-- Columna de -->

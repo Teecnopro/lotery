@@ -93,10 +93,6 @@ export class RegisterBetsListDetailComponent implements OnInit {
     this.subscriptions = this.registerBetsUseCase.listBets$()?.subscribe((value) => {
       this.getData();
     });
-
-    if (this.isSeller) {
-      this.displayedColumns = this.displayedColumns.filter((item) => item !== 'select');
-    }
   }
 
   ngOnDestroy() {
