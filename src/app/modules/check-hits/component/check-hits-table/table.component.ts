@@ -58,14 +58,21 @@ export class CheckHitsTableComponent {
         this.loading = true;
         try {
             this.totalItems = await this.registerBetsUseCase.getTotalBetsDetail(REGISTER_BETS_DETAIL,queries);
+            this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
             if (queries && Object.keys(queries).length > 0) {
+                this.dataSource = this.dataSource.map(bet => {
+                    return {
+                        ...bet,
+                        isWinner: this.calculatePrize(bet).isWinner,
+                        prize: this.calculatePrize(bet).value
+                    };
+                }).filter(bet => bet.isWinner);
                 this.pageSize = this.totalItems;
                 this.arraySize = [this.totalItems];
             } else {
                 this.pageSize = pageSize ? pageSize : 10;
                 this.arraySize = [10, 20, 50, 100];
             }
-            this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
         } catch (error: any) {
             this.notification.error('Error al cargar los vendedores: ' + error.message);
         } finally {
