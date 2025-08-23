@@ -15,8 +15,8 @@
 
             <mat-form-field appearance="outline">
               <mat-label>Lotería</mat-label>
-              <mat-select #lotterySelect name="lottery" [(ngModel)]="checkData.lottery" required>
-                <mat-option *ngFor="let item of lotteries" [value]="item._id"><span [style.color]="item.color">{{ item.name }}</span></mat-option>
+              <mat-select #lotterySelect name="lottery" [(ngModel)]="checkData.lottery" required [style.color]="colorSelected" (selectionChange)="changeColor($event)"  [style.fontWeight]="'bold'">
+                <mat-option *ngFor="let item of lotteries" [value]="item._id"><span [style.color]="item.color" [style.fontWeight]="item.color === colorSelected ? 'bold' : 'normal'">{{ item.name }}</span></mat-option>
               </mat-select>
             </mat-form-field>
 

@@ -47,6 +47,7 @@ export class CheckHitsFormComponent {
 
     loading = false;
     lotteries = lotteries; // Assuming lotteries is an array of lottery objects
+    colorSelected = lotteries[0].color;
 
     constructor(private ChangeDetectorRef: ChangeDetectorRef) { }
 
@@ -80,5 +81,10 @@ export class CheckHitsFormComponent {
             lotteryNumber: ''
         };
         this.queries.next({});
+    }
+
+    changeColor(event: any): void {
+        const selectedLottery = this.lotteries.find(lottery => lottery._id === event.value);
+        this.colorSelected = selectedLottery ? selectedLottery.color : '';
     }
 }

@@ -57,10 +57,10 @@ export class CheckHitsTableComponent {
     async getDataSource(queries: { [key: string]: any  } = {}, pageSize?: number) {
         this.loading = true;
         try {
-            this.totalItems = await this.registerBetsUseCase.getTotalBetsDetail(REGISTER_BETS_DETAIL,queries);
-            this.dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
             if (queries && Object.keys(queries).length > 0) {
-                this.dataSource = this.dataSource.map(bet => {
+                this.totalItems = await this.registerBetsUseCase.getTotalBetsDetail(REGISTER_BETS_DETAIL,queries);
+                const dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
+                this.dataSource = dataSource.map(bet => {
                     return {
                         ...bet,
                         isWinner: this.calculatePrize(bet).isWinner,
