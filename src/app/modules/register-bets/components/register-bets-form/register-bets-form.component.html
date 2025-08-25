@@ -61,8 +61,8 @@
             <label for="lotteryNumber">Número</label>
           </div>
           <div class="rigth flex-comb">
-            <input #myInputNumber type="text" id="lotteryNumber" formControlName="lotteryNumber"
-              (keydown.enter)="inputValue.focus()" class="form-input" />
+            <input type="number" #myInputNumber id="lotteryNumber" formControlName="lotteryNumber"
+              (keydown.enter)="inputValue.focus()" [min]="0" class="form-input" />
 
             <div class="checkbox-group">
               <input #inputCombined type="checkbox" id="combined" formControlName="combined"
@@ -79,7 +79,7 @@
           </div>
           <div class="rigth">
             <input #inputValue type="number" id="value" formControlName="value" (keydown.enter)="btnSend.focus()"
-              placeholder="0" class="form-input" />
+              placeholder="0" class="form-input" [min]="0" />
           </div>
         </div>
 
