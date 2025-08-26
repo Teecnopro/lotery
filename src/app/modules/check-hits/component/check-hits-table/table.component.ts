@@ -58,7 +58,6 @@ export class CheckHitsTableComponent {
         this.loading = true;
         try {
             if (queries && Object.keys(queries).length > 0) {
-                this.totalItems = await this.registerBetsUseCase.getTotalBetsDetail(REGISTER_BETS_DETAIL,queries);
                 const dataSource = await this.registerBetsUseCase.getBetsByPagination(this.pageIndex, this.pageSize, queries);
                 this.dataSource = dataSource.map(bet => {
                     return {
@@ -67,6 +66,7 @@ export class CheckHitsTableComponent {
                         prize: this.calculatePrize(bet).value
                     };
                 }).filter(bet => bet.isWinner);
+                this.totalItems = this.dataSource.length;
                 this.pageSize = this.totalItems;
                 this.arraySize = [this.totalItems];
             } else {
