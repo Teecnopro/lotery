@@ -8,6 +8,7 @@
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef>
         <mat-checkbox
+        class="small-checkbox"
           (change)="toggleAllRows($event)"
           [checked]="isAllSelected()"
           [indeterminate]="isPartialSelected()"
@@ -16,6 +17,7 @@
       </th>
       <td mat-cell *matCellDef="let row">
         <mat-checkbox
+        class="small-checkbox"
           (click)="$event.stopPropagation()"
           (change)="toggleRow(row)"
           [checked]="selection.isSelected(row)"

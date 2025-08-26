@@ -153,7 +153,7 @@ export class RegisterBetsFormComponent implements OnInit {
     return {
       lottery: { id: form.lottery._id, name: form.lottery.name },
       date: dateObj,
-      lotteryNumber: form.lotteryNumber,
+      lotteryNumber: String(form.lotteryNumber || 0),
       seller: {
         id: form.seller.uid,
         name: form.seller.name,

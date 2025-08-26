@@ -4,14 +4,31 @@
       <!-- Columna de Dígitos -->
       <ng-container matColumnDef="lottery">
         <th mat-header-cell *matHeaderCellDef>Lotería</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}">
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [ngClass]="{ 'warning-color': element.warning && !warning }"
+        >
           {{ element.lottery.name }}
         </td>
-        <td mat-footer-cell *matFooterCellDef ><strong>Total registros: <span class="grand-total">{{totalWarning}} - {{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }} ({{ total }})</span></strong></td>
+        <td mat-footer-cell *matFooterCellDef>
+          <strong
+            >Total registros:
+            <span class="grand-total"
+              >{{ totalWarning }} -
+              {{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }}
+              ({{ total }})</span
+            ></strong
+          >
+        </td>
       </ng-container>
       <ng-container matColumnDef="lotteryNumber">
         <th mat-header-cell *matHeaderCellDef>Número</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}">
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [ngClass]="{ 'warning-color': element.warning && !warning }"
+        >
           {{ element.lotteryNumber }}
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
@@ -19,7 +36,11 @@
       <!-- Columna de Descripción -->
       <ng-container matColumnDef="combined">
         <th mat-header-cell *matHeaderCellDef>Combinado</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}">
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [ngClass]="{ 'warning-color': element.warning && !warning }"
+        >
           {{ element.combined ? "COMBINADO" : "" }}
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
@@ -27,13 +48,26 @@
       <!-- Columna de -->
       <ng-container matColumnDef="value">
         <th mat-header-cell *matHeaderCellDef>Valor</th>
-        <td mat-cell *matCellDef="let element" [ngClass]="{ 'warning-color': element.warning && !warning}" style="text-align: right">
-          <div style="display: flex; align-items: center; justify-content: end;">
-            <mat-icon matTooltip="{{
-              element.alertDescription ? element.alertDescription : ''
-            }}" color="warn" [ngClass]="{ 'icon-warning': element.warning && !warning}" *ngIf="element.warning && !warning" style="font-size: 15px; height: 16px;">warning</mat-icon>
-          <span [ngClass]="{ 'text-warning': element.warning && !warning}">{{
-            element.groupedValue | currency : "COP" : "symbol-narrow" : "1.0-0"
+        <td
+          mat-cell
+          *matCellDef="let element"
+          [ngClass]="{ 'warning-color': element.warning && !warning }"
+          style="text-align: right"
+        >
+          <div style="display: flex; align-items: center; justify-content: end">
+            <mat-icon
+              matTooltip="{{
+                element.alertDescription ? element.alertDescription : ''
+              }}"
+              color="warn"
+              [ngClass]="{ 'icon-warning': element.warning && !warning }"
+              *ngIf="element.warning && !warning"
+              style="font-size: 15px; height: 16px"
+              >warning</mat-icon
+            >
+            <span [ngClass]="{ 'text-warning': element.warning && !warning }">{{
+              element.groupedValue
+                | currency : "COP" : "symbol-narrow" : "1.0-0"
             }}</span>
           </div>
         </td>
@@ -41,9 +75,16 @@
       </ng-container>
       <!-- Columna de Acciones -->
       <ng-container matColumnDef="detail">
-        <th mat-header-cell *matHeaderCellDef class="actions-header">Detalles</th>
+        <th mat-header-cell *matHeaderCellDef class="actions-header">
+          Detalles
+        </th>
         <td mat-cell *matCellDef="let element" class="actions-cell">
-          <button mat-icon-button color="accent" title="Ver detalle" (click)="onViewDetail(element)">
+          <button
+            mat-icon-button
+            color="accent"
+            title="Ver detalle"
+            (click)="onViewDetail(element)"
+          >
             <mat-icon>assignment</mat-icon>
           </button>
         </td>
@@ -52,7 +93,11 @@
 
       <!-- Encabezado y filas -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="table-row"
+      ></tr>
       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
   </div>

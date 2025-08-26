@@ -30,6 +30,25 @@
   background: white; // para que no quede transparente al hacer scroll
 }
 
+.mat-mdc-row {
+  font-size: 14px !important;
+  height: 10px !important;
+  line-height: 6px !important;
+}
+
+.mat-mdc-cell {
+  border-right: 1px solid #e1eef4 !important;
+}
+
+.mat-mdc-row:nth-child(even) {
+  background-color: #e1eef4 !important;
+}
+
+.mat-mdc-header-row {
+  background-color: #00608f !important;
+  color: white !important;
+}
+
 // tr {
 //   height: 20px !important;
 //   font-size: 13px !important;
