@@ -28,7 +28,7 @@ tr {
 .mat-mdc-row {
   font-size: 13px !important;
   height: 10px !important;
-  line-height: 5px !important;
+  line-height: 5px !important
 }
 
 .mat-mdc-cell {
@@ -47,6 +47,7 @@ tr {
 .small-checkbox {
   transform: scale(0.6);   // escala al 80%
   transform-origin: left;  // opcional: que escale desde la izquierda
+  margin-bottom: 5px;
 }
 
 mat-paginator {

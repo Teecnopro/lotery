@@ -12,6 +12,7 @@
           (change)="toggleAllRows($event)"
           [checked]="isAllSelected()"
           [indeterminate]="isPartialSelected()"
+          style="font-size: 15px; height: 20px"
         >
         </mat-checkbox>
       </th>
@@ -21,6 +22,7 @@
           (click)="$event.stopPropagation()"
           (change)="toggleRow(row)"
           [checked]="selection.isSelected(row)"
+          style="font-size: 15px; height: 20px"
         >
         </mat-checkbox>
       </td>
@@ -100,6 +102,7 @@
           color="warn"
           [ngClass]="{ 'icon-warning': element.warning }"
           *ngIf="element.warning"
+          style="font-size: 15px; height: 16px"
           >warning</mat-icon
         >
         <span [ngClass]="{ 'text-warning': element.warning }">{{
