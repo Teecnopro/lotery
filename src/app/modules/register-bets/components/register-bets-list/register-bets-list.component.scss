@@ -37,9 +37,9 @@ tr {
 }
 
 .mat-mdc-row {
-  font-size: 14px !important;
+  font-size: 13px !important;
   height: 10px !important;
-  line-height: 6px !important
+  line-height: 5px !important
 }
 
 .mat-mdc-cell {
@@ -141,4 +141,9 @@ tr {
   margin-top: 16px;
   color: black;
   font-size: 16px;
+}
+
+.primary {
+  font-weight: bold;
+  background-color: #bed669;
 }

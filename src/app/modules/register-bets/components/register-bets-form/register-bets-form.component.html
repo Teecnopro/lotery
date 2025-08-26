@@ -62,7 +62,7 @@
           </div>
           <div class="rigth flex-comb">
             <input type="number" #myInputNumber id="lotteryNumber" formControlName="lotteryNumber"
-              (keydown.enter)="inputValue.focus()" [min]="0" class="form-input" />
+              (keydown.enter)="inputValue.focus()" [min]="0" [max]="99999" class="form-input" />
 
             <div class="checkbox-group">
               <input #inputCombined type="checkbox" id="combined" formControlName="combined"

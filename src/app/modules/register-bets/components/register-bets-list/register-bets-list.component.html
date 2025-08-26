@@ -16,8 +16,7 @@
             >Total registros:
             <span class="grand-total"
               >{{ totalWarning }} -
-              {{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }}
-              ({{ total }})</span
+              {{ grandTotal | currency : "COP" : "symbol-narrow" : "1.0-0" }}</span
             ></strong
           >
         </td>
@@ -95,7 +94,8 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr
         mat-row
-        *matRowDef="let row; columns: displayedColumns"
+        *matRowDef="let row; let i = index; columns: displayedColumns"
+        [ngClass]="{ 'primary': i === 0 && !warning }"
         class="table-row"
       ></tr>
       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
@@ -106,9 +106,9 @@
     <p>No hay resultados disponibles para los filtros seleccionados.</p>
   </div>
 
-  <!-- <mat-paginator [length]="total" [pageSize]="pageSize" [pageSizeOptions]="[25, 50, 75, 100]"
+  <mat-paginator [length]="total" [pageSize]="pageSize"
     (page)="onPageChange($event)" *ngIf="listBets.length">
-  </mat-paginator> -->
+  </mat-paginator>
 </div>
 
 <!-- <ng-template #loadingTpl>

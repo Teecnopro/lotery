@@ -54,7 +54,7 @@ export class RegisterBetsListComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 1000000000000000000;
+  pageSize = 45;
   currentPageIndex = 1; // controla el estado actual
 
   totalWarning = 0;
@@ -125,20 +125,24 @@ export class RegisterBetsListComponent implements OnInit {
       };
     }
 
+    if (this.query['warning']) {
+      this.warning = true;
+    }
+
     try {
-      const [totalResult, dataRegister] = await Promise.all([
-        this.registerBetsUseCase.getTotalBets(!this.query['warning'] ? REGISTER_BETS_DETAIL : REGISTER_BETS, this.query),
-        this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize),
+      this.listBets = await this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize);
+
+      const [totalResultWarning, totalResult] = await Promise.all([
+        this.registerBetsUseCase.getTotalBets(REGISTER_BETS, {...this.query, warning: true}),
+        this.registerBetsUseCase.getRegisterBetsByQuery(this.query, 1, 1000000000000000),
       ]);
-      this.listBets = dataRegister;
-      this.grandTotal = this.listBets?.reduce(
+
+      this.grandTotal = totalResult?.reduce(
         (acc, item) => acc + item?.groupedValue!,
         0
       );
 
-      this.totalWarning = this.listBets?.filter(bet => bet.warning).length || 0;
-
-      this.total = totalResult;
+      this.totalWarning = totalResultWarning || 0;
 
     } catch (error: any) {
       console.error('Error fetching register bets:', error);

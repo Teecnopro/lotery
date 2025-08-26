@@ -135,16 +135,14 @@ export class RegisterBetsListDetailComponent implements OnInit {
     }
 
     try {
-      this.total = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, this.defaultQueries);
       const data = await this.registerBetsUseCase.getBetsDetailsByPagination(this.currentPageIndex, this.pageSize, this.defaultQueries);
       this.listBets = data;
+      this.totalWarning = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, {...this.defaultQueries, warning: true});
 
       this.grandTotal = this.listBets?.reduce(
         (acc, item) => acc + item?.value!,
         0
       );
-
-      this.totalWarning = this.listBets?.filter(bet => bet.warning).length || 0;
 
       this.selection.clear();
 

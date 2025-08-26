@@ -14,10 +14,21 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+table {
+  width: 100%;
+  border-collapse: separate;
+  font-size: 13px; // Más pequeño
+}
+
+tr {
+  height: 20px;
+  font-size: 12px;
+}
+
 .mat-mdc-row {
-  font-size: 14px !important;
+  font-size: 13px !important;
   height: 10px !important;
-  line-height: 6px !important;
+  line-height: 5px !important;
 }
 
 .mat-mdc-cell {
@@ -34,35 +45,9 @@
 }
 
 .small-checkbox {
-  transform: scale(0.8);   // escala al 80%
+  transform: scale(0.6);   // escala al 80%
   transform-origin: left;  // opcional: que escale desde la izquierda
 }
-
-table {
-  width: 100%;
-  overflow: hidden;
-  flex: 1;
-}
-
-tr {
-  height: 20px;
-  font-size: 12px;
-}
-
-// Filas más angostas
-// .table-row {
-//   height: 32px !important;
-// }
-
-// .mat-mdc-header-row {
-//   height: 40px !important;
-// }
-
-// .mat-mdc-cell, .mat-mdc-header-cell {
-//   padding: 4px 12px !important;
-//   font-size: 14px;
-//   line-height: 1.2;
-// }
 
 mat-paginator {
   border-radius: 0 0 8px 8px !important; /* Bordes inferiores redondeados */
