@@ -132,14 +132,14 @@
     <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
   </table>
 
-  <!-- <mat-paginator
+  <mat-paginator
     [length]="total"
     [pageSize]="pageSize"
-    [pageSizeOptions]="[25, 50, 75]"
+    [pageSizeOptions]="[45]"
     (page)="onPageChange($event)"
     *ngIf="listBets.length"
   >
-  </mat-paginator> -->
+  </mat-paginator>
 
   <div *ngIf="listBets.length === 0" class="empty-state">
     <p>No hay resultados disponibles para los filtros seleccionados.</p>

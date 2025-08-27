@@ -38,15 +38,14 @@
       <mat-icon>arrow_back</mat-icon>
       Volver
     </span>
-    <button
-      mat-flat-button
-      color="warn"
+    <span
+      class="item-filter  color-delete"
       *ngIf="selectedBets?.selected && viewDetail?.detail"
       (click)="deleteBetsDetail()"
     >
       <mat-icon>delete</mat-icon>
       Eliminar
-    </button>
+    </span>
     <span
       *ngFor="let item of filteredOptions"
       class="item-filter"

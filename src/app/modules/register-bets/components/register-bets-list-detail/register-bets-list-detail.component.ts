@@ -68,7 +68,7 @@ export class RegisterBetsListDetailComponent implements OnInit {
 
   // Paginación
   total = 0; // opcional, si puedes estimar o contar
-  pageSize = 1000000000000000000;
+  pageSize = 45;
   currentPageIndex = 1; // controla el estado actual
 
   grandTotal = 0;
@@ -138,6 +138,7 @@ export class RegisterBetsListDetailComponent implements OnInit {
       const data = await this.registerBetsUseCase.getBetsDetailsByPagination(this.currentPageIndex, this.pageSize, this.defaultQueries);
       this.listBets = data;
       this.totalWarning = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, {...this.defaultQueries, warning: true});
+      this.total = await this.registerBetsUseCase.getTotalBets(REGISTER_BETS_DETAIL, {...this.defaultQueries});
 
       this.grandTotal = this.listBets?.reduce(
         (acc, item) => acc + item?.value!,
@@ -160,7 +161,8 @@ export class RegisterBetsListDetailComponent implements OnInit {
   }
 
   onPageChange(event: PageEvent) {
-      this.currentPageIndex = event.pageSize != this.currentPageIndex ? 1 : event.pageIndex + 1;
+      this.pageSize = event.pageSize;
+      this.currentPageIndex = event.pageIndex + 1;
       this.getData();
   }
 
