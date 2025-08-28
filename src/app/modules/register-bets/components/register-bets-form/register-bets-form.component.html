@@ -61,8 +61,10 @@
             <label for="lotteryNumber">Número</label>
           </div>
           <div class="rigth flex-comb">
-            <input type="number" #myInputNumber id="lotteryNumber" formControlName="lotteryNumber"
-              (keydown.enter)="inputValue.focus()" [min]="0" [max]="99999" class="form-input" />
+            <input type="text" #myInputNumber id="lotteryNumber" formControlName="lotteryNumber"
+              (keydown.enter)="inputValue.focus()" maxlength="5" class="form-input"
+              pattern="[0-9]*" inputmode="numeric"
+              (input)="onNumberInput(myInputNumber)" />
 
             <div class="checkbox-group">
               <input #inputCombined type="checkbox" id="combined" formControlName="combined"

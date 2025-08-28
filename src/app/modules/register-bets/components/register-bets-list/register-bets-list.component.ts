@@ -143,6 +143,7 @@ export class RegisterBetsListComponent implements OnInit {
       );
 
       this.totalWarning = totalResultWarning || 0;
+      this.total = totalResult?.length || 0;
 
     } catch (error: any) {
       console.error('Error fetching register bets:', error);

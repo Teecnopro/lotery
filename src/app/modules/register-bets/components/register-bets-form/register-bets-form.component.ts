@@ -204,4 +204,10 @@ export class RegisterBetsFormComponent implements OnInit {
 
     this.updateList();
   }
+
+  // Add this method to your component class
+  onNumberInput(input: HTMLInputElement): void {
+    input.value = input.value.replace(/[^0-9]/g, '');
+    this.registerBetForm.get('lotteryNumber')?.setValue(input.value);
+  }
 }
