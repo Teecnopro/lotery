@@ -95,7 +95,7 @@
       <tr
         mat-row
         *matRowDef="let row; let i = index; columns: displayedColumns"
-        [ngClass]="{ 'primary': i === 0 && !warning }"
+        [ngClass]="{ 'primary': i === 0 && !warning && initial }"
         class="table-row"
       ></tr>
       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>

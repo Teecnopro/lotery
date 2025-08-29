@@ -81,6 +81,8 @@ export class RegisterBetsListComponent implements OnInit {
 
   subscriptions!: Subscription | undefined;
 
+  initial = false;
+
   ngOnInit(): void {
     this.subscriptions = this.registerBetsUseCase
       .listBets$()
@@ -102,12 +104,13 @@ export class RegisterBetsListComponent implements OnInit {
           filter = undefined;
         }
 
-        this.getData(filter);
+        this.getData(filter, value?.initial);
       });
   }
 
   async getData(
-    filter?: WhereCondition
+    filter?: WhereCondition,
+    initial: boolean = false
   ) {
     this.loading = true;
     const dateObj = this.defaultDate;
@@ -129,8 +132,10 @@ export class RegisterBetsListComponent implements OnInit {
       this.warning = true;
     }
 
+    this.initial = initial;
+
     try {
-      this.listBets = await this.registerBetsUseCase.getRegisterBetsByQuery(this.query, this.currentPageIndex, this.pageSize);
+      this.listBets = await this.registerBetsUseCase.getRegisterBetsByQuery({...this.query, initial}, this.currentPageIndex, this.pageSize);
 
       const [totalResultWarning, totalResult] = await Promise.all([
         this.registerBetsUseCase.getTotalBets(REGISTER_BETS, {...this.query, warning: true}),

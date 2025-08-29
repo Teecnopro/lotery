@@ -136,7 +136,7 @@ export class RegisterBetsFormComponent implements OnInit {
       this.loading = false;
     }
 
-    this.updateList();
+    this.updateList(true);
   }
 
   resetForm() {
@@ -174,13 +174,14 @@ export class RegisterBetsFormComponent implements OnInit {
     event.stopPropagation();
   }
 
-  updateList() {
+  updateList(initial = false) {
     const form = this.registerBetForm.getRawValue();
     const date = new Date(`${form.date}T00:00:00`);
     this.registerBetsUseCase.updateList$({
       date: date,
       lottery: form.lottery,
       view: ['list'],
+      initial
     });
   }
 

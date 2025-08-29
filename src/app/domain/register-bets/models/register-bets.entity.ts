@@ -40,6 +40,7 @@ export interface ListBets {
   resume?: boolean;
   view: string[];
   returnView?: 'resume' | 'detail';
+  initial?: boolean;
 }
 
 export interface ViewDetail {

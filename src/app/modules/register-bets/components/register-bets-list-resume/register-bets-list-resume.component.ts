@@ -96,7 +96,9 @@ export class RegisterBetsListResumeComponent implements OnInit {
         code: value?.code,
         userName: value?.name,
         total: value?.value,
-      }));
+      })).sort((a: any, b: any) => b - a);
+
+
 
       this.grandTotal = this.listBets?.reduce(
         (acc, item) => acc + item?.total!,
