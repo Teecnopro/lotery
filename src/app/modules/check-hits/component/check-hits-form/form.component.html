@@ -1,39 +1,51 @@
 <div class="form-container">
-  <mat-card class="form-card">
-    <mat-card-header>
-      <mat-card-title>Consultar Aciertos</mat-card-title>
-    </mat-card-header>
-    
-    <mat-card-content>
-      <form #checkForm="ngForm" (ngSubmit)="onSubmit(checkForm)" class="check-form">
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Fecha</mat-label>
-          <input matInput type="date" name="date" [(ngModel)]="checkData.date" required>
-        </mat-form-field>
-        
-
-            <mat-form-field appearance="outline">
-              <mat-label>Lotería</mat-label>
-              <mat-select #lotterySelect name="lottery" [(ngModel)]="checkData.lottery" required [style.color]="colorSelected" (selectionChange)="changeColor($event)"  [style.fontWeight]="'bold'">
-                <mat-option *ngFor="let item of lotteries" [value]="item._id"><span [style.color]="item.color" [style.fontWeight]="item.color === colorSelected ? 'bold' : 'normal'">{{ item.name }}</span></mat-option>
-              </mat-select>
-            </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Número apostado</mat-label>
-          <input matInput type="text" name="lotteryNumber" [(ngModel)]="checkData.lotteryNumber" required placeholder="Ingrese el número apostado">
-        </mat-form-field>
-
+  <div class="form-card">
+    <div class="form-header">
+      <h3 class="form-title">Consultar Aciertos</h3>
+    </div>
+    <div class="form-content">
+      <form #checkForm="ngForm" (ngSubmit)="onSubmit(checkForm)" class="bets-form">
+        <div class="form-group full-width">
+          <div class="left">
+            <label for="date">Fecha</label>
+          </div>
+          <div class="rigth">
+            <input type="date" id="date" name="date" [(ngModel)]="checkData.date" required class="form-input" />
+          </div>
+        </div>
+        <div class="lottery">
+          <div class="lottery-select" style="display: flex; width: 100%; align-items: center; justify-content: center; flex-direction: column;">
+            <div style="width: 100%;">
+              <div class="form-group full-width">
+                <div class="left">
+                  <label for="lottery"><strong>Lotería</strong></label>
+                </div>
+                <div class="rigth">
+                  <select id="lottery" name="lottery" [(ngModel)]="checkData.lottery" required class="form-select" [style]="{'color': colorSelected}" (selectionchange)="changeColor($event)">
+                    <option *ngFor="let item of lotteries" [ngValue]="item._id" [style.color]="item.color">{{ item.name }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <div class="left">
+            <label for="lotteryNumber">Número apostado</label>
+          </div>
+          <div class="rigth">
+            <input type="text" id="lotteryNumber" name="lotteryNumber" [(ngModel)]="checkData.lotteryNumber" required class="form-input" placeholder="Ingrese el número apostado" />
+          </div>
+        </div>
         <div class="button-group">
-          <button mat-raised-button color="primary" type="submit" [disabled]="!checkForm.valid || loading">
+          <button type="submit" [disabled]="!checkForm.valid || loading" class="btn-primary">
             {{loading ? 'Consultando...' : 'Consultar'}}
           </button>
-          <button mat-outlined-button type="button" (click)="limpiarFormulario(checkForm)" [disabled]="loading">
+          <button type="button" (click)="limpiarFormulario(checkForm)" [disabled]="loading" class="btn-primary" style="background: white; color: #1976d2; border: 1px solid #1976d2;">
             Limpiar
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </div>
