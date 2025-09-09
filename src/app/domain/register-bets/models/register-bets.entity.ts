@@ -17,6 +17,7 @@ export interface RegisterBetsDetail {
   updatedAt?: Date;
   updater?: AuthUser | null;
   alertDescription?: string | undefined | null;
+  consecutive?: number;
 }
 
 export interface RegisterBets {
@@ -41,6 +42,7 @@ export interface ListBets {
   view: string[];
   returnView?: 'resume' | 'detail';
   initial?: boolean;
+  initialNumber?: string;
 }
 
 export interface ViewDetail {

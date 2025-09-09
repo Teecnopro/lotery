@@ -1,4 +1,11 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { WhereCondition } from '../../../../shared/models/query.entity';
 import {
@@ -19,7 +26,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, Subscription, take, takeUntil, toArray } from 'rxjs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { query } from '@firebase/firestore';
-import { REGISTER_BETS, REGISTER_BETS_DETAIL } from '../../../../shared/const/controllers';
+import {
+  REGISTER_BETS,
+  REGISTER_BETS_DETAIL,
+} from '../../../../shared/const/controllers';
 import { mapWhereToMongo } from '../../../../shared/function/mapperWhereConditions';
 
 @Component({
@@ -42,7 +52,6 @@ export class RegisterBetsListComponent implements OnInit {
   @Output() viewDetail = new EventEmitter<ViewDetail>();
   @Input() warning = false;
 
-
   private registerBetsUseCase = inject(RegisterBetsUseCase);
   private notification = inject(NOTIFICATION_PORT);
 
@@ -61,7 +70,7 @@ export class RegisterBetsListComponent implements OnInit {
   grandTotal = 0;
 
   private defaultConditions: WhereCondition[] = [];
-  private query: any = {}
+  private query: any = {};
   private defaultDate!: Date;
   private lottery!: any;
 
@@ -82,6 +91,8 @@ export class RegisterBetsListComponent implements OnInit {
   subscriptions!: Subscription | undefined;
 
   initial = false;
+
+  initialNumber!: string;
 
   ngOnInit(): void {
     this.subscriptions = this.registerBetsUseCase
@@ -104,27 +115,25 @@ export class RegisterBetsListComponent implements OnInit {
           filter = undefined;
         }
 
+        this.initialNumber = value?.initialNumber as string;
         this.getData(filter, value?.initial);
       });
   }
 
-  async getData(
-    filter?: WhereCondition,
-    initial: boolean = false
-  ) {
+  async getData(filter?: WhereCondition, initial: boolean = false) {
     this.loading = true;
     const dateObj = this.defaultDate;
     dateObj.setHours(0, 0, 0, 0);
 
     this.query = {
       'lottery.id': this.lottery?._id,
-      'date': dateObj
-    }
+      date: dateObj,
+    };
 
     if (filter) {
       this.query = {
         ...this.query,
-        ...mapWhereToMongo([filter])
+        ...mapWhereToMongo([filter]),
       };
     }
 
@@ -135,11 +144,32 @@ export class RegisterBetsListComponent implements OnInit {
     this.initial = initial;
 
     try {
-      this.listBets = await this.registerBetsUseCase.getRegisterBetsByQuery({...this.query, initial}, this.currentPageIndex, this.pageSize);
+      const bets = await this.registerBetsUseCase.getRegisterBetsByQuery(
+        { ...this.query, initial },
+        this.currentPageIndex,
+        this.pageSize
+      );
+
+      if (initial) {
+        this.listBets = bets.sort((a: RegisterBets, b: RegisterBets) => {
+          if (a.lotteryNumber === this.initialNumber) return -1; // a va primero
+          if (b.lotteryNumber === this.initialNumber) return 1; // b va primero
+          return 0; // mantienen el orden relativo
+        });
+      }else {
+        this.listBets = bets;
+      }
 
       const [totalResultWarning, totalResult] = await Promise.all([
-        this.registerBetsUseCase.getTotalBets(REGISTER_BETS, {...this.query, warning: true}),
-        this.registerBetsUseCase.getRegisterBetsByQuery(this.query, 1, 1000000000000000),
+        this.registerBetsUseCase.getTotalBets(REGISTER_BETS, {
+          ...this.query,
+          warning: true,
+        }),
+        this.registerBetsUseCase.getRegisterBetsByQuery(
+          this.query,
+          1,
+          1000000000000000
+        ),
       ]);
 
       this.grandTotal = totalResult?.reduce(
@@ -149,7 +179,6 @@ export class RegisterBetsListComponent implements OnInit {
 
       this.totalWarning = totalResultWarning || 0;
       this.total = totalResult?.length || 0;
-
     } catch (error: any) {
       console.error('Error fetching register bets:', error);
       this.notification.error(
@@ -160,11 +189,15 @@ export class RegisterBetsListComponent implements OnInit {
     }
   }
 
-    onPageChange(event: any) {
-      this.pageSize = event.pageSize;
-      this.currentPageIndex = event.pageIndex + 1;
-      this.getData(this.filterQuery?.whereConditions ? this.filterQuery?.whereConditions : null);
-    }
+  onPageChange(event: any) {
+    this.pageSize = event.pageSize;
+    this.currentPageIndex = event.pageIndex + 1;
+    this.getData(
+      this.filterQuery?.whereConditions
+        ? this.filterQuery?.whereConditions
+        : null
+    );
+  }
 
   onViewDetail(item: RegisterBets) {
     this.viewDetail.emit({ detail: true, item });

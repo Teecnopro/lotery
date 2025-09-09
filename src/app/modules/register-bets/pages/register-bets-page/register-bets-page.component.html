@@ -57,12 +57,12 @@
 
   <div class="table-section">
     <app-register-bets-list
-      *ngIf="!viewDetail?.detail && !isResume"
+      *ngIf="(!viewDetail?.detail && !isResume) || reset"
       (viewDetail)="viewDetail = $event"
       [warning]="warning"
     ></app-register-bets-list>
     <app-register-bets-list-detail
-      *ngIf="viewDetail?.detail && !isResume"
+      *ngIf="viewDetail?.detail && !isResume && !reset"
       [grupedBet]="viewDetail.item!"
       (isSelectToDeleted)="selectedBets = $event; "
       (emitDetail)="viewDetail.detail = $event; onReset(false)"

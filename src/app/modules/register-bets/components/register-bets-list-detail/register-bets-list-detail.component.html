@@ -36,7 +36,7 @@
         *matCellDef="let element"
         [ngClass]="{ 'warning-color': element.warning }"
       >
-        {{ element.seller.code }}
+        {{ element?.consecutive }}
       </td>
       <td mat-footer-cell *matFooterCellDef></td>
     </ng-container>

@@ -73,6 +73,8 @@ export class RegisterBetsFormComponent implements OnInit {
   selectedOption: any = null;
   showOptions = false;
 
+  initialNumber = "";
+
   constructor() {}
 
   async ngOnInit() {
@@ -124,6 +126,7 @@ export class RegisterBetsFormComponent implements OnInit {
   async sendData() {
     this.loading = true;
     const betDetail = this.buildObj();
+    this.initialNumber = betDetail.lotteryNumber as string;
     try {
       this.resetForm();
       await this.registerBetsUseCase.createRegisterBets(betDetail);
@@ -181,7 +184,8 @@ export class RegisterBetsFormComponent implements OnInit {
       date: date,
       lottery: form.lottery,
       view: ['list'],
-      initial
+      initial,
+      initialNumber: this.initialNumber || undefined
     });
   }
 

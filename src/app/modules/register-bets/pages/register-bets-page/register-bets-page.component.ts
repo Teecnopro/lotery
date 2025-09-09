@@ -14,7 +14,7 @@ import {
   ViewDetail,
 } from '../../../../domain/register-bets/models/register-bets.entity';
 import { MatIconModule } from '@angular/material/icon';
-import { firstValueFrom } from 'rxjs';
+import { filter, firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog.component';
 import { NOTIFICATION_PORT } from '../../../../shared/ports';
@@ -49,7 +49,7 @@ export class RegisterBetsPageComponent implements OnInit {
 
   viewDetail: ViewDetail | any = {};
 
-  isDetail = false;
+  reset = false;
   isResume = false;
   showResumeResponsive = false;
 
@@ -99,6 +99,16 @@ export class RegisterBetsPageComponent implements OnInit {
       this.defaultDate = date;
       this.lottery = value.lottery;
       this.isResume = value.resume || false;
+      this.reset = value.hasOwnProperty('initial');
+
+      if (this.reset) {
+        this.filteredOptions = this.filteredOptions.map((option) => {
+          option.selected = false;
+          return option;
+        });
+
+        this.onReset(true);
+      }
 
       if (!value.returnView) return;
       this.returnView = value.returnView;
